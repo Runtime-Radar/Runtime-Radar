@@ -2,7 +2,7 @@
 
 ## Quick installation using Helm
 
-The Helm chart configuration file with the default settings will be used for installation. If you need to consider the specifics of the existing infrastructure, you can manually fill in the Helm chart configuration file prior to installation. All of the available settings are described in the `[README.md](../../install/helm/README.md)` file.
+The Helm chart configuration file with the default settings will be used for installation. If you need to consider the specifics of the existing infrastructure, you can manually fill in the Helm chart configuration file prior to installation. All of the available settings are described in the [README.md](../../install/helm/README.md) file.
 
 To install Runtime Radar using Helm,
 
