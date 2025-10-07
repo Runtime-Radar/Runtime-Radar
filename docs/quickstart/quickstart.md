@@ -9,7 +9,7 @@ To install Runtime Radar using Helm,
 1. Run the following command:
 
    ```bash
-	helm install rr -n rr --create-namespace oci://ghcr.io/runtime-radar/runtime-radar:0.1 \
+	helm install runtime-radar -n runtime-radar --create-namespace oci://ghcr.io/runtime-radar/runtime-radar:0.1 \
 		--set-string 'global.ownCsUrl=https://your-domain.com:32000' \
 		--set-string 'global.keys.publicAccessTokenSalt=INIT-DO-NOT-USE' \
 		--set-string 'global.keys.encryption=INIT-DO-NOT-USE' \
@@ -32,7 +32,7 @@ To install Runtime Radar using Helm,
 		--set-string 'clickhouse.auth.database=rr_quickstart' \
 		--set 'clickhouse.persistence.enabled=false' \
 		--set-string 'reverse-proxy.service.type=NodePort' \
-		--set-string 'reverse-proxy.service.nodePorts.app=32000'
+		--set-string 'reverse-proxy.service.nodePorts.http=32000'
    ```
 
    ***Note.** In the command example, the username is `admin` and the password is `Password`. You can specify other values and later use them to connect to the Runtime Radar web interface, PostgreSQL, Redis, RabbitMQ, and ClickHouse.*
