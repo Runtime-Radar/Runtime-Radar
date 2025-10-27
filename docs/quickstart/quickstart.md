@@ -50,7 +50,7 @@ The process of monitoring of and responding to runtime events comprises the foll
 1. Saving the events to the database depending on the event logging settings. Saved events are displayed on the **Events** tab of the **Runtime** page.
 1. Checking the events according to the response rules created in Runtime Radar to define further responses.
 
-**Configuring monitoring **
+**Configuring monitoring**
 
 To configure event monitoring:
 
