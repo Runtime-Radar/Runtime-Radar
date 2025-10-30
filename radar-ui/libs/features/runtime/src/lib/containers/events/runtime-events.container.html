@@ -1,0 +1,148 @@
+<div class="runtime-feature-events" *transloco="let tRuntime; prefix: 'runtime'">
+    <header class="layout-row layout-align-space-between-center layout-margin-bottom-3xl">
+        <h1 class="kbq-display-compact runtime-feature-events-title">{{ tRuntime('Runtime.Pseudo.Header.Title') }}</h1>
+        <cs-cluster-select-component
+                [clusters]="clusters$ | async"
+                [activeClusterHost]="activeClusterHost$ | async"
+                (selectClusterId)="switchCluster($event)"
+                testLocator="runtime-events-cluster-select"></cs-cluster-select-component>
+    </header>
+    <cs-tabs-component
+            [tabs]="runtimeNavigationTabs"
+            [localizationFn]="tRuntime"
+            (tabChange)="tabChange($event)"
+            testId="runtime-navigation-tab-group">
+        <cs-runtime-feature-event-counter-component [updateCounter]="updateCounter$ | async"></cs-runtime-feature-event-counter-component>
+        <button kbq-button
+                type="button"
+                class="kbq-button-icon layout-margin-left-l"
+                (click)="goToStartPage()"
+                data-testid="runtime-paginator-refresh-button">
+            <i kbq-icon="kbq-arrows-rotate-reverse_16"></i>
+        </button>
+    </cs-tabs-component>
+
+    <section class="runtime-feature-events-wrapper" *ngrxLet="{
+        loadStatus: (loadStatus$ | async),
+        isFilterExist: (isFilterExist$ | async),
+        activeContextId: (activeContextId$ | async)
+    } as srxlet">
+        @if (srxlet.loadStatus === loadStatus.IN_PROGRESS) {
+            <kbq-loader-overlay [transparent]="true"></kbq-loader-overlay>
+        }
+
+        <ng-container *ngrxLet="eventsResponse$ as eventsResponse">
+            <ng-container *ngrxLet="{
+                filters: (filterComponentStore.filters$ | async),
+                context: (filterComponentStore.context$ | async)
+            } as rxlet">
+                @if (srxlet.isFilterExist || eventsResponse.runtime_events.length) {
+                    <section class="layout-row layout-align-start-center">
+                        <ng-container *ngrxLet="{
+                            ruleNodes: (ruleNodes$ | async),
+                            detectors: (detectors$ | async)
+                        } as drxlet">
+                            <cs-runtime-feature-filter-popover-component
+                                    class="layout-margin-right-l"
+                                    [filters]="rxlet.filters"
+                                    [ruleNodes]="drxlet.ruleNodes"
+                                    [detectors]="drxlet.detectors"
+                                    (filterChange)="changeFilter($event)"></cs-runtime-feature-filter-popover-component>
+                        </ng-container>
+                        <cs-runtime-feature-context-popover-component
+                                class="layout-margin-right-l"
+                                [eventId]="srxlet.activeContextId"
+                                [context]="rxlet.context"
+                                (contextChange)="changeContext($event)"></cs-runtime-feature-context-popover-component>
+                        <cs-runtime-feature-preset-dropdown-component
+                                class="layout-margin-right-l"
+                                (presetChange)="changeFilter($event)"></cs-runtime-feature-preset-dropdown-component>
+                        <cs-runtime-feature-history-dropdown-component
+                                [history]="filterComponentStore.history$ | async"
+                                (historyChange)="changeFilter($event)"></cs-runtime-feature-history-dropdown-component>
+                    </section>
+                }
+            </ng-container>
+
+            @if (eventsResponse.runtime_events.length) {
+                <cs-runtime-feature-events-grid-container
+                        isContextChangeAvailable
+                        [events]="eventsResponse.runtime_events"
+                        [rulePermissions]="permissions[permissionName.RULES]"
+                        [activeContextId]="srxlet.activeContextId"
+                        (contextIdChange)="setContextId($event)"></cs-runtime-feature-events-grid-container>
+
+                <div class="layout-row layout-align-start-center runtime-feature-events-paginator">
+                    <button kbq-button
+                            kbqStyle="transparent"
+                            color="contrast"
+                            type="button"
+                            (click)="goToStartPage()"
+                            data-testid="runtime-paginator-start-button">
+                        {{ tRuntime('Runtime.EventsPage.Paginator.Button.Start') }}
+                    </button>
+                    <button kbq-button
+                            kbqStyle="transparent"
+                            color="contrast"
+                            type="button"
+                            [disabled]="!eventsResponse.left_cursor"
+                            (click)="changePage(runtimeEventCursorDirection.LEFT, eventsResponse.left_cursor)"
+                            data-testid="runtime-paginator-prev-button">
+                        <i kbq-icon="kbq-chevron-left_16"></i>
+                        {{ tRuntime('Runtime.EventsPage.Paginator.Button.Next') }}
+                    </button>
+                    <button kbq-button
+                            kbqStyle="transparent"
+                            color="contrast"
+                            type="button"
+                            [disabled]="!eventsResponse.right_cursor"
+                            (click)="changePage(runtimeEventCursorDirection.RIGHT, eventsResponse.right_cursor)"
+                            data-testid="runtime-paginator-next-button">
+                        {{ tRuntime('Runtime.EventsPage.Paginator.Button.Prev') }}
+                        <i kbq-icon="kbq-chevron-right_16"></i>
+                    </button>
+                    <button kbq-button
+                            kbqStyle="transparent"
+                            color="contrast"
+                            type="button"
+                            (click)="goToEndPage()"
+                            data-testid="runtime-paginator-end-button">
+                        {{ tRuntime('Runtime.EventsPage.Paginator.Button.End') }}
+                    </button>
+                </div>
+            }
+
+            @if (srxlet.loadStatus === loadStatus.LOADED) {
+                @if (!eventsResponse.runtime_events.length && !srxlet.isFilterExist) {
+                    <cs-empty-screen-component
+                            imageUrl="/assets/koobiq/light/empty_256@2x.png"
+                            [title]="tRuntime('Runtime.EventsPage.SubHeading.EmptyResult')"
+                            [description]="tRuntime('Runtime.EventsPage.Text.EmptyResult')">
+                        <button kbq-button
+                                type="button"
+                                [routerLink]="['..', runtimeRouterName.SETTINGS]">
+                            {{ tRuntime('Runtime.EventsPage.Button.EmptyResult') }}
+                        </button>
+                    </cs-empty-screen-component>
+                } @else if (!eventsResponse.runtime_events.length && srxlet.isFilterExist) {
+                    <cs-empty-screen-component
+                            imageUrl="/assets/koobiq/light/empty_256@2x.png"
+                            [title]="tRuntime('Runtime.EventsPage.WithFilters.SubHeading.EmptyResult')"
+                            [description]="tRuntime('Runtime.EventsPage.WithFilters.Text.EmptyResult')">
+                        <button kbq-button
+                                type="button"
+                                (click)="resetFilterAndContext()">
+                            {{ tRuntime('Runtime.EventsPage.WithFilters.Button.EmptyResult') }}
+                        </button>
+                    </cs-empty-screen-component>
+                }
+            } @else if (srxlet.loadStatus === loadStatus.ERROR) {
+                <cs-empty-screen-component
+                        imageUrl="/assets/koobiq/light/bad_256@2x.png"
+                        [title]="tRuntime('Runtime.EventsPage.SubHeading.ServerError')"
+                        [description]="tRuntime('Runtime.EventsPage.Text.ServerError')">
+                </cs-empty-screen-component>
+            }
+        </ng-container>
+    </section>
+</div>

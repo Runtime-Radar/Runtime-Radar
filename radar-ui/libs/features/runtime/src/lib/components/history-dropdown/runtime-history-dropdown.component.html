@@ -1,0 +1,27 @@
+<ng-container *transloco="let tRuntime; prefix: 'runtime'">
+    <button kbq-button
+            type="button"
+            [disabled]="!history?.length"
+            [kbqDropdownTriggerFor]="dropdownMenu"
+            data-testid="runtime-history-dropdown-open-button">
+        <i kbq-icon="kbq-clock_16"></i>
+        <span>{{ tRuntime('Runtime.EventsPage.Filter.Button.History') }}</span>
+    </button>
+
+    <kbq-dropdown #dropdownMenu="kbqDropdown">
+        @for (item of history; track item.id) {
+            <button kbq-dropdown-item
+                    [id]="item.id"
+                    (click)="select(item)"
+                    [kbqTooltip]="item | runtimeHistoryLabel"
+                    [kbqPlacement]="tooltipPlacements.Right"
+                    data-testid="runtime-history-dropdown-item-button">
+                @if (item | runtimeHistoryLabel: selectedFilterLabelLimit; as label) {
+                    {{ item.id | dateFormatter: dateTimeShortFormat }} - {{ label }}
+                } @else {
+                    {{ item.id | dateFormatter: dateTimeShortFormat }}
+                }
+            </button>
+        }
+    </kbq-dropdown>
+</ng-container>

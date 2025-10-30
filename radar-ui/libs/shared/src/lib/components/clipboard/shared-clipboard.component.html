@@ -1,0 +1,16 @@
+<section class="layout-row layout-align-space-between-center shared-clipboard"
+         *transloco="let tCommon; prefix: 'common'">
+    <span class="cs-text-gray shared-clipboard-text">{{ value }}</span>
+    <button kbq-button
+            kbqStyle="transparent"
+            color="contrast"
+            type="button"
+            class="kbq-button-icon shared-clipboard-button"
+            [disabled]="isDisabled"
+            (click)="copyToClipboard()">
+        <i kbq-icon="kbq-square-multiple-o_16"></i>
+        @if (isButtonTextVisible) {
+            <span class="layout-margin-left-s">{{ tCommon('Common.Clipboard.Button.CopyToClipboard') }}</span>
+        }
+    </button>
+</section>

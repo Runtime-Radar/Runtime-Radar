@@ -1,0 +1,170 @@
+<ng-container *transloco="let tIntegration; prefix: 'integration'">
+    <h4 class="kbq-caps-normal integration-feature-collapse-title" [ngClass]="type">
+        {{ tIntegration(type | integrationTypeLocalization) }}
+    </h4>
+
+    <section class="integration-feature-collapse-container">
+        @for (item of list; track item.id) {
+            <article class="integration-feature-collapse-card"
+                     id="{{ item.id }}"
+                     [attr.data-testid]="item.name">
+                <ng-container *ngrxLet="notifications$(item.id) as notifications">
+                    <button type="button"
+                            (click)="toogleCardExpand(item.id)"
+                            class="layout-row layout-align-start-center integration-feature-collapse-card-header"
+                            data-testid="integration-toggle-card-button">
+                        <i kbq-icon="{{ expandedCollection.get(item.id) ? 'kbq-chevron-up_16' : 'kbq-chevron-down_16' }}"></i>
+                        <p class="integration-feature-collapse-card-header-title">
+                            <strong class="kbq-text-normal-strong">{{ item.name }}</strong>
+                            <span class="integration-feature-collapse-card-header-title-counter">({{ notifications.length }})</span>
+                            <span class="kbq-text-compact cs-text-gray integration-feature-collapse-card-header-title-caption">
+                                @switch (item.type) {
+                                    @case (integrationType.EMAIL) {
+                                        {{ item.email.server }}
+                                    }
+                                    @case (integrationType.SYSLOG) {
+                                        {{ item.syslog.address }}
+                                    }
+                                    @case (integrationType.WEBHOOK) {
+                                        {{ item.webhook.url }}
+                                    }
+                                }
+                            </span>
+                        </p>
+                    </button>
+
+                    <section class="integration-feature-collapse-card-action">
+                        <button kbq-button
+                                kbqStyle="transparent"
+                                color="contrast"
+                                type="button"
+                                class="kbq-button-icon"
+                                [disabled]="!permissions[permissionName.NOTIFICATIONS].has(permissionType.CREATE)"
+                                (click)="openCreateRecipientSidepanel(item)"
+                                data-testid="integration-recipient-open-sidepanel-form-button">
+                            <i kbq-icon="kbq-plus_16"></i>
+                        </button>
+                        <button kbq-button
+                                kbqStyle="transparent"
+                                color="contrast"
+                                type="button"
+                                class="kbq-button-icon"
+                                [kbqDropdownTriggerFor]="dropdownCardMenu"
+                                data-testid="integration-open-card-menu-button">
+                            <i kbq-icon="kbq-gear_16"></i>
+                        </button>
+                    </section>
+
+                    <section class="integration-feature-collapse-card-body" [hidden]="!expandedCollection.get(item.id)">
+                        @if (notifications.length) {
+                            <table kbq-table [border]="true" class="integration-feature-collapse-card-body-table">
+                                <thead>
+                                    <tr>
+                                        <th width="40%">{{ tIntegration('Integration.Card.Table.Recipient') }}</th>
+                                        <th>{{ tIntegration('Integration.Card.Table.Rule') }}</th>
+                                        <th width="68"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                @for (notification of notifications; track notification.id) {
+                                    <tr *ngrxLet="rules$(notification.id) as rules"
+                                        id="{{ notification.id }}"
+                                        [attr.data-testid]="notification.name">
+                                        <td>{{ notification.name }}</td>
+                                        <td>
+                                            @for (rule of rules; track rule.id) {
+                                                <span id="{{ rule.id }}"
+                                                      [attr.data-testid]="rule.name"
+                                                      class="cs-separator">
+                                                    <a kbq-link (click)="openRuleSidepanel(rule)" data-testid="integration-rule-item-link">{{ rule.name }}</a>
+                                                </span>
+                                            } @empty {
+                                                {{ tIntegration('Integration.Card.Text.EmptyRule') }}
+                                            }
+                                        </td>
+                                        <td>
+                                            <button kbq-button
+                                                    kbqStyle="transparent"
+                                                    color="contrast"
+                                                    type="button"
+                                                    class="kbq-button-icon"
+                                                    [disabled]="!permissions[permissionName.NOTIFICATIONS].has(permissionType.UPDATE)"
+                                                    (click)="openEditRecipientSidepanel(item, notification)"
+                                                    data-testid="integration-recipient-update-button">
+                                                <i kbq-icon="kbq-pencil_16"></i>
+                                            </button>
+
+                                            @if (rules.length) {
+                                                <ng-container *ngTemplateOutlet="deleteRecipientButton"></ng-container>
+                                            } @else {
+                                                <span kbqTooltip="{{ tIntegration('Integration.Card.Hint.DeleteRecipient') }}"
+                                                      [kbqPlacement]="tooltipPlacements.Left">
+                                                    <ng-container *ngTemplateOutlet="deleteRecipientButton"></ng-container>
+                                                </span>
+                                            }
+
+                                            <ng-template #deleteRecipientButton>
+                                                <button kbq-button
+                                                        kbqStyle="transparent"
+                                                        color="contrast"
+                                                        type="button"
+                                                        class="kbq-button-icon"
+                                                        [disabled]="!permissions[permissionName.NOTIFICATIONS].has(permissionType.DELETE) || !!rules.length"
+                                                        (click)="openDeleteRecipientModal(notification.id)"
+                                                        data-testid="integration-recipient-delete-button">
+                                                    <i kbq-icon="kbq-trash_16"></i>
+                                                </button>
+                                            </ng-template>
+                                        </td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        } @else {
+                            <section class="cs-text-gray layout-column">
+                                <strong>{{ tIntegration('Integration.Card.SubHeading.EmptyResult') }}</strong>
+                                <span class="layout-margin-top-xxs">{{ tIntegration('Integration.Card.Text.EmptyResult') }}</span>
+                            </section>
+                        }
+
+                        <footer class="layout-row layout-margin-top-l">
+                            <button kbq-button
+                                    type="button"
+                                    [disabled]="!permissions[permissionName.NOTIFICATIONS].has(permissionType.CREATE)"
+                                    (click)="openCreateRecipientSidepanel(item)"
+                                    data-testid="integration-recipient-open-sidepanel-form-footer-button">
+                                <i kbq-icon="kbq-plus_16"></i>
+                                {{ tIntegration('Integration.Card.Button.CreateRecipient') }}
+                            </button>
+                            <button kbq-button
+                                    kbqStyle="transparent"
+                                    color="contrast"
+                                    type="button"
+                                    class="layout-margin-left-l"
+                                    (click)="toogleCardExpand(item.id)"
+                                    data-testid="integration-collapse-card-button">
+                                <i kbq-icon="kbq-chevron-up_16"></i>
+                                {{ tIntegration('Integration.Card.Button.Collapse') }}
+                            </button>
+                        </footer>
+                    </section>
+                </ng-container>
+
+                <kbq-dropdown #dropdownCardMenu="kbqDropdown">
+                    <button kbq-dropdown-item
+                            [disabled]="!permissions[permissionName.INTEGRATIONS].has(permissionType.UPDATE)"
+                            (click)="openEditSidepanel(item)"
+                            data-testid="integration-update-button">
+                        {{ tIntegration('Integration.Card.Button.Update') }}
+                    </button>
+                    <button kbq-dropdown-item
+                            [disabled]="!permissions[permissionName.INTEGRATIONS].has(permissionType.DELETE)"
+                            (click)="openDeleteModal(item.id)"
+                            data-testid="integration-delete-button">
+                        {{ tIntegration('Integration.Card.Button.Delete') }}
+                    </button>
+                </kbq-dropdown>
+            </article>
+        }
+    </section>
+</ng-container>

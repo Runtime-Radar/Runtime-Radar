@@ -1,0 +1,23 @@
+{
+    "name": "domain-token",
+    "projectType": "library",
+    "root": "libs/domains/token",
+    "sourceRoot": "libs/domains/token/src",
+    "prefix": "runtime-radar",
+    "targets": {
+        "lint": {
+            "executor": "@nx/linter:eslint",
+            "options": {
+                "lintFilePatterns": ["libs/domains/token/src/**/*.ts", "libs/domains/token/src/**/*.html"]
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": ["coverage/libs/domains/token"],
+            "options": {
+                "jestConfig": "libs/domains/token/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    }
+}

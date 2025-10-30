@@ -1,0 +1,43 @@
+{
+    "extends": [
+        "stylelint-config-standard",
+        "stylelint-prettier/recommended"
+    ],
+    "rules": {
+        "at-rule-empty-line-before": ["always", {
+            "except": [
+                "blockless-after-same-name-blockless",
+                "first-nested"
+            ],
+            "ignore": ["after-comment"],
+            "ignoreAtRules": ["import"]
+        } ],
+        "declaration-block-semicolon-newline-after": "always",
+        "declaration-empty-line-before": null,
+        "font-weight-notation": "named-where-possible",
+        "function-url-quotes": "always",
+        "indentation": [4, {
+            "message": "4 spaces must use!"
+        }],
+        "max-empty-lines": 2,
+        "max-line-length": 120,
+        "max-nesting-depth": 4,
+        "media-feature-name-no-vendor-prefix": true,
+        "no-descending-specificity": true,
+        "no-duplicate-selectors": true,
+        "no-eol-whitespace": [true, {
+            "ignore": ["empty-lines"]
+        }],
+        "number-max-precision": 2,
+        "selector-attribute-quotes": "always",
+        "selector-no-id": true,
+        "selector-type-no-unknown": null,
+        "string-quotes": "single",
+        "property-no-vendor-prefix": true,
+        "value-keyword-case": "lower",
+        "value-no-vendor-prefix": true,
+        "selector-pseudo-element-no-unknown": [true, {
+            "ignorePseudoElements": ["ng-deep"]
+        }]
+    }
+}

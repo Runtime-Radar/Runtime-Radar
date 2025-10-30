@@ -1,0 +1,187 @@
+<ng-container *transloco="let tCluster; prefix: 'cluster'">
+    <ng-container *ngrxLet="{
+        isInternal: (isInternalCluster$ | async),
+        isPersistence: (isPersistence$ | async)
+    } as rxlet">
+        <form [formGroup]="form" class="kbq-form-vertical cluster-abstract-feature-form">
+            @if (title) {
+                <h2 class="kbq-headline cluster-abstract-feature-form-headline">{{ title }}</h2>
+            }
+
+            <section class="kbq-form-row_margin">
+                <kbq-button-toggle-group
+                        formControlName="isInternalCluster"
+                        data-testid="cluster-database-internal-cluster-toggle">
+                    <kbq-button-toggle [value]="true">
+                        {{ tCluster('Cluster.CreatePage.DataBaseForm.Toogle.Internal') }}
+                    </kbq-button-toggle>
+                    <kbq-button-toggle [value]="false">
+                        {{ tCluster('Cluster.CreatePage.DataBaseForm.Toogle.External') }}
+                    </kbq-button-toggle>
+                </kbq-button-toggle-group>
+            </section>
+
+            <section class="kbq-form__row kbq-form-row_margin">
+                <span class="kbq-text-compact cs-text-gray">
+                    {{ tCluster(rxlet.isInternal ? 'Cluster.CreatePage.DataBaseForm.Hint.Internal' : 'Cluster.CreatePage.DataBaseForm.Hint.External') }}
+                </span>
+            </section>
+
+            <section class="kbq-form__row kbq-form-row_margin">
+                <label for="user" class="kbq-form__label">
+                    {{ tCluster('Cluster.CreatePage.DataBaseForm.Label.User') }}
+                </label>
+                <kbq-form-field class="kbq-form__control">
+                    <input kbqInput
+                           type="text"
+                           id="user"
+                           formControlName="user"
+                           data-testid="cluster-database-user-input">
+                </kbq-form-field>
+            </section>
+
+            <section class="kbq-form__row kbq-form-row_margin">
+                <label for="password" class="kbq-form__label">
+                    {{ tCluster('Cluster.CreatePage.DataBaseForm.Label.Password') }}
+                </label>
+                <kbq-form-field class="kbq-form__control">
+                    <input kbqInputPassword
+                           type="password"
+                           id="password"
+                           formControlName="password"
+                           data-testid="cluster-database-password-input">
+                    <kbq-password-toggle
+                            [kbqTooltipNotHidden]="tCluster('Cluster.CreatePage.Hint.HidePassword')"
+                            [kbqTooltipHidden]="tCluster('Cluster.CreatePage.Hint.ShowPassword')"></kbq-password-toggle>
+                </kbq-form-field>
+            </section>
+
+            @if (isDatabaseControlEnable) {
+                <section class="kbq-form__row kbq-form-row_margin">
+                    <label for="database" class="kbq-form__label">
+                        {{ tCluster('Cluster.CreatePage.DataBaseForm.Label.DataBase') }}
+                    </label>
+                    <kbq-form-field class="kbq-form__control">
+                        <input kbqInput
+                               type="text"
+                               id="database"
+                               formControlName="database"
+                               data-testid="cluster-database-database-input">
+                    </kbq-form-field>
+                </section>
+            }
+
+            <section class="kbq-form__row kbq-form-row_margin">
+                <kbq-toggle formControlName="isTls" data-testid="cluster-database-tls-toggle">
+                    {{ tCluster('Cluster.CreatePage.DataBaseForm.Label.Tls') }}
+                    <span class="kbq-text-compact cs-text-gray cluster-abstract-feature-form-toggle-hint">
+                        {{ tCluster('Cluster.CreatePage.DataBaseForm.Hint.Tls') }}
+                    </span>
+                </kbq-toggle>
+            </section>
+
+            @if (isTlsEnabled$ | async) {
+                <section class="kbq-form__row kbq-form-row_margin">
+                    <kbq-toggle formControlName="hasCheckCert" data-testid="cluster-database-check-cert-toggle">
+                        {{ tCluster('Cluster.CreatePage.DataBaseForm.Label.CheckCert') }}
+                        @if (rxlet.isInternal) {
+                            <span class="kbq-text-compact cs-text-gray cluster-abstract-feature-form-toggle-hint">
+                                {{ tCluster('Cluster.CreatePage.DataBaseForm.Hint.CheckCert') }}
+                            </span>
+                        }
+                    </kbq-toggle>
+                </section>
+
+                @if (hasCheckCert$ | async) {
+                    <section class="kbq-form__row kbq-form-row_margin">
+                        <label for="ca" class="kbq-form__label">
+                            {{ tCluster('Cluster.CreatePage.DataBaseForm.Label.Ca') }}
+                            <i kbq-icon="kbq-question-circle_16"
+                               class="cs-help-hover"
+                               kbqTooltip="{{ tCluster(
+                                    type === 'clickhouse'
+                                    ? 'Cluster.CreatePage.DataBaseForm.Hint.Ca.External.Clickhouse'
+                                    : type === 'postgres'
+                                        ? 'Cluster.CreatePage.DataBaseForm.Hint.Ca.External.Postgres'
+                                        : 'Cluster.CreatePage.DataBaseForm.Hint.Ca.External.Redis'
+                               ) }}"
+                               kbqTooltipClass="cluster-abstract-feature-form-tooltip"
+                               [kbqPlacement]="tooltipPlacement.RightTop"></i>
+                        </label>
+                        <kbq-form-field class="kbq-form__control" *transloco="let tCommon; prefix: 'common'">
+                            <textarea kbqTextarea
+                                      id="ca"
+                                      formControlName="ca"
+                                      class="cluster-abstract-feature-form-textarea"
+                                      data-testid="cluster-database-ca-textarea"></textarea>
+                        </kbq-form-field>
+                    </section>
+                }
+            }
+
+            @if (rxlet.isInternal) {
+                <section class="kbq-form__row" [ngClass]="{ 'kbq-form-row_margin': rxlet.isPersistence }">
+                    <kbq-toggle formControlName="isPersistence" data-testid="cluster-database-persistence-toggle">
+                        {{ tCluster('Cluster.CreatePage.DataBaseForm.Label.Persistence') }}
+                        <span class="kbq-text-compact cs-text-gray cluster-abstract-feature-form-toggle-hint">
+                            {{ tCluster('Cluster.CreatePage.DataBaseForm.Hint.Persistence') }}
+                        </span>
+                    </kbq-toggle>
+                </section>
+
+                @if (rxlet.isPersistence) {
+                    <section class="kbq-form__row">
+                        <label for="storageClass" class="kbq-form__label">
+                            {{ tCluster('Cluster.CreatePage.DataBaseForm.Label.StorageClass') }}
+                            <i kbq-icon="kbq-question-circle_16"
+                               class="cs-help-hover"
+                               kbqTooltip="{{ tCluster('Cluster.CreatePage.DataBaseForm.Hint.StorageClass') }}"
+                               kbqTooltipClass="cluster-abstract-feature-form-tooltip"
+                               [kbqPlacement]="tooltipPlacement.RightTop"></i>
+                        </label>
+                        <kbq-form-field class="kbq-form__control" *transloco="let tCommon; prefix: 'common'">
+                            <input kbqInput
+                                   type="text"
+                                   id="storageClass"
+                                   formControlName="storageClass"
+                                   placeholder="{{ tCluster('Cluster.CreatePage.DataBaseForm.Placeholder.StorageClass') }}"
+                                   data-testid="cluster-database-storage-class-input">
+                            <kbq-hint>{{ tCommon('Common.Form.Hint.Optional') }}</kbq-hint>
+                            @if (form.get('storageClass')?.hasError('pattern')) {
+                                <kbq-hint color="error">{{ tCommon('Common.Form.Error.Format') }}</kbq-hint>
+                            }
+                        </kbq-form-field>
+                    </section>
+                }
+            } @else {
+                <section class="kbq-form__row">
+                    <label for="address" class="kbq-form__label">
+                        {{ tCluster('Cluster.CreatePage.DataBaseForm.Label.Address') }}
+                        <i kbq-icon="kbq-question-circle_16"
+                           class="cs-help-hover"
+                           kbqTooltip="{{ tCluster(
+                                type === 'clickhouse'
+                                ? 'Cluster.CreatePage.DataBaseForm.Hint.Address.Clickhouse'
+                                : type === 'postgres'
+                                    ? 'Cluster.CreatePage.DataBaseForm.Hint.Address.Postgres'
+                                    : 'Cluster.CreatePage.DataBaseForm.Hint.Address.Redis'
+                           ) }}"
+                           kbqTooltipClass="cluster-abstract-feature-form-tooltip"
+                           [kbqPlacement]="tooltipPlacement.RightTop"></i>
+                    </label>
+                    <kbq-form-field class="kbq-form__control" *transloco="let tCommon; prefix: 'common'">
+                        <input kbqInput
+                               type="text"
+                               id="address"
+                               formControlName="address"
+                               placeholder="{{ tCluster('Cluster.CreatePage.DataBaseForm.Placeholder.Address') }}"
+                               data-testid="cluster-database-address-input">
+                        @if (form.get('address')?.hasError('pattern')) {
+                            <kbq-hint color="error">{{ tCommon('Common.Form.Error.Format') }}</kbq-hint>
+                        }
+                    </kbq-form-field>
+                </section>
+            }
+        </form>
+    </ng-container>
+</ng-container>

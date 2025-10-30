@@ -1,0 +1,94 @@
+version: '3'
+
+vars:
+  APP_NAME: reverse-proxy
+  DOCKER_IMAGE: reverse-proxy
+  PWD:
+    sh: "echo `pwd`"
+  TOOLS_BIN: "{{.PWD}}/bin"
+env:
+  DOCKER_BUILDKIT: 1
+
+includes:
+  radar-ui:
+    taskfile: ../radar-ui/Taskfile.yml
+    dir: ../radar-ui
+    optional: true
+
+tasks:
+  srv:
+    cmds:
+      - |
+        rm -rf srv && mkdir srv
+        ls -la
+        cp -rp build/dist/apps/runtime-radar/* srv/
+        echo "ls -lh srv"; ls -lh srv
+
+  lint:
+    cmds:
+      - caddy validate --config Caddyfile
+
+  certs:
+    cmds:
+      - go run "$(go env GOROOT)/src/crypto/tls/generate_cert.go" -host=127.0.0.1
+      - cp cert.pem ca.pem
+
+  docker-build:
+    deps: [radar-ui:build]
+    cmds:
+      - docker build --tag {{.DOCKER_IMAGE}} .
+
+  docker-push:
+    vars:
+      IMAGE_TAG:
+        sh: echo "${IMAGE_TAG:-$(git describe --tags 2> /dev/null || echo 'v0.0.0')}"
+      IMAGE: "{{.IMAGE_REGISTRY}}/{{.DOCKER_IMAGE}}:{{.IMAGE_TAG}}"
+    requires:
+      vars: [IMAGE_REGISTRY]
+    cmds:
+      - docker tag {{.DOCKER_IMAGE}} {{.IMAGE}}
+      - docker push {{.IMAGE}}
+
+  deploy:
+    sources:
+      - vendor/modules.txt
+      - go.mod
+      - go.sum
+      - cmd/**/*.go
+      - pkg/**/*.go
+      - internal/**/*.go
+      - Dockerfile
+    vars:
+      DEPLOY_TAG: |-
+        {{- $l := splitList "" "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"}}
+        {{- range until 7}}
+          {{- randInt 0 (len $l) | index $l}}
+        {{- end}}
+    requires:
+      vars: [IMAGE_REGISTRY]
+    preconditions:
+      - sh: test -n "{{.IMAGE_REGISTRY}}"
+        msg: IMAGE_REGISTRY is not set
+    cmds:
+      - task: docker-build
+      - task: _push_deploy
+        vars:
+          DEPLOY_TAG: {ref: .DEPLOY_TAG}
+          IMAGE_REGISTRY: {ref: .IMAGE_REGISTRY}
+          DEPLOY_IMAGE_REGISTRY: {ref: .DEPLOY_IMAGE_REGISTRY}
+
+  _push_deploy:
+    internal: true
+    label: deploy
+    requires:
+      vars: [IMAGE_REGISTRY, DEPLOY_TAG]
+    vars:
+      DEPLOY_IMAGE: '{{trimSuffix "/" (default .IMAGE_REGISTRY .DEPLOY_IMAGE_REGISTRY)}}/{{.DOCKER_IMAGE}}:{{.DEPLOY_TAG}}'
+      PUSH_IMAGE: '{{trimSuffix "/" .IMAGE_REGISTRY}}/{{.DOCKER_IMAGE}}:{{.DEPLOY_TAG}}'
+      CS_NAMESPACE: '{{default "cs" .CS_NAMESPACE}}'
+    cmds:
+      - docker image tag {{.DOCKER_IMAGE}} {{.PUSH_IMAGE}}
+      - defer: docker image rm {{.PUSH_IMAGE}}
+      - docker image push {{.PUSH_IMAGE}}
+      - |
+        kubectl patch deployment {{.APP_NAME}} -n {{.CS_NAMESPACE}} --patch '{"spec": {"template": {"spec": {"containers": [{"name": "{{.APP_NAME}}", "image": "{{.DEPLOY_IMAGE}}", "imagePullPolicy": "Always"}]}}}}'

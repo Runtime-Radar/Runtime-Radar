@@ -1,0 +1,23 @@
+{
+    "name": "feature-switch",
+    "projectType": "library",
+    "root": "libs/features/switch",
+    "sourceRoot": "libs/features/switch/src",
+    "prefix": "runtime-radar",
+    "targets": {
+        "lint": {
+            "executor": "@nx/linter:eslint",
+            "options": {
+                "lintFilePatterns": ["libs/features/switch/src/**/*.ts", "libs/features/switch/src/**/*.html"]
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": ["coverage/libs/features/switch"],
+            "options": {
+                "jestConfig": "libs/features/switch/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    }
+}

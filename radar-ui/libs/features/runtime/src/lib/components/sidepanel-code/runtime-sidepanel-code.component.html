@@ -1,0 +1,15 @@
+<ng-container *transloco="let tRuntime; prefix: 'runtime'">
+    <kbq-sidepanel-header [closeable]="true">{{ tRuntime('Runtime.CodeSidepanel.Title.Source') }}</kbq-sidepanel-header>
+
+    <kbq-sidepanel-body class="runtime-feature-sidepanel-code">
+        <kbq-code-block
+                canCopy
+                canDownload
+                canToggleSoftWrap
+                [lineNumbers]="true"
+                [softWrap]="false"
+                [filled]="false"
+                [files]="files">
+        </kbq-code-block>
+    </kbq-sidepanel-body>
+</ng-container>

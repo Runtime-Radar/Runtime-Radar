@@ -1,0 +1,23 @@
+{
+    "name": "domain-role",
+    "projectType": "library",
+    "root": "libs/domains/role",
+    "sourceRoot": "libs/domains/role/src",
+    "prefix": "runtime-radar",
+    "targets": {
+        "lint": {
+            "executor": "@nx/linter:eslint",
+            "options": {
+                "lintFilePatterns": ["libs/domains/role/src/**/*.ts", "libs/domains/role/src/**/*.html"]
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": ["coverage/libs/domains/role"],
+            "options": {
+                "jestConfig": "libs/domains/role/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    }
+}

@@ -1,0 +1,18 @@
+<section class="shared-tabs layout-margin-bottom-3xl">
+    <kbq-tab-group
+            underlined
+            (selectedTabChange)="onSelectedTabChange($event)"
+            [selectedIndex]="activeTabIndex$ | async"
+            [attr.data-testid]="testId">
+        @for (tab of tabs; track $index) {
+            <kbq-tab [tabId]="tab.path">
+                <ng-template kbq-tab-label>
+                    <span [attr.data-testid]="tab.path">{{ localizationFn(tab.localizationKey) }}</span>
+                </ng-template>
+            </kbq-tab>
+        }
+    </kbq-tab-group>
+    <div class="layout-row shared-tabs-action">
+        <ng-content></ng-content>
+    </div>
+</section>

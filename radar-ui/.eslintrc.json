@@ -1,0 +1,70 @@
+{
+    "root": true,
+    "ignorePatterns": ["**/*"],
+    "plugins": ["@nx", "import"],
+    "settings": {
+        "import/resolver": {
+            "typescript": {
+                "alwaysTryTypes": true,
+                "project": ["apps/*/tsconfig.json", "libs/*/tsconfig.json", "../*/tsconfig.json"]
+            }
+        },
+        "import/parsers": {
+            "@typescript-eslint/parser": [".ts", ".tsx"]
+        }
+    },
+    "overrides": [
+        {
+            "files": ["*.ts", "*.tsx", "*.js", "*.jsx", "*.mjs", "*.cjs"],
+            "parser": "@typescript-eslint/parser",
+            "parserOptions": {
+                "project": ["tsconfig.json", "tsconfig.*.json"],
+                "ecmaVersion": 2022
+            },
+            "plugins": ["rxjs-angular"],
+            "extends": ["plugin:@nx/typescript", "plugin:@nx/angular", "plugin:prettier/recommended"],
+            "settings": {
+                "import/resolver": {
+                    "typescript": {
+                        "alwaysTryTypes": true,
+                        "project": ["tsconfig.json", "tsconfig.*.json"]
+                    }
+                },
+                "import/ignore": ["node_modules"]
+            },
+            "rules": {
+                "id-length": "off",
+                "max-params": "off",
+                "import/order": "off",
+                "import/no-deprecated": "warn",
+                "no-console": [
+                    "error",
+                    {
+                        "allow": ["warn", "error"]
+                    }
+                ],
+                "sort-imports": [
+                    "error",
+                    {
+                        "memberSyntaxSortOrder": ["none", "all", "single", "multiple"],
+                        "allowSeparatedGroups": true
+                    }
+                ],
+                "@typescript-eslint/no-unnecessary-condition": "off",
+                "@typescript-eslint/no-unsafe-enum-comparison": "warn",
+                "@angular-eslint/component-class-suffix": [
+                    "error",
+                    {
+                        "suffixes": ["Component", "Container"]
+                    }
+                ],
+                "@angular-eslint/component-selector": "off",
+                "@angular-eslint/directive-selector": "off"
+            }
+        },
+        {
+            "files": ["*.html"],
+            "extends": ["plugin:@angular-eslint/template/recommended"]
+        }
+    ]
+}

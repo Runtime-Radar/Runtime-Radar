@@ -1,0 +1,53 @@
+<ng-container *transloco="let tRuntime; prefix: 'runtime'">
+    <kbq-sidepanel-header [closeable]="true">{{ tRuntime('Runtime.ThreatsSidepanel.Title.ThreatAndError') }}</kbq-sidepanel-header>
+
+    <kbq-sidepanel-body class="runtime-feature-sidepanel-threats">
+        @if (isCapSysAdmin) {
+            <p class="layout-row layout-align-start-center runtime-feature-sidepanel-threats-cap-sys">
+                <i kbq-icon="kbq-exclamation-triangle_16"></i>
+                {{ tRuntime('Runtime.EventsPage.Hint.Process') }}
+            </p>
+        }
+
+        @if (props.threats.length) {
+            <h4 class="kbq-subheading layout-margin-top-xxl layout-margin-no-bottom">
+                {{ tRuntime('Runtime.ThreatsSidepanel.Title.Threat') }}
+            </h4>
+            @for (threat of props.threats; track i; let i = $index) {
+                <article class="runtime-feature-sidepanel-threats-item">
+                    <div class="kbq-text-compact cs-text-gray layout-margin-bottom-xxs">{{ threat.detector.id }}</div>
+                    <div class="kbq-text-compact cs-text-gray layout-margin-bottom-xxs">{{ tRuntime('Runtime.ThreatsSidepanel.Label.DetectorVersion') }}: {{ threat.detector.version }}</div>
+                    <h4 class="kbq-subheading layout-margin-no-top">{{ threat.detector.name }}</h4>
+                    <cs-severity-label-component [severity]="threat.severity"></cs-severity-label-component>
+                    <section class="runtime-feature-sidepanel-threats-item-info">
+                        <span class="kbq-text-compact cs-text-gray">{{ tRuntime('Runtime.ThreatsSidepanel.Label.Severity') }}</span>
+                        <p class="runtime-feature-sidepanel-threats-item-info-description">{{ threat.detector.description }}</p>
+                    </section>
+                </article>
+            }
+        }
+
+        @if (props.errors.length) {
+            <h4 class="kbq-subheading layout-margin-top-xxl layout-margin-no-bottom">
+                {{ tRuntime('Runtime.ThreatsSidepanel.Title.Error') }}
+                <i kbq-icon="kbq-question-circle_16"
+                   class="cs-help-hover"
+                   kbqTooltip="{{ tRuntime('Runtime.ThreatsSidepanel.Title.Hint') }}"
+                   kbqTooltipClass="runtime-feature-sidepanel-threats-tooltip"
+                   [kbqPlacement]="tooltipPlacement.RightTop"></i>
+            </h4>
+            @for (error of props.errors; track i; let i = $index) {
+                <kbq-alert
+                        [alertColor]="alertColors.Error"
+                        [alertStyle]="'colored'"
+                        [compact]="true"
+                        class="runtime-feature-sidepanel-threats-detect-errors">
+                    <i kbq-icon="kbq-exclamation-triangle_16" class="runtime-feature-sidepanel-threats-detect-errors-icon"></i>
+                    <div kbq-alert-title class="runtime-feature-sidepanel-threats-detect-errors-truncate">{{ error.detector.id }}</div>
+                    <div class="kbq-text-normal-strong">{{ error.detector.name }}</div>
+                    <span class="runtime-feature-sidepanel-threats-detect-errors-break">{{ error.error }}</span>
+                </kbq-alert>
+            }
+        }
+    </kbq-sidepanel-body>
+</ng-container>

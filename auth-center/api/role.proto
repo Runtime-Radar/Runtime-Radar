@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package role;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "./api";
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Role API";
+  };
+};
+
+
+// The role service definition.
+service RoleController {
+    // Get role by id
+    rpc Read(ReadRoleReq) returns (ReadRoleResp) {
+      option (google.api.http) = {
+        get: "/api/v1/role/{id}"
+      };
+    }
+
+    // Get list of all roles
+    rpc ReadList(google.protobuf.Empty) returns (ReadListRoleResp) {
+      option (google.api.http) = {
+        get: "/api/v1/role"
+      };
+    }
+}
+
+message ReadRoleReq {
+    string id = 1;
+}
+
+message ReadRoleResp {
+  message Permission {
+    repeated string actions =1;
+    string description = 2;
+  }
+
+  message RolePermissions {
+    Permission users = 1;
+    Permission roles = 2;
+    Permission rules = 3;
+    Permission scanning = 5;
+    Permission events = 6;
+    Permission registries = 7;
+    Permission images = 8;
+    Permission integrations = 9;
+    Permission notifications = 10;
+    Permission system_settings = 11;
+    Permission clusters = 12;
+    Permission invalidate_public_access_tokens = 13;
+    Permission public_access_tokens = 14;
+   }
+
+    string id = 1;
+    string role_name = 2;
+    RolePermissions role_permissions = 3;
+    string description = 4;
+}
+
+message ReadListRoleResp {
+    repeated ReadRoleResp roles= 1;
+}

@@ -1,0 +1,174 @@
+<section class="runtime-feature-rules" *transloco="let tRuntime; prefix: 'runtime'">
+    <ng-container *ngrxLet="{
+        loadStatus: (loadStatus$ | async)!,
+        rulesResponse: (rulesResponse$ | async)!
+    } as rxlet">
+        @if (rxlet.loadStatus === loadStatus.INIT || rxlet.loadStatus === loadStatus.IN_PROGRESS) {
+            <kbq-loader-overlay
+                    [transparent]="true"
+                    [size]="'compact'"
+                    class="runtime-feature-rules-overlay"></kbq-loader-overlay>
+        } @else if (rxlet.rulesResponse && rxlet.rulesResponse.length) {
+            <h4 class="kbq-subheading layout-margin-no-top layout-margin-no-bottom">
+                <span>{{ tRuntime('Runtime.Rules.SubTitle.Rules') }}</span>
+                <span class="cs-text-gray layout-margin-left-xs">({{ rxlet.rulesResponse.length }})</span>
+            </h4>
+
+            @for (ruleResponse of rxlet.rulesResponse | slice: 0:expandLimit; track ruleResponse.rule.id) {
+                <article class="layout-row layout-align-space-between-start runtime-feature-rules-item"
+                         *transloco="let tCommon; prefix: 'common'">
+                    <section class="runtime-feature-rules-item-section">
+                        @if (ruleResponse.deleted) {
+                            <span class="kbq-text-compact cs-text-gray">{{ tRuntime('Runtime.Rules.Hint.Deleted') }}</span>
+                        }
+                        <h5 class="kbq-text-normal-strong layout-row layout-align-start-center layout-margin-no-top layout-margin-no-bottom">
+                            <span>{{ ruleResponse.rule.name }}</span>
+                            @if (ruleResponse.rule.rule.whitelist.threats.length) {
+                                <span class="kbq-text-compact cs-text-gray layout-margin-left-m">({{ ruleResponse.rule.rule.whitelist.threats.length }})</span>
+                                <i kbq-icon="kbq-shield-half_16"
+                                   class="layout-margin-left-xs"
+                                   kbqTooltip="{{ tRuntime('Runtime.Rules.Hint.Exceptions') }}"
+                                   [kbqPlacement]="tooltipPlacements.Right"></i>
+                            }
+                        </h5>
+                        @if (notifications$(ruleResponse.rule.rule.notify?.targets) | async; as notifications) {
+                            <ul class="runtime-feature-rules-item-badges">
+                                @for (notification of notifications | slice: 0:ruleNotificationsLimit; track notification.id) {
+                                    <li class="runtime-feature-rules-item-badges-item">
+                                        <kbq-badge [badgeColor]="badgeColors.FadeContrast" [outline]="true">
+                                            <span class="runtime-feature-rules-item-badges-item-truncate">{{ notification.name }}</span>
+                                        </kbq-badge>
+                                    </li>
+                                }
+
+                                @if (notifications.length > ruleNotificationsLimit) {
+                                    <li class="runtime-feature-rules-item-badges-limit">
+                                        <kbq-badge [badgeColor]="badgeColors.FadeContrast" [outline]="true">
+                                            <span class="runtime-feature-rules-item-badges-item-truncate">+{{ notifications.length - ruleNotificationsLimit }}</span>
+                                        </kbq-badge>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        @if (ruleResponse.rule.rule.whitelist.threats.length) {
+                            <ul class="runtime-feature-rules-item-badges">
+                                @for (threat of ruleResponse.rule.rule.whitelist.threats.slice(0, 5); track threat) {
+                                    <li class="runtime-feature-rules-item-badges-item">
+                                        <kbq-badge [badgeColor]="badgeColors.FadeTheme">
+                                            <span class="runtime-feature-rules-item-badges-item-truncate">{{ threat }}</span>
+                                            @if (!ruleResponse.deleted) {
+                                                <button type="button"
+                                                        class="runtime-feature-rules-item-badges-item-remove"
+                                                        [disabled]="!permissions.has(permissionType.UPDATE)"
+                                                        (click)="deleteRuleThreat(ruleResponse.rule, threat)"
+                                                        data-testid="runtime-rules-delete-rule-threat-button">
+                                                    <i kbq-icon="kbq-xmark-s_16"></i>
+                                                </button>
+                                            }
+                                        </kbq-badge>
+                                    </li>
+                                }
+
+                                @if (ruleResponse.rule.rule.whitelist.threats.length > 5) {
+                                    <li class="runtime-feature-rules-item-badges-item">+{{ ruleResponse.rule.rule.whitelist.threats.length - 5 }}</li>
+                                }
+                            </ul>
+                        }
+                        @if (ruleResponse.rule.rule.whitelist.binaries.length) {
+                            <ul class="runtime-feature-rules-item-badges">
+                                @for (binary of ruleResponse.rule.rule.whitelist.binaries.slice(0, 5); track binary) {
+                                    <li class="runtime-feature-rules-item-badges-item">
+                                        <kbq-badge [badgeColor]="badgeColors.FadeContrast">
+                                            <span class="runtime-feature-rules-item-badges-item-truncate">{{ binary }}</span>
+                                            @if (!ruleResponse.deleted) {
+                                                <button type="button"
+                                                        class="runtime-feature-rules-item-badges-item-remove"
+                                                        [disabled]="!permissions.has(permissionType.UPDATE)"
+                                                        (click)="deleteRuleBinary(ruleResponse.rule, binary)"
+                                                        data-testid="runtime-rules-delete-rule-binary-button">
+                                                    <i kbq-icon="kbq-xmark-s_16"></i>
+                                                </button>
+                                            }
+                                        </kbq-badge>
+                                    </li>
+                                }
+
+                                @if (ruleResponse.rule.rule.whitelist.binaries.length > 5) {
+                                    <li class="runtime-feature-rules-item-badges-item">+{{ ruleResponse.rule.rule.whitelist.binaries.length - 5 }}</li>
+                                }
+                            </ul>
+                        }
+                    </section>
+
+                    <div class="layout-row layout-align-space-between-center runtime-feature-rules-item-info-actions">
+                        <section class="layout-column runtime-feature-rules-item-section">
+                            @if (ruleResponse.rule.rule.notify) {
+                                <div class="layout-row layout-align-start-center">
+                                    <i kbq-icon="kbq-envelope_16" class="layout-margin-right-s"></i>
+                                    <span kbqTooltip="{{ tCommon(ruleResponse.rule.rule.notify.severity | severityLocalization) }}"
+                                          [kbqPlacement]="tooltipPlacements.Right">
+                                        <cs-severity-component
+                                                isWidthAuto
+                                                [severity]="ruleResponse.rule.rule.notify.severity"></cs-severity-component>
+                                    </span>
+                                </div>
+                            }
+                        </section>
+
+                        @if (!ruleResponse.deleted) {
+                            <section class="layout-row">
+                                <button kbq-button
+                                        kbqStyle="transparent"
+                                        color="contrast"
+                                        type="button"
+                                        class="kbq-button-icon"
+                                        [disabled]="!permissions.has(permissionType.UPDATE)"
+                                        (click)="openEditRuleSidepanel(ruleResponse.rule)"
+                                        data-testid="runtime-rules-update-rule-button">
+                                    <i kbq-icon="kbq-pencil_16"></i>
+                                </button>
+                                <button kbq-button
+                                        kbqStyle="transparent"
+                                        color="contrast"
+                                        type="button"
+                                        class="kbq-button-icon"
+                                        [disabled]="!permissions.has(permissionType.DELETE)"
+                                        (click)="openDeleteRuleModal(ruleResponse.rule.id)"
+                                        data-testid="runtime-rules-delete-rule-button">
+                                    <i kbq-icon="kbq-trash_16"></i>
+                                </button>
+                            </section>
+                        }
+                    </div>
+                </article>
+            }
+
+            @if (expandLimit && expandLimit < rxlet.rulesResponse.length) {
+                <div class="layout-row layout-align-center layout-margin-top-l">
+                    <button kbq-button
+                            kbqStyle="transparent"
+                            color="contrast"
+                            type="button"
+                            class="kbq-button-icon"
+                            (click)="expand()"
+                            data-testid="runtime-rules-expand-button">
+                        <i kbq-icon="kbq-chevron-down_16"></i>
+                    </button>
+                </div>
+            }
+        } @else {
+            <section class="runtime-feature-rules-empty-rules">
+                <p class="layout-margin-no-top layout-margin-bottom-xxl">{{ tRuntime('Runtime.Rules.Text.EmptyRule') }}</p>
+                <button kbq-button
+                        kbqStyle="outline"
+                        color="theme-fade"
+                        type="button"
+                        [disabled]="!permissions.has(permissionType.CREATE)"
+                        (click)="openCreateRuleSidepanel()"
+                        data-testid="runtime-rules-open-sidepanel-rule-form-button">
+                    {{ tRuntime('Runtime.Rules.Button.Create') }}
+                </button>
+            </section>
+        }
+    </ng-container>
+</section>

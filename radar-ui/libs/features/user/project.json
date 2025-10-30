@@ -1,0 +1,23 @@
+{
+    "name": "feature-user",
+    "projectType": "library",
+    "root": "libs/features/user",
+    "sourceRoot": "libs/features/user/src",
+    "prefix": "runtime-radar",
+    "targets": {
+        "lint": {
+            "executor": "@nx/linter:eslint",
+            "options": {
+                "lintFilePatterns": ["libs/features/user/src/**/*.ts", "libs/features/user/src/**/*.html"]
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": ["coverage/libs/features/user"],
+            "options": {
+                "jestConfig": "libs/features/user/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    }
+}

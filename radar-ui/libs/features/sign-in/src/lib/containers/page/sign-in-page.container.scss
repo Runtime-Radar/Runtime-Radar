@@ -1,0 +1,41 @@
+:host {
+    display: block;
+    height: 100%;
+    min-height: 480px;
+    background-color: #eee; // @todo: replace to koobiq token
+}
+
+.sign-in-feature-page {
+    &-block {
+        height: 100%;
+    }
+
+    &-form {
+        width: 320px;
+        padding: 0 80px 80px;
+        border-radius: 16px;
+        background-color: #fff; // @todo: replace to koobiq token
+
+        &-logo {
+            margin: 40px auto;
+
+            img {
+                display: block;
+                margin-right: 12px;
+            }
+        }
+
+        &-title {
+            margin: 16px 0;
+            text-align: center;
+        }
+
+        &-field {
+            margin-bottom: 16px;
+        }
+
+        &-button {
+            width: 100%;
+        }
+    }
+}

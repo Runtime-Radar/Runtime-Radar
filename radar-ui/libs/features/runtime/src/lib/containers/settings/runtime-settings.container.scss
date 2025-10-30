@@ -1,0 +1,169 @@
+.runtime-feature-settings {
+    padding: 32px;
+
+    &-title {
+        margin: 0;
+    }
+
+    &-row {
+        width: 100%;
+        gap: 32px;
+
+        &-expert-toggle {
+            height: 20px;
+            padding: 6px 0;
+        }
+
+        &-radio-group {
+            gap: 16px;
+        }
+    }
+
+    &-form {
+        max-width: 900px;
+    }
+
+    &-headline {
+        margin: 0 0 24px 0;
+    }
+
+    &-policy {
+        max-height: 480px;
+        overflow-x: auto;
+        position: relative;
+        padding: 16px;
+        border-radius: 16px;
+        border: 1px solid #d7dee4; // @todo: replace to koobiq token
+
+        &-item {
+            box-sizing: border-box;
+            min-height: 36px;
+            padding: 8px;
+            padding-right: 2px;
+            border-radius: 8px;
+
+            &:hover,
+            &:focus {
+                background-color: #f2f5f9; // @todo: replace to koobiq token
+
+                .runtime-feature-settings-policy-item-remove {
+                    visibility: visible;
+                    opacity: 1;
+                }
+            }
+
+            .disabled {
+                pointer-events: none;
+
+                @at-root ::ng-deep .runtime-feature-settings-policy-item .kbq-checkbox.disabled .kbq-checkbox__frame {
+                    border-color: var(--kbq-checkbox-theme-states-disabled-border);
+                    background-color: var(--kbq-checkbox-theme-states-disabled-background);
+
+                    .kbq-checkbox-checkmark {
+                        color: var(--kbq-checkbox-theme-states-disabled-color);
+                    }
+                }
+            }
+
+            &.expert {
+                padding-top: 2px;
+                padding-bottom: 2px;
+            }
+
+            &-link {
+                margin: 0;
+                padding: 0;
+                border: 0;
+                background: none;
+                text-align: left;
+                cursor: pointer;
+            }
+
+            &-remove {
+                visibility: hidden;
+                opacity: 0;
+            }
+        }
+
+        &-footer {
+            display: none;
+            width: calc(100% - 48px);
+            height: 20px;
+            margin-top: -1px;
+            padding: 12px 24px;
+            border-radius: 0 0 16px 16px;
+            border: 1px solid #d7dee4; // @todo: replace to koobiq token
+        }
+    }
+
+    &-permissions {
+        position: relative;
+
+        &-subheading {
+            margin: 16px 0;
+        }
+
+        &-card {
+            position: relative;
+            gap: 16px;
+            margin-bottom: 16px;
+            padding: 24px;
+            padding-right: 112px;
+            border-radius: 16px;
+            border: 1px solid #d7dee4; // @todo: replace to koobiq token
+
+            &-label {
+                width: 115px;
+                min-width: 115px;
+                line-height: 24px;
+            }
+
+            &-list {
+                flex-wrap: wrap;
+                gap: 4px;
+                margin: 0;
+                padding: 0;
+                list-style: none;
+            }
+
+            &-action {
+                position: absolute;
+                top: 20px;
+                right: 24px;
+            }
+        }
+    }
+
+    &-rules {
+        width: 320px;
+    }
+
+    &-confirm-drawer {
+        display: none;
+        max-width: 100%;
+        position: relative;
+        padding: 12px;
+        margin-top: 32px;
+        border-radius: 12px;
+        background-color: #fff; // @todo: replace to koobiq token
+        box-shadow: 0 4px 32px 0 rgba(13, 14, 18, 0.12), 0 3px 16px 0 rgba(13, 14, 18, 0.06), 0 0 0 1px rgba(13, 14, 18, 0.03);
+        z-index: 3;
+
+        &--sticky {
+            display: block;
+            position: sticky;
+            bottom: 24px;
+        }
+
+        &-title {
+            margin: 0;
+            font-weight: 500;
+        }
+
+        &-actions {
+            display: flex;
+            gap: 12px;
+            margin-left: 12px;
+        }
+    }
+}

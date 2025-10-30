@@ -1,0 +1,82 @@
+name: Build and Push Helm Chart
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  CHART_PATH: install/helm
+  CHART_NAME: runtime-radar
+  HELM_VERSION: '3.19.0'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Helm
+      uses: azure/setup-helm@v4
+      with:
+        version: ${{ env.HELM_VERSION }}
+
+    # This step is necessary because the organization name contains uppercase letters.
+    # Github Actions itself doesn't have any functions that help to transform strings.
+    - name: Make repo lowercase
+      run: |
+        echo "REPO=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract chart version
+      id: version
+      run: |
+        CHART_VERSION=$(helm show chart ${{ env.CHART_PATH }} | grep '^version:' | cut -d' ' -f2)
+        echo "chart_version=${CHART_VERSION}" >> $GITHUB_OUTPUT
+        echo "registry_path=${{ env.REGISTRY }}/${{ env.REPO }}/${{ env.CHART_NAME }}" >> $GITHUB_OUTPUT
+
+    # - name: Lint Helm chart
+    #   run: |
+    #     helm lint ${{ env.CHART_PATH }}
+
+    - name: Update Helm dependencies
+      run: |
+        cd ${{ env.CHART_PATH }}
+        helm dependency update
+
+    - name: Package Helm chart
+      run: |
+        helm package ${{ env.CHART_PATH }} --destination ./charts
+
+    - name: Push Helm chart to GHCR
+      run: |
+        helm push ./charts/${{ env.CHART_NAME }}-${{ steps.version.outputs.chart_version }}.tgz oci://${{ env.REGISTRY }}/${{ env.REPO }}
+
+    - name: Generate chart summary
+      run: |
+        echo "## Helm Chart Published 🚀" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Chart Name:** ${{ env.CHART_NAME }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Version:** ${{ steps.version.outputs.chart_version }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Registry:** ${{ steps.version.outputs.registry_path }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Git Tag:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Installation" >> $GITHUB_STEP_SUMMARY
+        echo '```bash' >> $GITHUB_STEP_SUMMARY
+        echo "helm install ${{ env.CHART_NAME }} oci://${{ steps.version.outputs.registry_path }} --version ${{ steps.version.outputs.chart_version }}" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY

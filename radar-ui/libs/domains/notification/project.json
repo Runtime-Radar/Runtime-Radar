@@ -1,0 +1,23 @@
+{
+    "name": "domain-notification",
+    "projectType": "library",
+    "root": "libs/domains/notification",
+    "sourceRoot": "libs/domains/notification/src",
+    "prefix": "runtime-radar",
+    "targets": {
+        "lint": {
+            "executor": "@nx/linter:eslint",
+            "options": {
+                "lintFilePatterns": ["libs/domains/notification/src/**/*.ts", "libs/domains/notification/src/**/*.html"]
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": ["coverage/libs/domains/notification"],
+            "options": {
+                "jestConfig": "libs/domains/notification/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    }
+}

@@ -1,0 +1,28 @@
+:host {
+    display: block;
+    padding: 32px;
+}
+
+.cluster-feature-details {
+    position: relative;
+
+    &-header {
+        margin-bottom: 32px;
+
+        &-title {
+            margin: 0;
+        }
+    }
+
+    &-meta {
+        margin-left: 32px;
+
+        &-badgeline {
+            line-height: 24px !important;
+        }
+    }
+
+    &-footer {
+        margin-top: 32px;
+    }
+}

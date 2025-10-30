@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:17.4
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=cs
+      - POSTGRES_PASSWORD=cs
+      - POSTGRES_DB=cs
+    networks:
+      local:
+
+  service:
+    build:
+      context: .
+    image: auth-center
+    environment:
+      - TOKEN_KEY=dd20ed6d406da2a2a325dfe6e74a3f941e94c154b0b8d15b7360e1cce46a522a
+      - ADMIN_PASSWORD=admin
+      - ADMIN_USERNAME=admin
+    ports:
+      - "8080:8000"
+      - "9090:9000"
+    command: --postgresAddr=postgres --logLevel=INFO
+    depends_on:
+      - postgres
+    networks:
+      local:
+
+networks:
+  local:
+
+

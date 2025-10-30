@@ -1,0 +1,36 @@
+:host {
+    display: block;
+}
+
+.shared-paginator {
+    margin: 32px 0 0 0;
+    padding: 0;
+    list-style: none;
+
+    &-item {
+        min-width: 32px;
+        height: 32px;
+
+        &:not(:first-child) {
+            margin-left: 4px;
+        }
+
+        &-separator {
+            display: block;
+            line-height: 32px;
+            text-align: center;
+        }
+
+        &-button {
+            display: flex;
+            width: 100%;
+            padding: 0 4px;
+
+            &.active {
+                background-color: #ebeef2 !important; // @todo: replace to koobiq token
+                pointer-events: none;
+                cursor: pointer;
+            }
+        }
+    }
+}

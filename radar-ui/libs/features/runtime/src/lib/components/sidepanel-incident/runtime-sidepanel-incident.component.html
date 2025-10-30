@@ -1,0 +1,52 @@
+<ng-container *transloco="let tRuntime; prefix: 'runtime'">
+    <kbq-sidepanel-header [closeable]="true">
+        {{ tRuntime('Runtime.IncidentSidepanel.Title.Incident') }}
+    </kbq-sidepanel-header>
+
+    <kbq-sidepanel-body class="runtime-feature-sidepanel-incident">
+        <section severityBgColor
+                 [severity]="props.severity"
+                 class="runtime-feature-sidepanel-incident-card">
+            <cs-severity-label-component
+                    class="runtime-feature-sidepanel-incident-card-severity"
+                    isLabelColored
+                    isWidthAuto
+                    [severity]="props.severity"></cs-severity-label-component>
+
+            <kbq-dl [vertical]="false" [wide]="true">
+                <kbq-dt>{{ tRuntime('Runtime.IncidentSidepanel.Label.Type') }}:</kbq-dt>
+                <kbq-dd class="layout-row">
+                    <i runtimeEventTypeIcon [type]="props.type"></i>
+                    <span class="layout-margin-left-xs">{{ tRuntime(props.type | runtimeEventTypeLocalization) }}</span>
+                </kbq-dd>
+                <kbq-dt>{{ tRuntime('Runtime.IncidentSidepanel.Label.Binary') }}:</kbq-dt>
+                <kbq-dd>{{ props.process.process.binary || '—' }}</kbq-dd>
+                <kbq-dt>{{ tRuntime('Runtime.IncidentSidepanel.Label.Argument') }}:</kbq-dt>
+                <kbq-dd>{{ props.process.process.arguments || '—' }}</kbq-dd>
+                <kbq-dt>{{ tRuntime('Runtime.IncidentSidepanel.Label.Date') }}:</kbq-dt>
+                <kbq-dd>{{ props.time | runtimeNanosecondsFormatter }}</kbq-dd>
+                <kbq-dt>{{ tRuntime('Runtime.IncidentSidepanel.Label.Namespace') }}:</kbq-dt>
+                <kbq-dd>{{ props.process.process.pod?.namespace || '—' }}</kbq-dd>
+                <kbq-dt>{{ tRuntime('Runtime.IncidentSidepanel.Label.Pod') }}:</kbq-dt>
+                <kbq-dd>{{ props.process.process.pod?.name || '—' }}</kbq-dd>
+                <kbq-dt>{{ tRuntime('Runtime.IncidentSidepanel.Label.Threat') }}:</kbq-dt>
+                <kbq-dd>
+                    @for (option of ruleSeverityOptions; track option.id) {
+                        @if (props.threats | runtimeSeverityThreatsCounter: option.id; as counter) {
+                            <span class="layout-margin-right-m">
+                                <span class="layout-margin-right-xs">{{ counter }}</span>
+                                <cs-severity-component
+                                        isWidthAuto
+                                        [severity]="option.id"></cs-severity-component>
+                            </span>
+                        }
+                    }
+                </kbq-dd>
+            </kbq-dl>
+        </section>
+
+        <cs-runtime-feature-rules-container
+                [ruleIds]="props.ruleIds"
+                [permissions]="props.permissions"></cs-runtime-feature-rules-container>
+    </kbq-sidepanel-body>
+</ng-container>

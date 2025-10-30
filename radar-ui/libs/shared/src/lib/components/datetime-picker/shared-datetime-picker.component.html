@@ -1,0 +1,41 @@
+<section class="layout-row layout-align-start-center">
+    @if (label) {
+        <label class="kbq-form__label shared-datetime-picker-label">{{ label }}</label>
+    }
+    <div *transloco="let tCommon; prefix: 'common'" class="layout-row">
+        <kbq-form-field class="kbq-form__control layout-margin-right-m"
+                        (click)="datepicker.toggle()">
+            <!-- @todo: need to refactor to native placeholder localization -->
+            <input type="text"
+                   class="shared-datetime-picker-date"
+                   [id]="id + 'date'"
+                   [value]="dateTime"
+                   [placeholder]="tCommon('Common.Form.Placeholder.Datepicker')"
+                   (dateChange)="changeDate($event.value)"
+                   [kbqDatepicker]="datepicker"
+                   [attr.data-testid]="testLocator + '-date-input'">
+            <i kbqPrefix kbq-icon="kbq-calendar-o_16"></i>
+            <kbq-datepicker #datepicker [minDate]="minDate"></kbq-datepicker>
+        </kbq-form-field>
+        <kbq-form-field class="kbq-form__control">
+            <i kbqPrefix kbq-icon="kbq-clock_16"></i>
+            <!-- @todo: need to refactor to native placeholder localization -->
+            <input kbqTimepicker
+                   [id]="id + 'time'"
+                   [format]="timeFormats.HHmmss"
+                   [placeholder]="tCommon('Common.Form.Placeholder.Timepicker')"
+                   (ngModelChange)="changeTime($event)"
+                   [ngModel]="dateTime"
+                   [attr.data-testid]="testLocator + '-time-input'">
+        </kbq-form-field>
+        <button kbq-button
+                kbqStyle="transparent"
+                color="contrast"
+                type="button"
+                class="kbq-button-icon layout-margin-left-s"
+                (click)="clearDateTime()"
+                [attr.data-testid]="testLocator + '-clear-button'">
+            <i kbq-icon="kbq-xmark-circle_16"></i>
+        </button>
+    </div>
+</section>

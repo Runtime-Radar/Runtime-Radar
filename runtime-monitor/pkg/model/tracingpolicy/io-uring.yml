@@ -1,0 +1,46 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "io-uring"
+spec:
+  kprobes:
+  # SYNOPSIS
+  # int io_uring_setup(u32 entries, struct io_uring_params *p)
+  #      @entries: number of entries in SQ and CQ
+  #      @p: options of context
+  #
+  # DESCRIPTION
+  # Setup a context for performing asynchronous I/O
+  #
+  # RETURN VALUE
+  # Returns a new file descriptor on success.
+  # On error, a negative error code is returned. The caller should not rely on errno variable.
+  # (https://man7.org/linux/man-pages/man2/io_uring_setup.2.html#RETURN_VALUE)
+  #
+  - call: "sys_io_uring_setup"
+    return: false
+    syscall: true
+  # SYNOPSIS
+  # int io_uring_enter(unsigned int fd, unsigned int to_submit, unsigned int min_complete,
+  # unsigned int flags, sigset_t *sig)
+  #      @fd: file descriptor returned by io_uring_setup
+  #      @to_submit: number of entries to submit in SQ
+  #      @min_complete: value of minimum complete events to return from CQ
+  #      @flags: bitmask of flags
+  #      @sig: pointer to a signal mask
+  #
+  # DESCRIPTION
+  # Initiate and/or complete asynchronous I/O
+  #
+  # RETURN VALUE
+  # Returns the number of I/Os successfully consumed.
+  # The errors related to a submission queue entry will be returned through a completion
+  # queue entry (see section CQE ERRORS), rather than through the system call itself.
+  # Errors that occur not on behalf of a submission queue entry are returned via
+  # the system call directly. On such an error, a negative error code is returned.
+  # The caller should not rely on errno variable.
+  # (https://man7.org/linux/man-pages/man2/io_uring_enter.2.html#RETURN_VALUE)
+  #
+  - call: "sys_io_uring_enter"
+    return: false
+    syscall: true

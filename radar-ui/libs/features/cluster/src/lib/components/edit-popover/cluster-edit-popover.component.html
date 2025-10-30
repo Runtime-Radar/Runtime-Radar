@@ -1,0 +1,54 @@
+<ng-container *transloco="let tCluster; prefix: 'cluster'">
+    <button kbq-button
+            kbqPopover
+            kbqStyle="transparent"
+            color="contrast"
+            type="button"
+            [disabled]="disabled"
+            class="kbq-button-icon"
+            #kbqPopover="kbqPopover"
+            [kbqPopoverPlacement]="tooltipPlacements.Left"
+            [kbqPopoverContent]="popoverContent"
+            [kbqPopoverFooter]="popoverFooter"
+            data-testid="cluster-edit-popover-open-button">
+        <i kbq-icon="kbq-pencil_16"></i>
+    </button>
+
+    <ng-template #popoverContent>
+        <div class="kbq-form-vertical cluster-feature-edit-popover-form">
+            <h4 class="kbq-subheading cluster-feature-edit-popover-form-title">
+                {{ tCluster('Cluster.ListPage.Popover.SubTitle.Edit') }}
+            </h4>
+            <section class="kbq-form__row">
+                <kbq-form-field class="kbq-form__control">
+                    <input kbqInput
+                           type="text"
+                           id="name"
+                           [(ngModel)]="name"
+                           placeholder="{{ tCluster('Cluster.ListPage.Popover.Placeholder.Name') }}"
+                           data-testid="cluster-edit-popover-user-input">
+                </kbq-form-field>
+            </section>
+        </div>
+    </ng-template>
+
+    <ng-template #popoverFooter>
+        <div class="layout-row layout-align-end-center layout-margin-bottom-s">
+            <button kbq-button
+                    kbqStyle="outline"
+                    color="theme-fade"
+                    type="button"
+                    class="layout-margin-right-l"
+                    (click)="confirm()"
+                    data-testid="cluster-edit-popover-confirm-button">
+                {{ tCluster('Cluster.ListPage.Popover.Button.Confirm') }}
+            </button>
+            <button kbq-button
+                    type="button"
+                    (click)="cancel()"
+                    data-testid="cluster-edit-popover-cancel-button">
+                {{ tCluster('Cluster.ListPage.Popover.Button.Cancel') }}
+            </button>
+        </div>
+    </ng-template>
+</ng-container>

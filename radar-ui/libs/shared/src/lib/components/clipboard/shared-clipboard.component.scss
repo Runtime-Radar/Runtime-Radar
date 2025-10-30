@@ -1,0 +1,21 @@
+:host {
+    display: block;
+}
+
+.shared-clipboard {
+    padding: 2px;
+    background-color: #f2f5f9; // @todo: replace to koobiq token
+    border: 1px solid #d7dee4;
+    border-radius: 4px;
+
+    &-button {
+        border-radius: 4px;
+    }
+
+    &-text {
+        max-width: calc(100% - 64px);
+        padding: 4px 8px;
+        line-height: 16px;
+        overflow-wrap: anywhere;
+    }
+}

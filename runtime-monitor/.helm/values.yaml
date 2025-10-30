@@ -1,0 +1,492 @@
+global:
+  imagePullSecrets: []
+  keys:
+    token: random
+image:
+  registry: ghcr.io/runtime-radar
+  repository: runtime-monitor
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+containerPorts:
+  gops: 7000
+  grpc: 8000
+  http: 9000
+  instrumentation: 9090
+service:
+  ports:
+    grpc: 8000
+    http: 9000
+configUpdateInterval: ""
+env:
+  - name: LISTEN_HTTP_ADDR
+    value: ":{{ .Values.containerPorts.http }}"
+  - name: LISTEN_GRPC_ADDR
+    value: ":{{ .Values.containerPorts.grpc }}"
+  - name: LISTEN_GOPS_ADDR
+    value: "127.0.0.1:{{ .Values.containerPorts.gops }}"
+  - name: CONFIG_UPDATE_INTERVAL
+    value: "{{ .Values.configUpdateInterval }}"
+  - name: TETRAGON_EVENTS_BUFFER
+    value: "1000"
+  - name: TETRAGON_ADDR
+    value: "{{ .Values.tetragon.grpc.address }}"
+postgresql:
+  enabled: true
+rabbitmq:
+  enabled: true
+resources:
+  limits:
+    cpu: 1
+    memory: 1Gi
+    ephemeral-storage: 1Gi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+    ephemeral-storage: 1Mi
+livenessProbe:
+  enabled: true
+  httpGet:
+    path: /live
+    scheme: HTTP
+    port: instrumentation
+  periodSeconds: 600
+  successThreshold: 1
+  failureThreshold: 2
+readinessProbe:
+  enabled: true
+  httpGet:
+    path: /ready
+    scheme: HTTP
+    port: instrumentation
+  periodSeconds: 360
+  successThreshold: 1
+  failureThreshold: 3
+startupProbe:
+  enabled: true
+  httpGet:
+    path: /ready
+    scheme: HTTP
+    port: instrumentation
+  initialDelaySeconds: 70
+  periodSeconds: 3
+  successThreshold: 1
+  failureThreshold: 3
+# tetragon values are copied from tetragon helm chart as-is
+# https://github.com/cilium/tetragon/blob/v1.3.0/install/kubernetes/tetragon/values.yaml
+# Tetragon agent settings
+priorityClassName: ""
+imagePullPolicy: IfNotPresent
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+podAnnotations: {}
+podSecurityContext: {}
+nodeSelector: {}
+tolerations:
+  - operator: Exists
+affinity: {}
+extraHostPathMounts: []
+extraConfigmapMounts: []
+daemonSetAnnotations: {}
+extraVolumes: []
+updateStrategy: {}
+podLabels: {}
+daemonSetLabelsOverride: {}
+selectorLabelsOverride: {}
+podLabelsOverride: {}
+serviceLabelsOverride: {}
+# -- DNS policy for Tetragon pods.
+#
+# https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
+dnsPolicy: Default
+# -- Directory to put Tetragon JSON export files.
+exportDirectory: "/var/run/cilium/tetragon"
+# -- Configures whether Tetragon pods run on the host network.
+#
+# IMPORTANT: Tetragon must be on the host network for the process visibility to
+# function properly.
+hostNetwork: true
+tetragon:
+  enabled: true
+  image:
+    override: ~
+    repository: quay.io/cilium/tetragon
+    tag: v1.3.0
+  resources:
+    limits:
+      cpu: 1
+      memory: 2Gi
+      ephemeral-storage: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+      ephemeral-storage: 1Mi
+  extraArgs: {}
+  extraEnv: []
+  # extraEnv:
+  #   - name: foo
+  #     value: bar
+  extraVolumeMounts: []
+  securityContext:
+    privileged: true
+  # -- Overrides the default livenessProbe for the tetragon container.
+  livenessProbe: {}
+  #  grpc:
+  #    port: 54321
+
+  # -- Tetragon puts processes in an LRU cache. The cache is used to find ancestors
+  # for subsequently exec'ed processes.
+  processCacheSize: 65536
+  # -- If you want to run Tetragon in debug mode change this value to true
+  debug: false
+  # -- JSON export filename. Set it to an empty string to disable JSON export altogether.
+  exportFilename: tetragon.log
+  # -- JSON export file permissions as a string. Typically it's either "600" (to restrict access to
+  # owner) or "640"/"644" (to allow read access by logs collector or another agent).
+  exportFilePerm: "600"
+  # -- Size in megabytes at which to rotate JSON export files.
+  exportFileMaxSizeMB: 10
+  # -- Number of rotated files to retain.
+  exportFileMaxBackups: 5
+  # -- Compress rotated JSON export files.
+  exportFileCompress: false
+  # -- Rate-limit event export (events per minute), Set to -1 to export all events.
+  exportRateLimit: -1
+  # -- Allowlist for JSON export. For example, to export only process_connect events from
+  # the default namespace:
+  #
+  # exportAllowList: |
+  #   {"namespace":["default"],"event_set":["PROCESS_EXEC"]}
+  exportAllowList: |-
+    {"event_set":["PROCESS_EXEC", "PROCESS_EXIT", "PROCESS_KPROBE", "PROCESS_UPROBE", "PROCESS_TRACEPOINT", "PROCESS_LSM"]}
+  # -- Denylist for JSON export. For example, to exclude exec events that look similar to
+  # Kubernetes health checks and all the events from kube-system namespace and the host:
+  #
+  # exportDenyList: |
+  #   {"health_check":true}
+  #   {"namespace":["kube-system",""]}
+  #
+  exportDenyList: |-
+    {"health_check":true}
+    {"namespace":["", "cilium", "kube-system"]}
+  # -- Filters to include or exclude fields from Tetragon events. Without any filters, all
+  # fields are included by default. The presence of at least one inclusion filter implies
+  # default-exclude (i.e. any fields that don't match an inclusion filter will be
+  # excluded). Field paths are expressed using dot notation like "a.b.c" and multiple
+  # field paths can be separated by commas like "a.b.c,d,e.f". An optional "event_set" may
+  # be specified to apply the field filter to a specific set of events.
+  #
+  # For example, to exclude the "parent" field from all events and include the "process"
+  # field in PROCESS_KPROBE events while excluding all others:
+  #
+  # fieldFilters: |
+  #   {"fields": "parent", "action": "EXCLUDE"}
+  #   {"event_set": ["PROCESS_KPROBE"], "fields": "process", "action": "INCLUDE"}
+  #
+  fieldFilters: ""
+  # -- Filters to redact secrets from the args fields in Tetragon events. To perform
+  # redactions, redaction filters define RE2 regular expressions in the `redact`
+  # field. Any capture groups in these RE2 regular expressions are redacted and
+  # replaced with "*****".
+  #
+  # For more control, you can select which binary or binaries should have their
+  # arguments redacted with the `binary_regex` field.
+  #
+  # NOTE: This feature uses RE2 as its regular expression library. Make sure that you follow
+  # RE2 regular expression guidelines as you may observe unexpected results otherwise.
+  # More information on RE2 syntax can be found [here](https://github.com/google/re2/wiki/Syntax).
+  #
+  # NOTE: When writing regular expressions in JSON, it is important to escape
+  # backslash characters. For instance `\Wpasswd\W?` would be written as
+  # `{"redact": "\\Wpasswd\\W?"}`.
+  #
+  # As a concrete example, the following will redact all passwords passed to
+  # processes with the "--password" argument:
+  #
+  #   {"redact": ["--password(?:\\s+|=)(\\S*)"]}
+  #
+  # Now, an event which contains the string "--password=foo" would have that
+  # string replaced with "--password=*****".
+  #
+  # Suppose we also see some passwords passed via the -p shorthand for a specific binary, foo.
+  # We can also redact these as follows:
+  #
+  #   {"binary_regex": ["(?:^|/)foo$"], "redact": ["-p(?:\\s+|=)(\\S*)"]}
+  #
+  # With both of the above redaction filters in place, we are now redacting all
+  # password arguments.
+  redactionFilters: ""
+  # -- Name of the cluster where Tetragon is installed. Tetragon uses this value
+  # to set the cluster_name field in GetEventsResponse messages.
+  clusterName: ""
+  # -- Access Kubernetes API to associate Tetragon events with Kubernetes pods.
+  enableK8sAPI: true
+  # -- Enable Capabilities visibility in exec and kprobe events.
+  enableProcessCred: false
+  # -- Enable Namespaces visibility in exec and kprobe events.
+  enableProcessNs: false
+  # -- Set --btf option to explicitly specify an absolute path to a btf file. For advanced users only.
+  btf: ""
+  # -- Override the command. For advanced users only.
+  commandOverride: []
+  # -- Override the arguments. For advanced users only.
+  argsOverride: []
+  prometheus:
+    # -- Whether to enable exposing Tetragon metrics.
+    enabled: true
+    # -- The address at which to expose metrics. Set it to "" to expose on all available interfaces.
+    address: ""
+    # -- The port at which to expose metrics.
+    port: 2112
+    # -- Comma-separated list of enabled metrics labels.
+    # The configurable labels are: namespace, workload, pod, binary. Unkown labels will be ignored.
+    # Removing some labels from the list might help reduce the metrics cardinality if needed.
+    metricsLabelFilter: "namespace,workload,pod,binary"
+    serviceMonitor:
+      # -- Whether to create a 'ServiceMonitor' resource targeting the tetragon pods.
+      enabled: false
+      # -- The set of labels to place on the 'ServiceMonitor' resource.
+      labelsOverride: {}
+      # -- Extra labels to be added on the Tetragon ServiceMonitor.
+      extraLabels: {}
+      # -- Interval at which metrics should be scraped. If not specified, Prometheus' global scrape interval is used.
+      scrapeInterval: "10s"
+  grpc:
+    # -- Whether to enable exposing Tetragon gRPC.
+    enabled: true
+    # -- The address at which to expose gRPC. Examples: localhost:54321, unix:///var/run/cilum/tetragon/tetragon.sock
+    address: "localhost:54321"
+  gops:
+    # -- Whether to enable exposing gops server.
+    enabled: true
+    # -- The address at which to expose gops.
+    address: "localhost"
+    # -- The port at which to expose gops.
+    port: 8118
+  pprof:
+    # -- Whether to enable exposing pprof server.
+    enabled: false
+    # -- The address at which to expose pprof.
+    address: "localhost"
+    # -- The port at which to expose pprof.
+    port: 6060
+  # -- Enable policy filter. This is required for K8s namespace and pod-label filtering.
+  enablePolicyFilter: True
+  # -- Enable policy filter debug messages.
+  enablePolicyFilterDebug: false
+  # -- Enable latency monitoring in message handling
+  enableMsgHandlingLatency: false
+  healthGrpc:
+    # -- Whether to enable health gRPC server.
+    enabled: false
+    # -- The port at which to expose health gRPC.
+    port: 6789
+    # -- The interval at which to check the health of the agent.
+    interval: 10
+  # -- Location of the host proc filesystem in the runtime environment. If the runtime runs in the
+  # host, the path is /proc. Exceptions to this are environments like kind, where the runtime itself
+  # does not run on the host.
+  hostProcPath: "/proc"
+  # -- Configure tetragon's init container for setting up tetragon-oci-hook on the host
+  # NOTE: This is deprecated, please use .rthooks
+  ociHookSetup:
+    # -- enable  init container to setup tetragon-oci-hook
+    enabled: false
+    # -- interface specifices how the hook is  configured. There is only one avaialble value for now:
+    # "oci-hooks" (https://github.com/containers/common/blob/main/pkg/hooks/docs/oci-hooks.5.md).
+    interface: "oci-hooks"
+    installDir: "/opt/tetragon"
+    # -- Comma-separated list of namespaces to allow Pod creation for, in case tetragon-oci-hook fails to reach Tetragon agent.
+    # The namespace Tetragon is deployed in is always added as an exception and must not be added again.
+    failAllowNamespaces: ""
+    # -- Security context for oci-hook-setup init container
+    securityContext:
+      privileged: true
+    # -- Extra volume mounts to add to the oci-hook-setup init container
+    extraVolumeMounts: []
+    # -- resources for the the oci-hook-setup init container
+    resources: {}
+  # -- Configure the number of retries in tetragon's event cache.
+  eventCacheRetries: 15
+  # -- Configure the delay (in seconds) between retires in tetragon's event cache.
+  eventCacheRetryDelay: 2
+  # -- Persistent enforcement to allow the enforcement policy to continue running even when its Tetragon process is gone.
+  enableKeepSensorsOnExit: false
+  # -- Configure the interval (suffixed with s for seconds, m for minutes, etc) for the process cache garbage collector.
+  processCacheGCInterval: 30s
+# Tetragon Operator settings
+tetragonOperator:
+  # -- Enables the Tetragon Operator.
+  enabled: false
+  # -- Annotations for the Tetragon Operator Deployment.
+  annotations: {}
+  # -- Annotations for the Tetragon Operator Deployment Pods.
+  podAnnotations: {}
+  # -- Extra labels to be added on the Tetragon Operator Deployment.
+  extraLabels: {}
+  # -- Extra labels to be added on the Tetragon Operator Deployment Pods.
+  extraPodLabels: {}
+  # -- priorityClassName for the Tetragon Operator Deployment Pods.
+  priorityClassName: ""
+  # -- tetragon-operator service account.
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+  # -- securityContext for the Tetragon Operator Deployment Pods.
+  securityContext: {}
+  # -- securityContext for the Tetragon Operator Deployment Pod container.
+  podSecurityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - "ALL"
+  # -- resources for the Tetragon Operator Deployment Pod container.
+  resources:
+    limits:
+      cpu: 500m
+      memory: 128Mi
+    requests:
+      cpu: 10m
+      memory: 64Mi
+  # -- resources for the Tetragon Operator Deployment update strategy
+  strategy: {}
+  # -- Steer the Tetragon Operator Deployment Pod placement via nodeSelector, tolerations and affinity rules.
+  nodeSelector: {}
+  tolerations:
+    - operator: Exists
+  affinity: {}
+  # -- tetragon-operator image.
+  image:
+    override: ~
+    repository: quay.io/cilium/tetragon-operator
+    tag: v1.3.0
+    pullPolicy: IfNotPresent
+  # -- Extra volumes for the Tetragon Operator Deployment.
+  extraVolumes: []
+  extraVolumeMounts: []
+  forceUpdateCRDs: false
+  podInfo:
+    # -- Enables the PodInfo CRD and the controller that reconciles PodInfo
+    # custom resources.
+    enabled: false
+  tracingPolicy:
+    # -- Enables the TracingPolicy and TracingPolicyNamespaced CRD creation.
+    enabled: false
+  prometheus:
+    # -- Enables the Tetragon Operator metrics.
+    enabled: true
+    # -- The address at which to expose Tetragon Operator metrics. Set it to "" to expose on all available interfaces.
+    address: ""
+    # -- The port at which to expose metrics.
+    port: 2113
+    serviceMonitor:
+      # -- Whether to create a 'ServiceMonitor' resource targeting the tetragonOperator pods.
+      enabled: false
+      # -- The set of labels to place on the 'ServiceMonitor' resource.
+      labelsOverride: {}
+      # -- Extra labels to be added on the Tetragon Operator ServiceMonitor.
+      extraLabels: {}
+      # -- Interval at which metrics should be scraped. If not specified, Prometheus' global scrape interval is used.
+      scrapeInterval: "10s"
+# -- Tetragon events export settings
+export:
+  # "stdout". "" to disable.
+  mode: "stdout"
+  resources: {}
+  securityContext: {}
+  # filenames defines list of files for fluentd to tail and export.
+  filenames:
+    - tetragon.log
+  # stdout specific exporter settings
+  stdout:
+    extraEnv: []
+    # extraEnv:
+    #   - name: foo
+    #     value: bar
+
+    # * When enabledCommand=true and commandOverride is not set, the command inserted will be hubble-export-stdout.
+    #   This supports the default for the current deployment instructions to deploy stdout-export sidecar container.
+    # * When enabledCommand=true and commandOverride override is set, the command inserted will be the value of commandOverride.
+    #   This is useful for inserting another sidecar container that requires a command override.
+    # * When enabledCommand=false, no command will be specified in the manifest and container's default command will take over.
+    enabledCommand: true
+    # * When enabledArgs=true and argsOverride is not set, the args inserted will be the default ones for export-stdout.
+    # * When enabledArgs=true and argsOverride override is set, the args value inserted will be the value of argsOverride.
+    #   This is useful for inserting another sidecar container that requires args override.
+    # * When enabledArgs=false, no command will be specified in the manifest and container's default args value will take over.
+    enabledArgs: true
+    # specific manifest command to use
+    commandOverride: []
+    # specific manifest args to use
+    argsOverride: []
+    # Extra volume mounts to add to stdout export pod
+    extraVolumeMounts: []
+    image:
+      override: ~
+      repository: quay.io/cilium/hubble-export-stdout
+      tag: v1.0.4
+crds:
+  # -- Method for installing CRDs. Supported values are: "operator", "helm" and "none".
+  # The "operator" method allows for fine-grained control over which CRDs are installed and by
+  # default doesn't perform CRD downgrades. These can be configured in tetragonOperator section.
+  # The "helm" method always installs all CRDs for the chart version.
+  installMethod: "none"
+# -- Method for installing Tetagon rthooks (tetragon-rthooks) daemonset
+# The tetragon-rthooks daemonset is responsible for installing run-time hooks on the host.
+# See: https://tetragon.io/docs/concepts/runtime-hooks
+rthooks:
+  # -- Enable the Tetragon rthooks daemonset
+  enabled: false
+  # -- Method to use for installing  rthooks. Values:
+  #
+  #    "oci-hooks":
+  #       Add an apppriate file to "/usr/share/containers/oci/hooks.d". Use this with CRI-O.
+  #       See https://github.com/containers/common/blob/main/pkg/hooks/docs/oci-hooks.5.md
+  #       for more details.
+  #       Specific configuration for this interface can be found under "OciHooks".
+  #
+  #    "nri-hook":
+  #      Install the hook via NRI. Use this with containerd. Requires NRI being enabled.
+  #      see: https://github.com/containerd/containerd/blob/main/docs/NRI.md.
+  #
+  interface: ""
+  # -- Annotations for the Tetragon rthooks daemonset
+  annotations: {}
+  # -- Extra labels for the Tetrargon rthooks daemonset
+  extraLabels: {}
+  # -- Pod annotations for the Tetrargon rthooks pod
+  podAnnotations: {}
+  # -- priorityClassName for the Tetrargon rthooks pod
+  priorityClassName: ""
+  # -- security context for the Tetrargon rthooks pod
+  podSecurityContext: {}
+  # -- installDir is the host location where the tetragon-oci-hook binary will be installed
+  installDir: "/opt/tetragon"
+  # -- Comma-separated list of namespaces to allow Pod creation for, in case tetragon-oci-hook fails to reach Tetragon agent.
+  # The namespace Tetragon is deployed in is always added as an exception and must not be added again.
+  failAllowNamespaces: ""
+  # -- Extra volume mounts to add to the oci-hook-setup init container
+  extraVolumeMounts: []
+  # -- resources for the the oci-hook-setup init container
+  resources: {}
+  # -- extra args to pass to tetragon-oci-hook
+  extraHookArgs: {}
+  # -- configuration for "oci-hooks" interface
+  ociHooks:
+    # -- directory to install .json file for running the hook
+    hooksPath: "/usr/share/containers/oci/hooks.d"
+  # -- configuration for the "nri-hook" interface
+  nriHook:
+    # -- path to NRI socket
+    nriSocket: "/var/run/nri/nri.sock"
+  # -- image for the Tetragon rthooks pod
+  image:
+    override: ~
+    repository: quay.io/cilium/tetragon-rthooks
+    tag: v0.4
+  # -- rthooks service account.
+  serviceAccount:
+    name: ""

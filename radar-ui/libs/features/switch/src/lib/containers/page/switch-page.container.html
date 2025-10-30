@@ -1,0 +1,26 @@
+<div *transloco="let tCluster; prefix: 'cluster'" class="switch-feature-page">
+    <section class="switch-feature-page-section">
+        @if (cluster) {
+            <div id="{{ cluster.id }}" class="layout-row layout-align-space-between-center switch-feature-page-section-card">
+                <h4 class="kbq-subheading layout-margin-no-top layout-margin-no-bottom">{{ cluster.name }}</h4>
+                <kbq-badge [badgeColor]="cluster.status === clusterStatus.REGISTERED ? badgeColors.FadeSuccess : badgeColors.FadeError"
+                           [outline]="true"
+                           *transloco="let tCommon; prefix: 'common'">
+                    {{ tCommon(cluster.status | clusterStatusLocalization) }}
+                </kbq-badge>
+            </div>
+        }
+
+        <!-- @todo: remove image after back-end improvements -->
+        <img src="/assets/koobiq/light/lock_256@2x.png" width="256" height="256" class="flex">
+        <p class="layout-margin-bottom-xxl">{{ tCluster('Cluster.SwitchPage.Text.WrongCluster') }}</p>
+
+        <ng-container *ngrxLet="url$ as url">
+            @if (url) {
+                <a kbq-button kbqStyle="outline" color="theme-fade" [href]="url">
+                    {{ tCluster('Cluster.SwitchPage.Button.MainCluster') }}
+                </a>
+            }
+        </ng-container>
+    </section>
+</div>

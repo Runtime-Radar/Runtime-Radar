@@ -1,0 +1,22 @@
+<kbq-form-field class="kbq-form__control" *transloco="let tCommon; prefix: 'common'">
+    <kbq-select [multiple]="true"
+                [value]="selected"
+                (selectionChange)="changeSelected($event.value)"
+                [attr.id]="id"
+                [attr.placeholder]="placeholder"
+                [attr.data-testid]="testId">
+        <kbq-option class="shared-multiple-select-general"
+                    [value]="allOptionKey"
+                    [ngClass]="{ 'checked': selectedItems === optionItems, 'indeterminate': selectedItems < optionItems && selectedItems !== 0 }"
+                    [attr.data-testid]="tCommon('Common.Form.Label.SelectAll')">
+            {{ tCommon('Common.Form.Label.SelectAll') }}
+        </kbq-option>
+        @for (item of options; track item.id) {
+            <kbq-option [value]="item.id"
+                        [attr.data-testid]="localizationFn(item.localizationKey)">
+                {{ localizationFn(item.localizationKey) }}
+            </kbq-option>
+        }
+        <kbq-cleaner #kbqSelectCleaner></kbq-cleaner>
+    </kbq-select>
+</kbq-form-field>

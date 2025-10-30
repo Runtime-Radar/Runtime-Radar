@@ -1,0 +1,98 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "kernel-modules"
+spec:
+  kprobes:
+ # SYNOPSIS
+ # int security_kernel_module_request(char *kmod_name)
+ #     @kmod_name: module name
+ # 
+ # DESCRIPTION
+ # Check if loading a module is allowed.
+ # Ability to trigger the kernel to automatically upcall to userspace for
+ # userspace to load a kernel module with the given name.
+ #
+ # RETURN VALUE
+ # Returns 0 if successful.
+ #
+  - call: "security_kernel_module_request"
+    syscall: false
+    return: true
+    args:
+    - index: 0
+      type: "string"
+    returnArg:
+      index: 0
+      type: "int"
+ # SYNOPSIS
+ # int security_kernel_read_file(struct file *file, enum kernel_read_file_id id, bool contents)
+ #     @file: file
+ #     @id: file identifier
+ #     @contents: trust if security_kernel_post_read_file() will be called
+ #
+ # DESCRIPTION
+ # Read a file specified by userspace.
+ #
+ # RETURN VALUE
+ # Returns 0 if permission is granted.
+ #
+  - call: "security_kernel_read_file"
+    syscall: false
+    return: true
+    args:
+    - index: 0
+      type: "file"
+    - index: 1
+      type: "int"
+    returnArg:
+      index: 0
+      type: "int"
+    selectors:
+    - matchArgs:
+      - index: 1
+        operator: "Equal"
+        values:
+        - "2"  # READING_MODULE  
+  # SYNOPSIS
+  # int do_init_module(struct module *mod)
+  #     @mod: module information
+  #
+  # DESCRIPTION
+  # Load a kernel module
+  #
+  # RETURN VALUE
+  # Returns 0 if success, >0 if partial success, <0 if failure (https://elixir.bootlin.com/linux/v6.8-rc7/source/kernel/module/main.c#L2504)
+  # 
+  # SYSCALLS
+  #     finit_module(), init_module()
+  # 
+  - call: "do_init_module"
+    syscall: false
+    return: true
+    args:
+    - index: 0
+      type: "module"
+    returnArg:
+      index: 0
+      type: "int"
+  
+  # SYNOPSIS
+  # void free_module(struct module *mod)
+  #      @mod: module information
+  #
+  # DESCRIPTION
+  # Unload a kernel module
+  #
+  # RETURN VALUE
+  # Nothing
+  # 
+  # SYSCALLS
+  #     delete_module()
+  # 
+  - call: "free_module"
+    syscall: false
+    return: false
+    args:
+    - index: 0
+      type: "module"

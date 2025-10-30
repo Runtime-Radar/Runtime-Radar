@@ -1,0 +1,58 @@
+services:
+  mailpit:
+    image: axllent/mailpit:v1.24
+    networks:
+      - local
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    environment:
+      MP_SMTP_AUTH_ALLOW_INSECURE: true
+
+  postgres:
+    image: postgres:17.4
+    networks:
+      - local
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=cs
+      - POSTGRES_PASSWORD=cs
+      - POSTGRES_DB=cs
+
+  notifier:
+    build:
+      context: .
+    image: notifier
+    ports:
+      - "8000:8000"
+      - "9000:9000"
+    environment:
+      - ENCRYPTION_KEY=f5f3c6ac672c0e4ba49a41c96fad2cb4cb4fa2464836cada5a331847099181de
+    command: --postgresAddr=postgres --logLevel=INFO
+    depends_on:
+      - postgres
+    networks:
+      cs:
+        aliases:
+          - notifier
+      local:
+
+  syslog-ng:
+    image: balabit/syslog-ng:4.9.0
+    ports:
+      - 6514:6514/udp
+      - 6601:6601/tcp
+    restart: unless-stopped
+    environment:
+      - LOG_PATH=/var/log/syslog-ng
+    volumes:
+      - ./testdata/syslog/logs:/var/log/syslog-ng # Mount directory for logs
+      - ./testdata/syslog-ng.conf:/etc/syslog-ng/syslog-ng.conf:ro  # Mount the config file
+    networks:
+      - local
+
+networks:
+  local:
+  cs:
+    external: true

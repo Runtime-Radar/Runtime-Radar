@@ -1,0 +1,23 @@
+{
+    "name": "domain-auth",
+    "projectType": "library",
+    "root": "libs/domains/auth",
+    "sourceRoot": "libs/domains/auth/src",
+    "prefix": "runtime-radar",
+    "targets": {
+        "lint": {
+            "executor": "@nx/linter:eslint",
+            "options": {
+                "lintFilePatterns": ["libs/domains/auth/src/**/*.ts", "libs/domains/auth/src/**/*.html"]
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": ["coverage/libs/domains/auth"],
+            "options": {
+                "jestConfig": "libs/domains/auth/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    }
+}

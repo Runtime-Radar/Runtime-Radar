@@ -1,0 +1,38 @@
+{{- if not .Values.existingConfigmap }}
+{{- $tlsEnabled := eq (include "common.tls.enabled" .) "true" }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.configmapName" . }}
+  namespace: {{ include "common.namespace" . | quote }}
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+  {{- with (include "common.annotations" .) }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+data:
+  redis.conf: |-
+    {{- if .Values.configuration }}
+      {{- tpl .Values.configuration $ | nindent 6 }}
+    {{- else }}
+      # Enable AOF https://redis.io/topics/persistence#append-only-file
+      appendonly yes
+      # Disable RDB persistence, AOF persistence already enabled.
+      save ""
+      dir /data
+      {{- range .Values.disableCommands }}
+      rename-command {{ . }} ""
+      {{- end }}
+      {{- if $tlsEnabled }}
+      port 0
+      tls-port {{ .Values.containerPorts.redis }}
+      tls-cert-file {{ include "redis.tlsCert" . }}
+      tls-key-file {{ include "redis.tlsCertKey" . }}
+      tls-ca-cert-file {{ include "redis.tlsCACert" . }}
+      tls-auth-clients {{ ternary "yes" "no" .Values.tls.authClients }}
+      {{- else }}
+      port {{ .Values.containerPorts.redis }}
+      {{- end }}
+    {{- end }}
+{{- end }}

@@ -1,0 +1,55 @@
+:host {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    height: 100%;
+}
+
+.integration-feature-sidepanel-recipient-form {
+    position: relative;
+
+    &-header {
+        display: block;
+        margin-bottom: 16px;
+        padding: 10px;
+        border-radius: 4px;
+        background-color: #f2f5f9; // @todo: replace to koobiq token
+
+        &-icon {
+            display: none;
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            background-position: 0 0;
+            background-size: cover;
+            background-repeat: no-repeat;
+            vertical-align: bottom;
+
+            $icons: 'email', 'syslog', 'webhook';
+            @each $icon in $icons {
+                &.#{$icon} {
+                    display: inline-block;
+                    background-image: url('/assets/images/integration/icon-#{$icon}.svg');
+                }
+            }
+        }
+    }
+
+    &-headers {
+        position: relative;
+
+        &-item {
+            gap: 16px;
+            margin-top: 16px;
+
+            &-key {
+                max-width: 130px;
+            }
+        }
+    }
+
+    &-template-control {
+        min-height: 450px !important;
+        overflow: auto !important;
+    }
+}

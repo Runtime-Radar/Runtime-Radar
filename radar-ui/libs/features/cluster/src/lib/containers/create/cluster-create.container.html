@@ -1,0 +1,61 @@
+<ng-container *transloco="let tCluster; prefix: 'cluster'">
+    <header class="layout-row layout-align-start-center cluster-feature-create-header">
+        <a kbq-link [routerLink]="'..'" [noUnderline]="true" class="layout-margin-right-l" data-testid="cluster-create-back-link">
+            <i kbq-icon="kbq-chevron-left_16"></i>
+        </a>
+        <h1 class="kbq-display-compact cluster-feature-create-header-title">{{ tCluster('Cluster.CreatePage.Header.Title') }}</h1>
+    </header>
+
+    <cs-cluster-feature-stepper-component
+            [step]="step$ | async"
+            [isStepValid]="isStepValid$ | async"
+            (stepChange)="stepChange($event)"
+            (completeChange)="completeChange()">
+        <ng-template #step>
+            <cs-cluster-feature-registry-form-component
+                    class="cluster-feature-create-form cluster-feature-create-form--registry"
+                    [values]="registryForm$ | async"
+                    (formChange)="changeRegistryForm($event)"></cs-cluster-feature-registry-form-component>
+        </ng-template>
+
+        <ng-template #step>
+            <cs-cluster-feature-database-form-component
+                    class="cluster-feature-create-form"
+                    type="clickhouse"
+                    [values]="clickhouseForm$ | async"
+                    [title]="tCluster('Cluster.CreatePage.DataBaseForm.SubHeading.Clickhouse')"
+                    (formChange)="changeClickhouseForm($event)"></cs-cluster-feature-database-form-component>
+            <cs-cluster-feature-database-form-component
+                    class="cluster-feature-create-form"
+                    type="postgres"
+                    [values]="postgresForm$ | async"
+                    [title]="tCluster('Cluster.CreatePage.DataBaseForm.SubHeading.Postgres')"
+                    (formChange)="changePostgresForm($event)"></cs-cluster-feature-database-form-component>
+            <cs-cluster-feature-database-form-component
+                    class="cluster-feature-create-form"
+                    type="redis"
+                    [values]="redisForm$ | async"
+                    [title]="tCluster('Cluster.CreatePage.DataBaseForm.SubHeading.Redis')"
+                    (formChange)="changeRedisForm($event)"></cs-cluster-feature-database-form-component>
+            <cs-cluster-feature-rabbit-form-component
+                    class="cluster-feature-create-form"
+                    [values]="rabbitForm$ | async"
+                    (formChange)="changeRabbitForm($event)"></cs-cluster-feature-rabbit-form-component>
+        </ng-template>
+
+        <ng-template #step>
+            <cs-cluster-feature-ingress-form-component
+                    class="cluster-feature-create-form"
+                    [values]="ingressForm$ | async"
+                    (formChange)="changeIngressForm($event)"></cs-cluster-feature-ingress-form-component>
+        </ng-template>
+
+        <ng-template #step>
+            <cs-cluster-feature-access-form-component
+                    class="cluster-feature-create-form"
+                    [values]="accessForm$ | async"
+                    [centralUrl]="centralUrl$ | async"
+                    (formChange)="changeAccessForm($event)"></cs-cluster-feature-access-form-component>
+        </ng-template>
+    </cs-cluster-feature-stepper-component>
+</ng-container>

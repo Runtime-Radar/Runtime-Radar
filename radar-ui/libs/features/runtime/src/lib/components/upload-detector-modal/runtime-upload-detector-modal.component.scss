@@ -1,0 +1,39 @@
+.runtime-feature-upload-detector-modal {
+    max-height: 100%;
+    padding-top: 8px;
+    padding-bottom: 8px;
+
+    &-table {
+        width: 100%;
+
+        td {
+            vertical-align: middle;
+        }
+
+        &-truncate {
+            display: block;
+            max-width: 220px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+    }
+
+    &-area {
+        min-height: 80px;
+        position: relative;
+        border: 1px dashed #bdc7d1; // @todo: replace to koobiq token
+        border-radius: 4px;
+
+        &-input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            opacity: 0;
+            cursor: pointer;
+        }
+    }
+}

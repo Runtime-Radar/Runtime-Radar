@@ -1,0 +1,39 @@
+<form [formGroup]="form" *transloco="let tIntegration; prefix: 'integration'">
+    <section class="kbq-form__row kbq-form-row_margin">
+        <label for="name" class="kbq-form__label">
+            {{ tIntegration('Integration.CreateForm.Label.Name') }}
+        </label>
+        <kbq-form-field class="kbq-form__control">
+            <input kbqInput
+                   cdkFocusInitial
+                   type="text"
+                   id="name"
+                   formControlName="name"
+                   data-testid="integration-name-input">
+        </kbq-form-field>
+    </section>
+
+    <section class="kbq-form__row kbq-form-row_margin">
+        <h4 class="kbq-subheading layout-margin-no-top layout-margin-no-bottom">
+            {{ tIntegration('Integration.CreateForm.SubTitle.Params') }}
+        </h4>
+    </section>
+
+    <section class="kbq-form__row" *transloco="let tCommon; prefix: 'common'">
+        <label for="address" class="kbq-form__label">
+            {{ tIntegration('Integration.CreateForm.Label.Address') }}
+        </label>
+        <kbq-form-field class="kbq-form__control">
+            <input kbqInput
+                   type="text"
+                   id="address"
+                   formControlName="address"
+                   placeholder="{{ tIntegration('Integration.CreateForm.Placeholder.Address') }}"
+                   data-testid="integration-server-input">
+            <kbq-hint>{{ tIntegration('Integration.CreateForm.Hint.Address') }}</kbq-hint>
+            @if (form.get('address')?.hasError('pattern')) {
+                <kbq-hint color="error">{{ tCommon('Common.Form.Error.Format') }}</kbq-hint>
+            }
+        </kbq-form-field>
+    </section>
+</form>

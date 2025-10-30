@@ -1,0 +1,29 @@
+{{- if and .Values.backup.enabled .Values.backup.cronjob.storage.enabled (not .Values.backup.cronjob.storage.existingClaim) -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "common.fullname" . }}-pgdumpall
+  namespace: {{ include "common.namespace" . | quote }}
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+    app.kubernetes.io/component: pg_dumpall
+  {{- $annotations := include "common.mergeAnnotations" (dict "context" . "value" .Values.backup.cronjob.annotations) | fromYaml }}
+  {{- if .Values.backup.cronjob.storage.resourcePolicy }}
+  {{- $annotations = merge $annotations (dict "helm.sh/resource-policy" .Values.backup.cronjob.storage.resourcePolicy) }}
+  {{- end }}
+  {{- with $annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+  {{- range .Values.backup.cronjob.storage.accessModes }}
+    - {{ . | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.backup.cronjob.storage.size | quote }}
+  {{- with (default .Values.persistence.storageClass (.Values.global).storageClass) }}
+  storageClassName: {{ eq . "-" | ternary "" . | quote }}
+  {{- end }}
+{{- end }}

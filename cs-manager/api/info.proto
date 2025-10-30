@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package info;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "./api";
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Info API";
+    contact: {
+    };
+  };
+};
+
+service InfoController {
+    rpc GetVersion(google.protobuf.Empty) returns (Version) {
+        option (google.api.http) = {
+            get: "/api/v1/info/version"
+        };
+    }
+
+    rpc GetCentralCSURL(google.protobuf.Empty) returns (URL) {
+        option (google.api.http) = {
+            get: "/api/v1/info/central-cs-url"
+        };
+    }
+}
+
+message Version {
+  string version = 1;
+}
+
+message URL {
+  string url = 1;
+}

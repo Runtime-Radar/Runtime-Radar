@@ -1,0 +1,33 @@
+<ng-container *transloco="let tCluster; prefix: 'cluster'">
+    <ng-container *ngrxLet="commandFiles$ as files">
+        <kbq-modal-title class="layout-margin-no-bottom">{{ tCluster('Cluster.DeleteModal.Title.Registered') }}</kbq-modal-title>
+
+        @if (files && files.length) {
+            <kbq-modal-body class="cluster-feature-delete-unregistered-modal">
+                <p class="layout-margin-no-top layout-margin-bottom-l">{{ tCluster('Cluster.DeleteModal.Text.Registered') }}</p>
+                <kbq-code-block
+                        [lineNumbers]="false"
+                        [softWrap]="false"
+                        [filled]="false"
+                        [files]="files"></kbq-code-block>
+            </kbq-modal-body>
+        }
+
+        <kbq-modal-footer>
+            <button kbq-button
+                    kbqStyle="outline"
+                    color="theme-fade"
+                    type="button"
+                    (click)="dispatch(files?.at(0)?.content)"
+                    data-testid="cluster-copy-command-modal-button">
+                {{ tCluster('Cluster.DeleteModal.Button.Copy') }}
+            </button>
+            <button kbq-button
+                    type="button"
+                    (click)="dispatch()"
+                    data-testid="cluster-close-unregistered-modal-button">
+                {{ tCluster('Cluster.DeleteModal.Button.Cancel') }}
+            </button>
+        </kbq-modal-footer>
+    </ng-container>
+</ng-container>

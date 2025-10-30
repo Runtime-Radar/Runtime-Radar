@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.cs.configmapName" . }}
+  namespace: {{ include "common.namespace" . | quote }}
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+  {{- with (include "common.annotations" .) }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+data:
+  CS_VERSION: {{ include "common.cs.csVersion" . | quote }}
+  TLS: {{ include "common.cs.tls.enabled" . | quote }}
+  AUTH: {{ include "common.cs.auth.enabled" . | quote }}
+  IS_CHILD_CLUSTER: {{ include "common.cs.isChildCluster" . | quote }}
+  OWN_CS_URL: {{ include "common.cs.ownCsUrl" . | quote }}
+  {{- $centralCsUrl := include "common.cs.centralCsUrl" . }}
+  CENTRAL_CS_URL: {{ $centralCsUrl | quote }}
+  CENTRAL_CS_TLS_CHECK_CERT: {{ .Values.tls.verify | quote }}
+  CENTRAL_CS_HOSTNAME: {{ $centralCsUrl | urlParse | pluck "hostname" | first | quote }}

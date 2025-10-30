@@ -1,0 +1,166 @@
+<ng-container *transloco="let tToken; prefix: 'token'">
+    <kbq-sidepanel-header [closeable]="true">{{ tToken('Token.CreateForm.Title.Create') }}</kbq-sidepanel-header>
+
+    <kbq-sidepanel-body>
+        <form [formGroup]="form" class="kbq-form-vertical">
+            <section class="kbq-form__row kbq-form-row_margin">
+                <label for="name" class="kbq-form__label">
+                    {{ tToken('Token.CreateForm.Label.Name') }}
+                </label>
+                <kbq-form-field class="kbq-form__control">
+                    <input kbqInput
+                           cdkFocusInitial
+                           type="text"
+                           id="name"
+                           formControlName="name"
+                           data-testid="token-name-input">
+                </kbq-form-field>
+            </section>
+
+            <section class="kbq-form__row kbq-form-row_margin">
+                <label for="preset" class="kbq-form__label">
+                    {{ tToken('Token.CreateForm.Label.ExpiryDate') }}
+                </label>
+                <div class="layout-row layout-align-start-start">
+                    <kbq-form-field class="kbq-form__control token-feature-sidepanel-form-preset-field">
+                        <kbq-select id="preset"
+                                    formControlName="preset"
+                                    data-testid="token-preset-select">
+                            @for (option of tokenExpiryDatePresetOptions; track option.id) {
+                                <kbq-option [value]="option.id"
+                                            [attr.data-testid]="tToken(option.localizationKey)">
+                                    {{ tToken(option.localizationKey) }}
+                                </kbq-option>
+                            }
+                        </kbq-select>
+                    </kbq-form-field>
+
+                    @if ((expiryDatePreset$ | async) !== tokenExpiryDatePreset.INDEFINITELY) {
+                        <kbq-form-field class="kbq-form__control flex layout-margin-left-l" (click)="datepicker.toggle()">
+                            <input type="text"
+                                   id="date"
+                                   formControlName="date"
+                                   [kbqDatepicker]="datepicker"
+                                   data-testid="token-date-input">
+                            <i kbqPrefix kbq-icon="kbq-calendar-o_16"></i>
+                            <kbq-datepicker #datepicker [minDate]="minDate"></kbq-datepicker>
+                            @if (form.get('date')?.value; as date) {
+                                <kbq-hint class="layout-padding-left-s">
+                                    {{ date.toJSDate().toISOString() | dateFormatter: dateTimeFullFormat }}
+                                </kbq-hint>
+                            }
+                        </kbq-form-field>
+                    }
+                </div>
+            </section>
+
+            <section class="kbq-form__row kbq-form-row_margin">
+                <h4 class="kbq-subheading layout-margin-no-top layout-margin-no-bottom">
+                    {{ tToken('Token.CreateForm.SubTitle.Permissions') }}
+                </h4>
+            </section>
+
+            <form [formGroup]="permissionsFormGroup">
+                <kbq-alert [alertStyle]="'colored'"
+                           [alertColor]="alertColors.Contrast"
+                           [compact]="true"
+                           class="layout-margin-bottom-m">
+                    <i kbq-icon="kbq-exclamation-triangle_16"></i>
+                    {{ tToken('Token.CreateForm.Text.Permissions') }}
+                </kbq-alert>
+
+                <kbq-accordion class="token-feature-sidepanel-form-accordion" [type]="'multiple'" [variant]="'hugSpaceBetween'">
+                    @for (subform of permissionsFormGroup.controls | keyvalue; track subform.key) {
+                        <kbq-accordion-item expanded>
+                            <button type="button"
+                                    kbq-accordion-trigger
+                                    class="token-feature-sidepanel-form-accordion-label">
+                                @if (subform.key === permissionName.EVENTS) {
+                                    {{ tToken('Token.CreateForm.EventPermissions.SubTitle.Events') }}
+                                } @else if (subform.key === permissionName.RULES) {
+                                    {{ tToken('Token.CreateForm.RulePermissions.SubTitle.Rules') }}
+                                }
+                            </button>
+                            <kbq-accordion-content class="token-feature-sidepanel-form-accordion-content">
+                                <form class="layout-column token-feature-sidepanel-form-accordion-permission"
+                                      [formGroupName]="subform.key"
+                                      [attr.data-testid]="subform.key"
+                                      [id]="subform.key">
+                                    @if (subform.value.value[tokenPermissionType.CREATE] !== undefined) {
+                                        <section class="kbq-form__row">
+                                            <kbq-toggle formControlName="canCreate" data-testid="token-permissions-create-toggle">
+                                                {{ tToken('Token.CreateForm.RulePermissions.Label.CanCreate') }}
+                                                @if (!props.permissions[subform.key].has(permissionType.CREATE)) {
+                                                    <div class="kbq-text-compact cs-text-gray">{{ tToken('Token.CreateForm.Text.Unavailable') }}</div>
+                                                }
+                                            </kbq-toggle>
+                                        </section>
+                                    }
+
+                                    @if (subform.value.value[tokenPermissionType.READ] !== undefined) {
+                                        <section class="kbq-form__row">
+                                            <kbq-toggle formControlName="canRead" data-testid="token-permissions-read-toggle">
+                                                @if (subform.key === permissionName.EVENTS) {
+                                                    {{ tToken('Token.CreateForm.EventPermissions.Label.CanRead') }}
+                                                } @else if (subform.key === permissionName.RULES) {
+                                                    {{ tToken('Token.CreateForm.RulePermissions.Label.CanRead') }}
+                                                }
+                                                @if (!props.permissions[subform.key].has(permissionType.READ)) {
+                                                    <div class="kbq-text-compact cs-text-gray">{{ tToken('Token.CreateForm.Text.Unavailable') }}</div>
+                                                }
+                                            </kbq-toggle>
+                                        </section>
+                                    }
+
+                                    @if (subform.value.value[tokenPermissionType.UPDATE] !== undefined) {
+                                        <section class="kbq-form__row">
+                                            <kbq-toggle formControlName="canUpdate" data-testid="token-permissions-update-toggle">
+                                                {{ tToken('Token.CreateForm.RulePermissions.Label.CanUpdate') }}
+                                                @if (!props.permissions[subform.key].has(permissionType.UPDATE)) {
+                                                    <div class="kbq-text-compact cs-text-gray">{{ tToken('Token.CreateForm.Text.Unavailable') }}</div>
+                                                }
+                                            </kbq-toggle>
+                                        </section>
+                                    }
+
+                                    @if (subform.value.value[tokenPermissionType.DELETE] !== undefined) {
+                                        <section class="kbq-form__row">
+                                            <kbq-toggle formControlName="canDelete" data-testid="token-permissions-delete-toggle">
+                                                {{ tToken('Token.CreateForm.RulePermissions.Label.CanDelete') }}
+                                                @if (!props.permissions[subform.key].has(permissionType.DELETE)) {
+                                                    <div class="kbq-text-compact cs-text-gray">{{ tToken('Token.CreateForm.Text.Unavailable') }}</div>
+                                                }
+                                            </kbq-toggle>
+                                        </section>
+                                    }
+                                </form>
+                            </kbq-accordion-content>
+                        </kbq-accordion-item>
+                    }
+                </kbq-accordion>
+            </form>
+        </form>
+    </kbq-sidepanel-body>
+
+    <kbq-sidepanel-footer>
+        <kbq-sidepanel-actions align="left">
+            <button kbq-button
+                    kbqStyle="outline"
+                    color="theme-fade"
+                    type="button"
+                    [disabled]="(isFormValid$ | async) === false"
+                    (click)="confirm()"
+                    data-testid="token-confirm-button">
+                {{ tToken('Token.CreateForm.Button.Confirm') }}
+            </button>
+        </kbq-sidepanel-actions>
+        <kbq-sidepanel-actions align="right">
+            <button kbq-button
+                    type="button"
+                    (click)="cancel()"
+                    data-testid="token-cancel-button">
+                {{ tToken('Token.CreateForm.Button.Cancel') }}
+            </button>
+        </kbq-sidepanel-actions>
+    </kbq-sidepanel-footer>
+</ng-container>

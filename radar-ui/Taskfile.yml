@@ -1,0 +1,10 @@
+version: '3'
+
+env:
+  DOCKER_BUILDKIT: 1
+
+tasks:
+  build:
+    cmds:
+      - rm -rf ../reverse-proxy/build && mkdir ../reverse-proxy/build
+      - docker build --target exporter -o ../reverse-proxy/build .

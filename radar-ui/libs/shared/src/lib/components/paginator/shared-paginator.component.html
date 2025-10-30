@@ -1,0 +1,55 @@
+@if (isShowSinglePagination || count > pageSize) {
+    <ul class="layout-row layout-align-start-center shared-paginator">
+        @if (isShowFirstLastButtons) {
+            <li class="shared-paginator-item">
+                <button kbq-button
+                        kbqStyle="transparent"
+                        color="contrast"
+                        type="button"
+                        id="paginator-prev-button"
+                        class="kbq-button-icon shared-paginator-item-button"
+                        [disabled]="!pageActiveIndex"
+                        (click)="prev()"
+                        [attr.data-testid]="testLocator + '-paginator-prev-button'">
+                    <i kbq-icon="kbq-chevron-left_16"></i>
+                </button>
+            </li>
+        }
+
+        @for (iterator of pagesTemplateIterator; track $index) {
+            <li class="shared-paginator-item">
+                @if (iterator === separator) {
+                    <span class="shared-paginator-item-separator">...</span>
+                } @else {
+                    <button kbq-button
+                            kbqStyle="transparent"
+                            color="contrast"
+                            type="button"
+                            id="paginator-number-button-{{ iterator + 1}}"
+                            class="shared-paginator-item-button"
+                            [ngClass]="{ 'active': iterator === pageActiveIndex }"
+                            (click)="navigate(iterator)"
+                            [attr.data-testid]="testLocator + '-paginator-number-button-' + (iterator + 1)">
+                        {{ iterator + 1 }}
+                    </button>
+                }
+            </li>
+        }
+
+        @if (isShowFirstLastButtons) {
+            <li class="shared-paginator-item">
+                <button kbq-button
+                        kbqStyle="transparent"
+                        color="contrast"
+                        type="button"
+                        id="paginator-next-button"
+                        class="kbq-button-icon shared-paginator-item-button"
+                        [disabled]="pageActiveIndex === pageLastIndex"
+                        (click)="next()"
+                        [attr.data-testid]="testLocator + '-paginator-next-button'">
+                    <i kbq-icon="kbq-chevron-right_16"></i>
+                </button>
+            </li>
+        }
+    </ul>
+}

@@ -1,0 +1,57 @@
+# More info on config here: https://golangci-lint.run/usage/configuration/#config-file
+run:
+  timeout: 2m
+  issues-exit-code: 1
+  tests: true
+  skip-dirs:
+    - bin
+    - vendor
+    - tmp
+  skip-files:
+    - \.pb\.go$
+    - \.pb\.gw\.go$
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+
+linters-settings:
+  govet:
+    check-shadowing: true
+  dupl:
+    threshold: 100
+  goconst:
+    min-len:         2
+    min-occurrences: 2
+
+linters:
+  disable-all: true
+  enable:
+    # - dupl
+    # - errcheck
+    - goconst
+    - goimports
+    - gci
+    - govet
+    - ineffassign
+    # - megacheck (staticcheck + gosimple + unused in one linter)
+    - revive
+    - typecheck
+    - unused # will be used instead of varcheck + deadcode + structcheck. More info https://github.com/golangci/golangci-lint/issues/1841
+    - exptostd
+issues:
+  exclude-use-default: true
+  exclude:
+    - "func.*is unused"
+    - "composites.*unkeyed"
+    - declaration of "(err|ctx)" shadows
+
+  # exclude-rules:
+  #   - linters:
+  #     - unused
+  #     text: "is unused"
+
+  #   - linters:
+  #     - govet
+  #     text: "unkeyed"

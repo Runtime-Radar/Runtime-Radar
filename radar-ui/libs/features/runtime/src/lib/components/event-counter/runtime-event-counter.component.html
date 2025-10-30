@@ -1,0 +1,8 @@
+<ng-container *transloco="let tRuntime; prefix: 'runtime'">
+    <ng-container *ngrxLet="count$ as count">
+        <div class="kbq-text-compact layout-column layout-align-center-end">
+            <span class="cs-text-gray">{{ tRuntime('Runtime.EventsPage.Counter.Text.NewEvents') }}</span>
+            {{ count ? '+' : '' }}{{ tRuntime(isPerSeconds ? 'Runtime.EventsPage.Counter.Text.PerSeconds' : 'Runtime.EventsPage.Counter.Text.PerHours', { count: count >= thousandPlaceLimit ? (count | numberFormatter) : count }) }}
+        </div>
+    </ng-container>
+</ng-container>

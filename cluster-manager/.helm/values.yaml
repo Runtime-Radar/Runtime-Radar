@@ -1,0 +1,92 @@
+image:
+  registry: ghcr.io/runtime-radar
+  repository: cluster-manager
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+containerPorts:
+  grpc: 8000
+  http: 9000
+  instrumentation: 9090
+service:
+  ports:
+    grpc: 8000
+    http: 9000
+containerSecurityContext:
+  enabled: true
+  seLinuxOptions: {}
+  privileged: false
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  seccompProfile:
+    type: "RuntimeDefault"
+podSecurityContext:
+  enabled: true
+  fsGroupChangePolicy: Always
+  sysctls: []
+  supplementalGroups: []
+env:
+  - name: ADMINISTRATOR_USERNAME
+    valueFrom:
+      secretKeyRef:
+        name: auth-center-account
+        key: username
+  - name: ADMINISTRATOR_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: auth-center-account
+        key: password
+  - name: PUBLIC_ACCESS_TOKEN_SALT_KEY
+    valueFrom:
+      secretKeyRef:
+        name: cs-keys
+        key: publicAccessTokenSalt
+encryption:
+  enabled: true
+postgresql:
+  enabled: true
+serviceAccount:
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+resourcePreset: nano
+resources: {}
+# limits:
+#   cpu: 300m
+#   memory: 1Gi
+#   ephemeral-storage: 10Gi
+# requests:
+#   cpu: 150m
+#   memory: 512Mi
+#   ephemeral-storage: 1Gi
+livenessProbe:
+  enabled: true
+  httpGet:
+    path: /live
+    scheme: HTTP
+    port: instrumentation
+  periodSeconds: 600
+  successThreshold: 1
+  failureThreshold: 2
+readinessProbe:
+  enabled: true
+  httpGet:
+    path: /ready
+    scheme: HTTP
+    port: instrumentation
+  periodSeconds: 360
+  successThreshold: 1
+  failureThreshold: 3
+startupProbe:
+  enabled: true
+  httpGet:
+    path: /ready
+    scheme: HTTP
+    port: instrumentation
+  initialDelaySeconds: 1
+  periodSeconds: 3
+  successThreshold: 1
+  failureThreshold: 3

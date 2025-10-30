@@ -1,0 +1,11 @@
+apiVersion: v2
+appVersion: 4.1.1
+dependencies:
+  - name: common
+    repository: file://../common
+    version: "0.x.x"
+description:
+  RabbitMQ is an open source general-purpose message broker that is designed
+  for consistent, highly-available messaging scenarios (both synchronous and asynchronous).
+name: rabbitmq
+version: 0.0.1

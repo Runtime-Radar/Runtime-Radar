@@ -1,0 +1,23 @@
+{
+    "name": "feature-token",
+    "projectType": "library",
+    "root": "libs/features/token",
+    "sourceRoot": "libs/features/token/src",
+    "prefix": "runtime-radar",
+    "targets": {
+        "lint": {
+            "executor": "@nx/linter:eslint",
+            "options": {
+                "lintFilePatterns": ["libs/features/token/src/**/*.ts", "libs/features/token/src/**/*.html"]
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": ["coverage/libs/features/token"],
+            "options": {
+                "jestConfig": "libs/features/token/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    }
+}

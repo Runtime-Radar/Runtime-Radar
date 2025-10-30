@@ -1,0 +1,38 @@
+:host {
+    display: block;
+}
+
+.runtime-feature-filter-popover {
+    min-width: 350px;
+    max-height: 455px;
+    padding: 1px;
+    overflow: auto;
+
+    &-reset-icon {
+        display: inline-block;
+        position: relative;
+        z-index: 1;
+        margin: 0 0 0 4px;
+        padding: 0;
+        border: 0;
+        background: none;
+        cursor: pointer;
+    }
+
+    &-row {
+        margin-top: 16px;
+
+        &-field {
+            max-width: 350px;
+
+            &-removed {
+                text-decoration: line-through;
+            }
+        }
+
+        &-type-icon {
+            margin-right: 4px;
+            vertical-align: text-bottom;
+        }
+    }
+}

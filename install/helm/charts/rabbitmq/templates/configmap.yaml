@@ -1,0 +1,36 @@
+{{- if not .Values.existingSecret }}
+{{- $tlsEnabled := eq (include "common.tls.enabled" .) "true" }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.configmapName" . }}
+  namespace: {{ include "common.namespace" . | quote }}
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+  {{- with (include "common.annotations" .) }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+data:
+  rabbitmq.conf: |-
+    {{- if .Values.configuration }}
+      {{- tpl .Values.configuration $ | nindent 6 }}
+    {{- else }}
+      ## Username and password
+      default_user = {{ .Values.auth.username }}
+      # queue master locator
+      queue_master_locator = min-masters
+      #default_vhost = {{ .Release.Namespace }}-vhost
+      #disk_free_limit.absolute = 50MB
+      {{- if (include "common.metrics.enabled" .) }}
+      ## Prometheus metrics
+      ##
+      prometheus.tcp.port = {{ .Values.containerPorts.metrics }}
+      prometheus.return_per_object_metrics = true
+      {{- end }}
+    {{- end }}
+  {{- with (include "rabbitmq.plugins" .) }}
+  enabled_plugins: |-
+    {{- printf "[%s]." . | nindent 6 }}
+  {{- end }}
+{{- end }}

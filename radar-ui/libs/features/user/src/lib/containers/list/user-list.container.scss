@@ -1,0 +1,24 @@
+:host {
+    display: block;
+    padding: 32px;
+}
+
+.user-feature-list {
+    &-title {
+        margin: 0;
+    }
+
+    &-table {
+        width: 100%;
+        margin-top: 32px;
+
+        td {
+            vertical-align: middle;
+        }
+
+        &-row-disabled td,
+        &-row-highlight td {
+            color: #8C99A5; // @todo: replace to koobiq token
+        }
+    }
+}

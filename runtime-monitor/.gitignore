@@ -1,0 +1,13 @@
+# .vscode
+.idea
+# .task
+/.task/checksum/tools
+*.exe
+/bin
+/cmd/runtime-monitor/test.go
+/cmd/runtime-monitor/tracingpolicy
+/cmd/runtime-monitor/runtime-monitor
+
+# helm dependencies
+.helm/charts
+.helm/Chart.lock

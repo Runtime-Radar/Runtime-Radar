@@ -1,0 +1,99 @@
+:host {
+    display: block;
+}
+
+.integration-feature-collapse {
+    &-title {
+        margin: 0 0 8px 0;
+        line-height: 24px;
+
+        &::before {
+            display: none;
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            background-position: 0 0;
+            background-size: cover;
+            background-repeat: no-repeat;
+            vertical-align: bottom;
+            content: '';
+        }
+
+        $icons: 'email', 'syslog', 'webhook';
+        @each $icon in $icons {
+            &.#{$icon}::before {
+                display: inline-block;
+                background-image: url('/assets/images/integration/icon-#{$icon}.svg');
+            }
+        }
+    }
+
+    &-container {
+        border: 1px solid #d7dee4; // @todo: replace to koobiq token
+        box-shadow: 0px 1px 6px rgba(33, 33, 33, 0.06);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    &-card {
+        position: relative;
+
+        &:not(:first-child) {
+            border-top: 1px solid #d7dee4; // @todo: replace to koobiq token
+        }
+
+        &-action {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1;
+        }
+
+        &-header {
+            width: 100%;
+            margin: 0;
+            padding: 16px;
+            padding-right: 84px;
+            text-align: left;
+            border: 0;
+            background: none;
+
+            &:hover,
+            &:focus {
+                background-color: rgba(0, 0, 0, 0.05); // @todo: replace to koobiq token
+                cursor: pointer;
+            }
+
+            &:active {
+                background-color: rgba(0, 0, 0, 0.1); // @todo: replace to koobiq token
+            }
+
+            &-title {
+                margin: 0 0 0 12px;
+
+                &-counter {
+                    margin-left: 4px;
+                    color: #0374eb; // @todo: replace to koobiq token
+                }
+
+                &-caption {
+                    line-height: 18px;
+
+                    &::before {
+                        margin: 0 4px;
+                        content: '·';
+                    }
+                }
+            }
+        }
+
+        &-body {
+            padding: 16px;
+            padding-left: 44px;
+
+            &-table {
+                width: 100%;
+            }
+        }
+    }
+}

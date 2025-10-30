@@ -1,0 +1,248 @@
+<ng-container *transloco="let tIntegration; prefix: 'integration'">
+    <kbq-sidepanel-header [closeable]="true">
+        {{ props.isEdit ? tIntegration('Integration.EditRecipientForm.Title.Edit') : tIntegration('Integration.RecipientForm.Title.Create') }}
+    </kbq-sidepanel-header>
+
+    <kbq-sidepanel-body class="integration-feature-sidepanel-recipient-form"
+                        *transloco="let tCommon; prefix: 'common'">
+        <form [formGroup]="form" class="kbq-form-vertical">
+            @if (props.integration) {
+                <section class="kbq-text-compact integration-feature-sidepanel-recipient-form-header">
+                    <i class="integration-feature-sidepanel-recipient-form-header-icon"
+                       [ngClass]="props.integration.type"></i>
+                    <span>{{ tIntegration('Integration.EditRecipientForm.Text.Type', {
+                        type: tIntegration(props.integration.type | integrationTypeLocalization),
+                        name: props.integration.name
+                    }) }}</span>
+                    @if (props.integration.type === integrationType.EMAIL) {
+                        <span class="cs-text-gray"> · {{ props.integration.email.server }}</span>
+                    } @else if (props.integration.type === integrationType.SYSLOG) {
+                        <span class="cs-text-gray"> · {{ props.integration.syslog.address }}</span>
+                    } @else if (props.integration.type === integrationType.WEBHOOK) {
+                        <span class="cs-text-gray"> · {{ props.integration.webhook.url }}</span>
+                    }
+                </section>
+            }
+
+            <section class="kbq-form__row kbq-form-row_margin">
+                <label for="name" class="kbq-form__label">
+                    {{ tIntegration('Integration.RecipientForm.Label.Name') }}
+                </label>
+                <kbq-form-field class="kbq-form__control">
+                    <input kbqInput
+                           cdkFocusInitial
+                           type="text"
+                           id="name"
+                           formControlName="name"
+                           data-testid="integration-recipient-name-input">
+                    @if (form.get('name')?.invalid) {
+                        <kbq-hint color="error">{{ tCommon('Common.Form.Error.Format') }}</kbq-hint>
+                    }
+                </kbq-form-field>
+            </section>
+
+            @if (props.integration.type === integrationType.EMAIL) {
+                <section class="kbq-form__row kbq-form-row_margin">
+                    <label for="recipients" class="kbq-form__label">
+                        {{ tIntegration('Integration.RecipientForm.Label.Recipients') }}
+                    </label>
+                    <kbq-form-field
+                            class="kbq-form__control"
+                            [ngClass]="{ 'ng-invalid': form.get('recipients')?.invalid && form.value.recipients?.length }">
+                        <kbq-tag-list #recipientRef data-testid="integration-recipient-recipients-tag-list">
+                            @for (recipient of form.value.recipients; track i; let i = $index) {
+                                <kbq-tag [value]="recipient"
+                                         (removed)="removeRecipient(i)">
+                                    {{ recipient }} <i kbq-icon="kbq-xmark-s_16" kbqTagRemove [attr.data-testid]="recipient"></i>
+                                </kbq-tag>
+                            }
+                            <input id="recipients"
+                                   [kbqTagInputFor]="recipientRef"
+                                   [kbqTagInputSeparatorKeyCodes]="separatorKeyCodes"
+                                   (kbqTagInputTokenEnd)="addRecipient($event)"
+                                   data-testid="integration-recipient-recipients-input">
+                        </kbq-tag-list>
+                        @if (form.get('recipients')?.invalid && form.value.recipients?.length) {
+                            <kbq-hint color="error">{{ tCommon('Common.Form.Error.Format') }}</kbq-hint>
+                        }
+                    </kbq-form-field>
+                </section>
+            }
+
+            <section class="kbq-form__row kbq-form-row_margin">
+                <h4 class="kbq-subheading layout-margin-no-top layout-margin-no-bottom">
+                    {{ tIntegration('Integration.RecipientForm.SubTitle.Params') }}
+                </h4>
+            </section>
+
+            <section class="kbq-form__row kbq-form-row_margin">
+                <label for="clusterName" class="kbq-form__label">
+                    {{ tIntegration('Integration.RecipientForm.Label.ClusterName') }}
+                </label>
+                <kbq-form-field class="kbq-form__control">
+                    <input kbqInput
+                           type="text"
+                           id="clusterName"
+                           formControlName="clusterName"
+                           data-testid="integration-recipient-cluster-name-input">
+                </kbq-form-field>
+            </section>
+
+            <section class="kbq-form__row kbq-form-row_margin">
+                <label for="centralUrl" class="kbq-form__label">
+                    {{ tIntegration('Integration.RecipientForm.Label.CentralUrl') }}
+                </label>
+                <kbq-form-field class="kbq-form__control">
+                    <input kbqInput
+                           type="text"
+                           id="centralUrl"
+                           formControlName="centralUrl"
+                           placeholder="{{ tIntegration('Integration.RecipientForm.Placeholder.CentralUrl') }}"
+                           data-testid="integration-recipient-central-url-input">
+                    @if (form.get('centralUrl')?.hasError('pattern')) {
+                        <kbq-hint color="error">{{ tCommon('Common.Form.Error.Format') }}</kbq-hint>
+                    }
+                </kbq-form-field>
+            </section>
+
+            @if (props.integration.type === integrationType.EMAIL) {
+                <section class="kbq-form__row kbq-form-row_margin">
+                    <label for="subjectTemplate" class="kbq-form__label">
+                        {{ tIntegration('Integration.RecipientForm.Label.Subject') }}
+                    </label>
+                    <kbq-form-field class="kbq-form__control">
+                        <input kbqInput
+                               type="text"
+                               id="subjectTemplate"
+                               formControlName="subjectTemplate"
+                               data-testid="integration-recipient-subject-template-input">
+                    </kbq-form-field>
+                </section>
+            }
+
+            @if (props.integration.type === integrationType.WEBHOOK) {
+                <section class="kbq-form__row kbq-form-row_margin">
+                    <label for="path" class="kbq-form__label">
+                        {{ tIntegration('Integration.RecipientForm.Label.Path') }}
+                    </label>
+                    <kbq-form-field class="kbq-form__control">
+                        <input kbqInput
+                               type="text"
+                               id="path"
+                               formControlName="path"
+                               placeholder="{{ tIntegration('Integration.RecipientForm.Placeholder.Path') }}"
+                               data-testid="integration-recipient-path-input">
+                    </kbq-form-field>
+                </section>
+            }
+
+            <section class="kbq-form__row kbq-form-row_margin">
+                <kbq-checkbox formControlName="isTemplateDefault"
+                              data-testid="integration-recipient-template-default-checkbox">
+                    {{ tIntegration('Integration.RecipientForm.Label.DefaultNotification') }}
+                </kbq-checkbox>
+            </section>
+
+            @if ((isTemplateDefault$ | async) === false) {
+                <section class="kbq-form__row" [ngClass]="{ 'kbq-form-row_margin': props.integration.type === integrationType.WEBHOOK }">
+                    <label for="template" class="kbq-form__label">
+                        {{ tIntegration('Integration.RecipientForm.Label.Template') }}
+                    </label>
+                    <kbq-form-field class="kbq-form__control">
+                        <textarea kbqTextarea
+                                  id="template"
+                                  formControlName="template"
+                                  class="integration-feature-sidepanel-recipient-form-template-control"
+                                  data-testid="integration-recipient-template-textarea"></textarea>
+                    </kbq-form-field>
+                </section>
+            }
+
+            @if (props.integration.type === integrationType.WEBHOOK) {
+                <section class="kbq-form__row">
+                    <h4 class="kbq-subheading layout-margin-no-top layout-margin-no-bottom">
+                        {{ tIntegration('Integration.RecipientForm.SubTitle.Headers') }}
+                    </h4>
+                </section>
+
+                <form [formGroup]="headerFormGroup" class="integration-feature-sidepanel-recipient-form-headers">
+                    <section class="layout-column" data-testid="integration-recipient-header-container">
+                        @for (subform of headerFormGroup.controls | keyvalue; track subform.key) {
+                            <form class="layout-row layout-align-space-between-end integration-feature-sidepanel-recipient-form-headers-item"
+                                  [formGroupName]="subform.key"
+                                  id="{{ subform.key }}"
+                                  [attr.data-testid]="subform.key">
+                                <section class="flex kbq-form__row integration-feature-sidepanel-recipient-form-headers-item-key">
+                                    <label for="key" class="kbq-form__label">
+                                        {{ tIntegration('Integration.RecipientForm.Label.HeaderKey') }}
+                                    </label>
+                                    <kbq-form-field class="kbq-form__control">
+                                        <input kbqInput
+                                               type="text"
+                                               id="key"
+                                               formControlName="key"
+                                               data-testid="integration-recipient-header-container-key-input">
+                                    </kbq-form-field>
+                                </section>
+
+                                <section class="flex kbq-form__row">
+                                    <label for="value" class="kbq-form__label">
+                                        {{ tIntegration('Integration.RecipientForm.Label.HeaderValue') }}
+                                    </label>
+                                    <kbq-form-field class="kbq-form__control">
+                                        <input kbqInput
+                                               type="text"
+                                               id="value"
+                                               formControlName="value"
+                                               data-testid="integration-recipient-header-container-value-input">
+                                    </kbq-form-field>
+                                </section>
+
+                                <button kbq-button
+                                        kbqStyle="transparent"
+                                        color="contrast"
+                                        type="button"
+                                        class="kbq-button-icon"
+                                        [disabled]="headerFormGroup.controls[subform.key].get('value')?.disabled"
+                                        (click)="removeHeaderItem(subform.key)"
+                                        data-testid="integration-recipient-header-container-remove-button">
+                                    <i kbq-icon="kbq-trash_16"></i>
+                                </button>
+                            </form>
+                        }
+                    </section>
+
+                    <button kbq-button
+                            type="button"
+                            class="layout-margin-top-l"
+                            (click)="addHeaderItem()"
+                            data-testid="integration-recipient-header-container-add-button">
+                        {{ tIntegration('Integration.RecipientForm.Button.Insert') }}
+                    </button>
+                </form>
+            }
+        </form>
+    </kbq-sidepanel-body>
+
+    <kbq-sidepanel-footer>
+        <kbq-sidepanel-actions align="left" *ngrxLet="isFormValid$ as isFormValid">
+            <button kbq-button
+                    kbqStyle="outline"
+                    color="theme-fade"
+                    type="button"
+                    [disabled]="!isFormValid"
+                    (click)="confirm()"
+                    data-testid="integration-recipient-confirm-button">
+                {{ props.isEdit ? tIntegration('Integration.EditRecipientForm.Button.Confirm') : tIntegration('Integration.RecipientForm.Button.Confirm') }}
+            </button>
+        </kbq-sidepanel-actions>
+        <kbq-sidepanel-actions align="right">
+            <button kbq-button
+                    type="button"
+                    (click)="cancel()"
+                    data-testid="integration-recipient-cancel-button">
+                {{ tIntegration('Integration.RecipientForm.Button.Cancel') }}
+            </button>
+        </kbq-sidepanel-actions>
+    </kbq-sidepanel-footer>
+</ng-container>

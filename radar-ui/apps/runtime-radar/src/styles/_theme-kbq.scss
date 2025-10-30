@@ -1,0 +1,27 @@
+@use 'sass:map';
+
+@use '../../../../node_modules/@koobiq/components' as kbqComponents;
+@use '../../../../node_modules/@koobiq/components/core/styles/visual' as kbqVisual;
+@use '../../../../node_modules/@koobiq/components/core/styles/typography' as kbqTypography;
+@use '../../../../node_modules/@koobiq/components/core/styles/koobiq-theme' as kbqTheme;
+@use '../../../../node_modules/@koobiq/icons/fonts/kbq-icons.css';
+@use '../../../../node_modules/@koobiq/design-tokens/web/css-tokens.css';
+
+@include kbqComponents.kbq-core();
+@include kbqVisual.body-html();
+@include kbqVisual.layouts-for-breakpoint();
+
+@mixin app-typography($tokens, $config, $md-config) {
+    @include kbqTypography.kbq-typography-level-to-styles($config, text-normal);
+    @include kbqTheme.koobiq-typography($tokens, $config, $md-config);
+}
+
+@mixin app-theme($theme, $typography) {
+    $background: map.get($theme, background);
+    $foreground: map.get($theme, foreground);
+
+    background: kbqComponents.kbq-color($background, bg);
+    color: kbqComponents.kbq-color($foreground, contrast);
+
+    @include kbqTheme.koobiq-theme($theme);
+}

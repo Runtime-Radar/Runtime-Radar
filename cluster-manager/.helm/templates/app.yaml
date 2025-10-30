@@ -1,0 +1,6 @@
+{{- if ne (include "common.cs.isChildCluster" .) "true" }}
+---
+{{ include "common.cs.deployment" . }}
+---
+{{ include "common.cs.service" . }}
+{{- end }}

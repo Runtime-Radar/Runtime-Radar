@@ -1,0 +1,88 @@
+<ng-container *transloco="let tRuntime; prefix: 'runtime'">
+    <button kbq-button
+            kbqPopover
+            type="button"
+            #kbqPopover="kbqPopover"
+            [kbqPopoverContent]="popoverContent"
+            [kbqPopoverFooter]="popoverFooter"
+            data-testid="runtime-context-popover-open-button">
+        <i kbq-icon="kbq-branch_16"></i>
+        <span>{{ tRuntime('Runtime.EventsPage.Filter.Button.Context') }}</span>
+        @if (context?.context) {
+            <span>: {{ tRuntime(context?.context | runtimeContextLocalization) }}</span>
+            <button type="button"
+                    class="runtime-feature-context-popover-reset-icon"
+                    (click)="reset(); $event.stopPropagation()"
+                    data-testid="runtime-context-popover-reset-button">
+                <i kbq-icon="kbq-xmark-s_16"></i>
+            </button>
+        }
+    </button>
+
+    <ng-template #popoverContent>
+        @if (eventId) {
+            <span class="runtime-feature-context-popover-exec-id">
+                {{ tRuntime('Runtime.EventsPage.Filter.ContextPopover.Label.Event', { id: eventId }) }}
+            </span>
+            <kbq-divider class="layout-margin-top-l layout-margin-bottom-l"></kbq-divider>
+            <section class="kbq-form__row">
+                <kbq-radio-group
+                        class="layout-column runtime-feature-context-popover-radio-group"
+                        [(ngModel)]="contextValue"
+                        data-testid="runtime-context-popover-radio-group">
+                    @for (option of runtimeContextOptions; track option.id) {
+                        <kbq-radio-button
+                                [value]="option.id"
+                                [attr.data-testid]="tRuntime(option.localizationKey)">
+                            {{ tRuntime(option.localizationKey) }}
+                        </kbq-radio-button>
+                    }
+                </kbq-radio-group>
+            </section>
+        } @else {
+            <transloco key="runtime.Runtime.EventsPage.Filter.ContextPopover.Hint.Event" [params]="{ template: emptyContextTemplate }"></transloco>
+            <ng-template #emptyContextTemplate>
+                <span class="runtime-feature-context-popover-hint">
+                    <i kbq-icon="kbq-branch_16"></i>
+                    <span id="cs-transloco-template"></span>
+                </span>
+            </ng-template>
+        }
+    </ng-template>
+
+    <ng-template #popoverFooter>
+        <div class="layout-row layout-align-end-center"
+             [ngClass]="{ 'layout-align-space-between-center': eventId }">
+            @if (eventId) {
+                <button kbq-button
+                        type="button"
+                        (click)="reset()"
+                        data-testid="runtime-context-popover-reset-button">
+                    {{ tRuntime('Runtime.EventsPage.Filter.Popover.Button.Reset') }}
+                </button>
+            }
+
+            <div class="layout-row layout-align-end-center">
+                @if (eventId) {
+                    <button kbq-button
+                            kbqStyle="outline"
+                            color="theme-fade"
+                            type="button"
+                            class="layout-margin-right-l"
+                            (click)="confirm()"
+                            data-testid="runtime-context-popover-confirm-button">
+                        {{ tRuntime('Runtime.EventsPage.Filter.Popover.Button.Confirm') }}
+                    </button>
+                }
+                <button kbq-button
+                        kbqStyle="outline"
+                        [color]="eventId ? 'contrast' : 'theme-fade'"
+                        type="button"
+                        (click)="cancel()"
+                        data-testid="runtime-context-popover-cancel-button">
+                    {{ tRuntime(eventId ? 'Runtime.EventsPage.Filter.Popover.Button.Cancel' : 'Runtime.EventsPage.Filter.Popover.Button.Acknowledge') }}
+                </button>
+            </div>
+        </div>
+    </ng-template>
+</ng-container>

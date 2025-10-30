@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:15.0
+    networks:
+      - local
+    environment:
+      - POSTGRES_USER=cs
+      - POSTGRES_PASSWORD=cs
+      - POSTGRES_DB=cs
+    ports:
+      - 5432:5432
+
+  redis:
+    image: redis:7.0
+    networks:
+      - local
+    ports:
+      - 6379:6379
+
+  policy-enforcer:
+    build:
+      context: .
+    image: policy-enforcer
+    ports:
+      - "8000:8000"
+      - "9000:9000"
+    command: --postgresAddr=postgres --redisAddr=redis --logLevel=INFO
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      cs:
+        aliases:
+          - policy-enforcer
+      local:
+
+networks:
+  local:
+  cs:
+    external: true

@@ -1,0 +1,23 @@
+{
+    "name": "domain-rule",
+    "projectType": "library",
+    "root": "libs/domains/rule",
+    "sourceRoot": "libs/domains/rule/src",
+    "prefix": "runtime-radar",
+    "targets": {
+        "lint": {
+            "executor": "@nx/linter:eslint",
+            "options": {
+                "lintFilePatterns": ["libs/domains/rule/src/**/*.ts", "libs/domains/rule/src/**/*.html"]
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": ["coverage/libs/domains/rule"],
+            "options": {
+                "jestConfig": "libs/domains/rule/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    }
+}

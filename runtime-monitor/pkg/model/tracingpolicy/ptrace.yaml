@@ -1,0 +1,31 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: "ptrace"
+spec:
+  kprobes:
+  # SYNOPSIS
+  # long ptrace(enum __ptrace_request request, pid_t pid, void *addr, void *data)
+  #      @request: action to be performed
+  #      @pid: tracee thread (process) ID
+  #      @addr: depends of @request
+  #      @data: depends of @request
+  #
+  # DESCRIPTION
+  # Process trace
+  #
+  # RETURN VALUE
+  # Returns >=0 if success (depends of @request), <0 if failure (PTRACE_PEEK* requests return <0 if success). 
+  # (https://man7.org/linux/man-pages/man2/ptrace.2.html#RETURN_VALUE)
+  #
+  - call: "sys_ptrace"
+    return: true
+    syscall: true
+    args:
+    - index: 0
+      type: "int"
+    - index: 1
+      type: "int"
+    returnArg:
+      index: 0
+      type: "int"

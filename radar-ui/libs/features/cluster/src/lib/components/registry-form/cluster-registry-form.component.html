@@ -1,0 +1,64 @@
+<ng-container *transloco="let tCluster; prefix: 'cluster'">
+    <form [formGroup]="form" class="kbq-form-vertical cluster-abstract-feature-form">
+        <section class="kbq-form__row kbq-form-row_margin">
+            <label for="address" class="kbq-form__label">
+                {{ tCluster('Cluster.CreatePage.RegistryForm.Label.Address') }}
+                <i kbq-icon="kbq-question-circle_16"
+                   class="cs-help-hover"
+                   kbqTooltip="{{ tCluster('Cluster.CreatePage.RegistryForm.Hint.Address') }}"
+                   kbqTooltipClass="cluster-abstract-feature-form-tooltip"
+                   [kbqPlacement]="tooltipPlacement.RightTop"></i>
+            </label>
+            <kbq-form-field class="kbq-form__control" *transloco="let tCommon; prefix: 'common'">
+                <input kbqInput
+                       cdkFocusInitial
+                       type="text"
+                       id="address"
+                       formControlName="address"
+                       placeholder="{{ tCluster('Cluster.CreatePage.RegistryForm.Placeholder.Address') }}"
+                       data-testid="cluster-registry-address-input">
+                @if (form.get('address')?.hasError('pattern')) {
+                    <kbq-hint color="error">{{ tCommon('Common.Form.Error.Format') }}</kbq-hint>
+                }
+            </kbq-form-field>
+        </section>
+
+        <section class="kbq-form__row kbq-form-row_margin">
+            <label for="user" class="kbq-form__label">
+                {{ tCluster('Cluster.CreatePage.RegistryForm.Label.User') }}
+            </label>
+            <kbq-form-field class="kbq-form__control">
+                <input kbqInput
+                       type="text"
+                       id="user"
+                       formControlName="user"
+                       data-testid="cluster-registry-user-input">
+            </kbq-form-field>
+        </section>
+
+        <section class="kbq-form__row kbq-form-row_margin">
+            <label for="password" class="kbq-form__label">
+                {{ tCluster('Cluster.CreatePage.RegistryForm.Label.Password') }}
+            </label>
+            <kbq-form-field class="kbq-form__control">
+                <input kbqInputPassword
+                       type="password"
+                       id="password"
+                       formControlName="password"
+                       data-testid="cluster-registry-password-input">
+                <kbq-password-toggle
+                        [kbqTooltipNotHidden]="tCluster('Cluster.CreatePage.Hint.HidePassword')"
+                        [kbqTooltipHidden]="tCluster('Cluster.CreatePage.Hint.ShowPassword')"></kbq-password-toggle>
+            </kbq-form-field>
+        </section>
+
+        <section class="kbq-form__row">
+            <kbq-toggle formControlName="isImageShortName" data-testid="cluster-registry-image-short-name-toggle">
+                {{ tCluster('Cluster.CreatePage.RegistryForm.Label.ImageShortName') }}
+                <span class="kbq-text-compact cs-text-gray cluster-abstract-feature-form-toggle-hint">
+                    {{ tCluster('Cluster.CreatePage.RegistryForm.Hint.ImageShortName') }}
+                </span>
+            </kbq-toggle>
+        </section>
+    </form>
+</ng-container>

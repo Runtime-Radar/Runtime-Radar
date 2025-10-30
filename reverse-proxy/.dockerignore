@@ -1,0 +1,5 @@
+*
+!build
+!Caddyfile
+!Taskfile.yml
+!*.pem

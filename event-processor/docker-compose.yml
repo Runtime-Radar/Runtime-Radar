@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:17.4
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=cs
+      - POSTGRES_PASSWORD=cs
+      - POSTGRES_DB=cs
+    healthcheck:
+      test: pg_isready -U cs -d cs
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    networks:
+      - local
+
+  rabbitmq:
+    image: rabbitmq:4.0-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=cs
+      - RABBITMQ_DEFAULT_PASS=cs
+    networks:
+      - local
+
+  event-processor:
+    build:
+      context: .
+    image: event-processor
+    ports:
+      - "8002:8000"
+      - "9002:9000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+    command: --postgresAddr=postgres --rabbitAddr=rabbitmq --rabbitUser=cs --rabbitPassword=cs --policyEnforcerGRPCAddr=policy-enforcer:8000 --logLevel=INFO
+    networks:
+      - local
+
+networks:
+  local:

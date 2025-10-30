@@ -1,0 +1,23 @@
+{
+    "name": "feature-error",
+    "projectType": "library",
+    "root": "libs/features/error",
+    "sourceRoot": "libs/features/error/src",
+    "prefix": "runtime-radar",
+    "targets": {
+        "lint": {
+            "executor": "@nx/linter:eslint",
+            "options": {
+                "lintFilePatterns": ["libs/features/error/src/**/*.ts", "libs/features/error/src/**/*.html"]
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": ["coverage/libs/features/error"],
+            "options": {
+                "jestConfig": "libs/features/error/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    }
+}

@@ -1,0 +1,19 @@
+<div class="kbq-form-horizontal" *transloco="let tCommon; prefix: 'common'">
+    <label for="clusterSelectId" class="kbq-form__label">
+        {{ tCommon('Common.Pseudo.Label.Cluster') }}
+    </label>
+    <kbq-form-field class="kbq-form__control shared-cluster-select-field">
+        <kbq-select id="clusterSelectId"
+                    [value]="activeClusterHost"
+                    (selectionChange)="change($event.value)"
+                    [attr.data-testid]="testLocator">
+            @for (cluster of clusters; track cluster.id) {
+                <kbq-option
+                        [value]="cluster.own_cs_url"
+                        [attr.data-testid]="cluster.name || tCommon('Common.Pseudo.Label.CentralCluster')">
+                    {{ cluster.name || tCommon('Common.Pseudo.Label.CentralCluster') }}
+                </kbq-option>
+            }
+        </kbq-select>
+    </kbq-form-field>
+</div>

@@ -1,0 +1,54 @@
+.kbq-button.kbq-button_outline.kbq-theme-fade.kbq-disabled {
+    border-color: var(--kbq-button-outline-theme-fade-on-states-disabled-foreground);
+}
+
+.kbq-divider.kbq-divider_horizontal {
+    min-height: 1px;
+}
+
+.kbq-link__text + .kbq-icon {
+    transform: translateY(1px); 
+}
+
+kbq-divider.kbq-divider.kbq-divider_horizontal.kbq-divider_paddings {
+    margin-top: 24px;
+    margin-bottom: 24px;
+}
+
+.kbq-loader-overlay {
+    --kbq-loader-overlay-size-big-loader-margin-bottom: 0 !important;
+}
+
+.kbq-progress-bar {
+    --kbq-progress-bar-size-container-border-radius: 0 !important;
+}
+
+.kbq-empty-state {
+    --kbq-empty-state-size-normal-image-margin-bottom: 0 !important;
+    --kbq-empty-state-size-normal-title-margin-bottom: 8px !important;
+    --kbq-empty-state-size-normal-actions-margin-top: 16px !important;
+}
+
+.kbq-popover {
+    --kbq-popover-size-container-max-height: 600px !important;
+}
+
+.kbq-popover__content {
+    --kbq-popover-size-content-padding-bottom: 24px !important;
+}
+
+.kbq-select .kbq-select__trigger {
+    --kbq-form-field-size-height: 30px !important;
+}
+
+.kbq-textarea {
+    --kbq-textarea-size-padding-horizontal: 0 !important;
+}
+
+.kbq-tag {
+    --kbq-tag-size-padding-vertical: 1px !important;
+}
+
+kbq-code-block.kbq-code-block:has(.kbq-code-block__view-all) .kbq-code-block__main .kbq-code-block__code {
+    padding-bottom: 56px !important;
+}

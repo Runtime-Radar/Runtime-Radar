@@ -1,0 +1,24 @@
+@if (title) {
+    <kbq-modal-title>{{ title }}</kbq-modal-title>
+}
+
+<kbq-modal-body
+        class="shared-modal-body"
+        [ngClass]="{ 'with-title': title }">{{ content }}</kbq-modal-body>
+
+<kbq-modal-footer>
+    <button kbq-button
+            kbqStyle="outline"
+            color="theme-fade"
+            type="button"
+            (click)="close(true)"
+            data-testid="shared-modal-confirm-button">
+        {{ confirmText }}
+    </button>
+    <button kbq-button
+            type="button"
+            (click)="close(false)"
+            data-testid="shared-modal-cancel-button">
+        {{ cancelText }}
+    </button>
+</kbq-modal-footer>

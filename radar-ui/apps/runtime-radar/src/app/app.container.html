@@ -1,0 +1,35 @@
+<div class="layout-row layout-align-stretch-start app">
+    <ng-container *ngrxLet="{
+        loadStatus: (loadStatus$ | async),
+        routerName: (routerName$ | async),
+        role: (role$ | async),
+        credentials: (credentials$ | async)!
+    } as rxlet">
+        @if (rxlet.loadStatus === loadStatus.LOADED) {
+            <cs-navbar-component
+                    [role]="rxlet.role?.role_name"
+                    [credentials]="rxlet.credentials"
+                    (signOut)="signOut()"></cs-navbar-component>
+        }
+
+        <section class="app-router">
+            <router-outlet></router-outlet>
+        </section>
+
+        @if (rxlet.loadStatus === loadStatus.INIT) {
+            <kbq-progress-bar [mode]="'indeterminate'" class="app-loader"></kbq-progress-bar>
+            <img ngSrc="/assets/logotypes/logo.svg" width="48" height="48" class="app-skeleton" priority>
+        }
+    </ng-container>
+
+    <ng-template #clusterToastActionTemplate>
+        <ng-container *transloco="let tCommon; prefix: 'common'">
+            <a kbq-link pseudo [href]="activeClusterHost$ | async" target="_blank">
+                {{ tCommon('Common.Pseudo.Notification.CertAuthorityInvalid.Open') }}
+            </a>
+            <a kbq-link pseudo (click)="reloadPage()">
+                {{ tCommon('Common.Pseudo.Notification.CertAuthorityInvalid.TryAgain') }}
+            </a>
+        </ng-container>
+    </ng-template>
+</div>

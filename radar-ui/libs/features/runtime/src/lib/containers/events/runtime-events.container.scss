@@ -1,0 +1,18 @@
+.runtime-feature-events {
+    padding: 32px;
+
+    &-title {
+        margin: 0;
+    }
+
+    &-wrapper {
+        min-height: 370px;
+        position: relative;
+    }
+
+    &-paginator {
+        display: flex;
+        gap: 4px;
+        margin-top: 32px;
+    }
+}

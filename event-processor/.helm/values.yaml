@@ -1,0 +1,74 @@
+image:
+  registry: ghcr.io/runtime-radar
+  repository: event-processor
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+containerPorts:
+  grpc: 8000
+  http: 9000
+  instrumentation: 9090
+service:
+  ports:
+    grpc: 8000
+    http: 9000
+configUpdateInterval: ""
+env:
+  - name: CONFIG_UPDATE_INTERVAL
+    value: "{{ .Values.configUpdateInterval }}"
+  - name: POLICY_ENFORCER_GRPC_ADDR
+    value: "policy-enforcer:8000"
+  - name: NOTIFIER_GRPC_ADDR
+    value: "notifier:8000"
+  - name: JOBS_BUFFER_SIZE
+    value: "100"
+  - name: RABBIT_RUNTIME_EVENTS_QUEUE_PREFETCH_COUNT
+    value: "100"
+postgresql:
+  enabled: true
+rabbitmq:
+  enabled: true
+serviceAccount:
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+resources:
+  limits:
+    cpu: 1
+    memory: 1Gi
+    ephemeral-storage: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+    ephemeral-storage: 1Mi
+livenessProbe:
+  enabled: true
+  httpGet:
+    path: /live
+    scheme: HTTP
+    port: instrumentation
+  periodSeconds: 600
+  successThreshold: 1
+  failureThreshold: 2
+readinessProbe:
+  enabled: true
+  httpGet:
+    path: /ready
+    scheme: HTTP
+    port: instrumentation
+  periodSeconds: 360
+  successThreshold: 1
+  failureThreshold: 3
+startupProbe:
+  enabled: true
+  httpGet:
+    path: /ready
+    scheme: HTTP
+    port: instrumentation
+  initialDelaySeconds: 1
+  periodSeconds: 3
+  successThreshold: 1
+  failureThreshold: 3

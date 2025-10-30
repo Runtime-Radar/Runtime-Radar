@@ -1,0 +1,72 @@
+<ng-container *transloco="let tIntegration; prefix: 'integration'">
+    <kbq-sidepanel-header [closeable]="true">
+        {{ props.isEdit ? tIntegration('Integration.EditForm.Title.Edit') : tIntegration('Integration.CreateForm.Title.Create') }}
+    </kbq-sidepanel-header>
+
+    <kbq-sidepanel-body>
+        <div class="kbq-form-vertical">
+            <section class="kbq-form__row kbq-form-row_margin">
+                <label for="type" class="kbq-form__label">
+                    {{ tIntegration('Integration.CreateForm.Label.Type') }}
+                </label>
+                <kbq-form-field class="kbq-form__control">
+                    <kbq-select id="type"
+                                [disabled]="props.isEdit"
+                                [(value)]="integrationTypeValue"
+                                (selectionChange)="changeType()"
+                                data-testid="integration-type-select">
+                        @for (option of integrationTypeOptions; track option.id) {
+                            <kbq-option [value]="option.id"
+                                        [attr.data-testid]="tIntegration(option.localizationKey)">
+                                {{ tIntegration(option.localizationKey) }}
+                            </kbq-option>
+                        }
+                    </kbq-select>
+                </kbq-form-field>
+            </section>
+
+            @if (integrationTypeValue === integrationType.EMAIL) {
+                <cs-integration-feature-email-form-component
+                        [values]="props.email"
+                        (formChange)="changeEmailForm($event)"></cs-integration-feature-email-form-component>
+            } @else if (integrationTypeValue === integrationType.SYSLOG) {
+                <cs-integration-feature-syslog-form-component
+                        [values]="props.syslog"
+                        (formChange)="changeSyslogForm($event)"></cs-integration-feature-syslog-form-component>
+            } @else if (integrationTypeValue === integrationType.WEBHOOK) {
+                <cs-integration-feature-webhook-form-component
+                        [values]="props.webhook"
+                        (formChange)="changeWebhookForm($event)"></cs-integration-feature-webhook-form-component>
+            }
+        </div>
+    </kbq-sidepanel-body>
+
+    <kbq-sidepanel-footer>
+        <kbq-sidepanel-actions align="left" *ngrxLet="isFormValid$ as isFormValid">
+            <button kbq-button
+                    kbqStyle="outline"
+                    color="theme-fade"
+                    type="button"
+                    [disabled]="!isFormValid"
+                    (click)="confirmWithoutCheck(false)"
+                    data-testid="integration-confirm-button">
+                {{ props.isEdit ? tIntegration('Integration.EditForm.Button.Confirm') : tIntegration('Integration.CreateForm.Button.Confirm') }}
+            </button>
+            <button kbq-button
+                    type="button"
+                    [disabled]="!isFormValid"
+                    (click)="confirmWithoutCheck(true)"
+                    data-testid="integration-confirm-without-check-button">
+                {{ props.isEdit ? tIntegration('Integration.EditForm.Button.ConfirmWithoutCheck') : tIntegration('Integration.CreateForm.Button.ConfirmWithoutCheck') }}
+            </button>
+        </kbq-sidepanel-actions>
+        <kbq-sidepanel-actions align="right">
+            <button kbq-button
+                    type="button"
+                    (click)="cancel()"
+                    data-testid="integration-cancel-button">
+                {{ tIntegration('Integration.CreateForm.Button.Cancel') }}
+            </button>
+        </kbq-sidepanel-actions>
+    </kbq-sidepanel-footer>
+</ng-container>

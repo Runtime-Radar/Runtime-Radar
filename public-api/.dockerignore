@@ -1,0 +1,38 @@
+# Version control
+.git
+.gitignore
+.gitattributes
+.github
+
+# cmd folder
+/cmd/*
+!/cmd/*/*.go
+!/cmd/*/*.pem
+
+# Documentation
+README*.md
+docs/
+LICENSE
+CHANGELOG.md
+
+# Build artifacts
+/bin
+*.exe
+
+# Development
+.vscode/
+.idea/
+.zed/
+.DS_Store
+
+# Docker & deployment
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+/.helm
+/.task
+
+# Misc
+.env*
+*.log
+tmp/

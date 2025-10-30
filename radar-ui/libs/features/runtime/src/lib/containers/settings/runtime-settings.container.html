@@ -1,0 +1,353 @@
+<section class="runtime-feature-settings" *transloco="let tRuntime; prefix: 'runtime'">
+    <header class="layout-row layout-align-space-between-center layout-margin-bottom-3xl">
+        <h1 class="kbq-display-compact runtime-feature-settings-title">{{ tRuntime('Runtime.Pseudo.Header.Title') }}</h1>
+        <cs-cluster-select-component
+                [clusters]="clusters$ | async"
+                [activeClusterHost]="activeClusterHost$ | async"
+                (selectClusterId)="switchCluster($event)"
+                testLocator="runtime-cluster-select"></cs-cluster-select-component>
+    </header>
+
+    <cs-tabs-component
+            [tabs]="runtimeNavigationTabs"
+            [localizationFn]="tRuntime"
+            (tabChange)="tabChange($event)"
+            testId="runtime-navigation-tab-group"></cs-tabs-component>
+
+    <div class="layout-row layout-align-space-between runtime-feature-settings-row">
+        <form [formGroup]="form" class="flex kbq-form-vertical runtime-feature-settings-form"
+              *ngrxLet="{
+                isAdminRole: (isAdminRole$ | async),
+                runtimeIsExpertMode: (runtimeIsExpertMode$ | async),
+                runtimeHasPoliciesChanges: (runtimeHasPoliciesChanges$ | async)
+              } as rxlet">
+            <section class="layout-row layout-align-start-center runtime-feature-settings-headline">
+                <h3 class="kbq-title layout-margin-no-top layout-margin-no-bottom">
+                    {{ tRuntime('Runtime.SettingsPage.SubTitle.Policies') }}
+                </h3>
+
+                @if (rxlet.runtimeIsExpertMode) {
+                    <button kbq-button
+                            type="button"
+                            class="layout-margin-left-xxl"
+                            (click)="openCreatePolicySidepanel()"
+                            data-testid="runtime-open-sidepanel-policies-form-button">
+                        <i kbq-icon="kbq-plus_16"></i>
+                        {{ tRuntime('Runtime.SettingsPage.Policies.Button.AddItem') }}
+                    </button>
+                }
+            </section>
+
+            @if (rxlet.runtimeIsExpertMode) {
+                <kbq-alert class="layout-margin-bottom-xxl"
+                           [alertStyle]="'colored'"
+                           [alertColor]="alertColors.Success"
+                           [compact]="true">
+                    <i kbq-icon="kbq-exclamation-triangle_16"></i>
+                    <div kbq-alert-title>{{ tRuntime('Runtime.SettingsPage.Text.ExpertMode') }}</div>
+                    {{ tRuntime('Runtime.SettingsPage.Text.ExpertModeDescription') }}
+                </kbq-alert>
+            }
+
+            <form class="layout-column runtime-feature-settings-policy"
+                  [formGroup]="policiesFormGroup"
+                  data-testid="runtime-policies-checkbox-group">
+                @for (control of policiesFormGroup.controls | keyvalue; track control.key) {
+                    <form class="layout-row layout-align-start-center runtime-feature-settings-policy-item"
+                          [ngClass]="{ 'expert': rxlet.runtimeIsExpertMode }"
+                          [formGroupName]="control.key">
+                        <kbq-checkbox
+                                formControlName="isEnabled"
+                                [ngClass]="{ 'disabled': control.key === tracingPoliciesProcessesKey || !permissions[permissionName.SYSTEM].has(permissionType.UPDATE) }"
+                                [attr.data-testid]="control.value.get('name')?.value"></kbq-checkbox>
+                        @if (rxlet.runtimeIsExpertMode && control.key !== tracingPoliciesProcessesKey) {
+                            <button type="button"
+                                    class="flex kbq-text-normal runtime-feature-settings-policy-item-link"
+                                    (click)="openEditPolicySidepanel(control.value.value, control.key)"
+                                    data-testid="runtime-open-sidepanel-police-button">
+                                {{ control.value.get('name')?.value || '—' }}
+                            </button>
+                            <button kbq-button
+                                    kbqStyle="transparent"
+                                    color="contrast"
+                                    type="button"
+                                    class="kbq-button-icon runtime-feature-settings-policy-item-remove"
+                                    (click)="openDeletePolicyModal(control.key, control.value.value.name)"
+                                    data-testid="runtime-policy-delete-button">
+                                <i kbq-icon="kbq-trash_16"></i>
+                            </button>
+                        } @else {
+                            <button type="button"
+                                    class="flex kbq-text-normal runtime-feature-settings-policy-item-link"
+                                    (click)="openViewPolicySidepanel(control.key, control.value.value)"
+                                    data-testid="runtime-open-sidepanel-police-button">
+                                {{ control.value.get('name')?.value || '—' }}
+                            </button>
+                        }
+                    </form>
+                }
+            </form>
+
+            <footer class="layout-row layout-align-start-center runtime-feature-settings-policy-footer">
+                <i kbq-icon="kbq-question-circle_16" class="layout-margin-right-s"></i>
+                <transloco key="runtime.Runtime.SettingsPage.Policies.Text.HasChanges" [params]="{ template: runtimeGrafanaLink }"></transloco>
+                <ng-template #runtimeGrafanaLink>
+                    <a kbq-link
+                       href="#"
+                       class="kbq-link_external"
+                       target="_blank">
+                        <span id="cs-transloco-template" class="kbq-link__text"></span>
+                        <i kbq-icon="kbq-north-east_16"></i>
+                    </a>
+                </ng-template>
+            </footer>
+
+            <kbq-divider></kbq-divider>
+
+            <section class="layout-row layout-align-start-center runtime-feature-settings-headline">
+                <h3 class="kbq-title layout-margin-no-top layout-margin-no-bottom">
+                    {{ tRuntime('Runtime.SettingsPage.SubTitle.Permissions') }}
+                </h3>
+                <button kbq-button
+                        type="button"
+                        class="layout-margin-left-xxl"
+                        (click)="openCreatePermissionSidepanel()"
+                        [disabled]="!permissions[permissionName.SYSTEM].has(permissionType.CREATE)"
+                        data-testid="runtime-open-sidepanel-permissions-form-button">
+                    <i kbq-icon="kbq-plus_16"></i>
+                    {{ tRuntime('Runtime.SettingsPage.Permissions.Button.AddItem') }}
+                </button>
+            </section>
+
+            <section class="runtime-feature-settings-permissions"
+                     *ngrxLet="permissionCounter$ as permissionCounter">
+                @if (permissionCounter.allow) {
+                    <h4 class="kbq-subheading runtime-feature-settings-permissions-subheading">
+                        {{ tRuntime('Runtime.SettingsPage.Permissions.SubHeading.Allow') }}
+                    </h4>
+                }
+
+                @for (group of permissionsFormGroup.value | keyvalue | runtimePermissionsFilter: true; track group.key) {
+                    <article class="layout-column runtime-feature-settings-permissions-card"
+                             data-testid="runtime-allow-group-container">
+                        @if (group.value.namespaces.length) {
+                            <div class="layout-row layout-row layout-align-start-start">
+                                <span class="kbq-text-compact runtime-feature-settings-permissions-card-label">
+                                    {{ tRuntime('Runtime.SettingsPage.Permissions.Label.Namespaces') }}
+                                </span>
+                                <ul class="layout-row runtime-feature-settings-permissions-card-list">
+                                    @for (namespace of group.value.namespaces; track namespace) {
+                                        <li>
+                                            <kbq-badge [badgeColor]="badgeColors.FadeSuccess" [attr.data-testid]="namespace">{{ namespace }}</kbq-badge>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                        @if (group.value.pods.length) {
+                            <div class="layout-row layout-row layout-align-start-start">
+                                <span class="kbq-text-compact runtime-feature-settings-permissions-card-label">
+                                    {{ tRuntime('Runtime.SettingsPage.Permissions.Label.Pods') }}
+                                </span>
+                                <ul class="layout-row runtime-feature-settings-permissions-card-list">
+                                    @for (pod of group.value.pods; track pod) {
+                                        <li>
+                                            <kbq-badge [badgeColor]="badgeColors.FadeSuccess" [attr.data-testid]="pod">{{ pod }}</kbq-badge>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                        @if (group.value.labels.length) {
+                            <div class="layout-row layout-row layout-align-start-start">
+                                <span class="kbq-text-compact runtime-feature-settings-permissions-card-label">
+                                    {{ tRuntime('Runtime.SettingsPage.Permissions.Label.Labels') }}
+                                </span>
+                                <ul class="layout-row runtime-feature-settings-permissions-card-list">
+                                    @for (label of group.value.labels; track label) {
+                                        <li>
+                                            <kbq-badge [badgeColor]="badgeColors.FadeTheme" [attr.data-testid]="label">{{ label }}</kbq-badge>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                        <div class="runtime-feature-settings-permissions-card-action">
+                            <button kbq-button
+                                    kbqStyle="transparent"
+                                    color="contrast"
+                                    type="button"
+                                    class="kbq-button-icon"
+                                    [disabled]="!permissions[permissionName.SYSTEM].has(permissionType.UPDATE)"
+                                    (click)="openEditPermissionSidepanel(group.key, group.value)"
+                                    data-testid="runtime-permissions-update-button">
+                                <i kbq-icon="kbq-pencil_16"></i>
+                            </button>
+                            <button kbq-button
+                                    kbqStyle="transparent"
+                                    color="contrast"
+                                    type="button"
+                                    class="kbq-button-icon"
+                                    [disabled]="!permissions[permissionName.SYSTEM].has(permissionType.DELETE) || permissionCounter.allow + permissionCounter.deny <= 1"
+                                    (click)="removePermissionEntity(group.key)"
+                                    data-testid="runtime-permissions-delete-button">
+                                <i kbq-icon="kbq-trash_16"></i>
+                            </button>
+                        </div>
+                    </article>
+                }
+
+                @if (permissionCounter.deny) {
+                    <h4 class="kbq-subheading runtime-feature-settings-permissions-subheading">
+                        {{ tRuntime('Runtime.SettingsPage.Permissions.SubHeading.Deny') }}
+                    </h4>
+                }
+
+                @for (group of permissionsFormGroup.value | keyvalue | runtimePermissionsFilter: false; track group.key) {
+                    <article class="layout-column runtime-feature-settings-permissions-card"
+                             data-testid="runtime-deny-group-container">
+                        @if (group.value.namespaces.length) {
+                            <div class="layout-row layout-row layout-align-start-start">
+                                <span class="kbq-text-compact runtime-feature-settings-permissions-card-label">
+                                    {{ tRuntime('Runtime.SettingsPage.Permissions.Label.Namespaces') }}
+                                </span>
+                                <ul class="layout-row runtime-feature-settings-permissions-card-list">
+                                    @for (namespace of group.value.namespaces; track namespace) {
+                                        <li>
+                                            <kbq-badge [badgeColor]="badgeColors.FadeError" [attr.data-testid]="namespace">{{ namespace }}</kbq-badge>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                        @if (group.value.pods.length) {
+                            <div class="layout-row layout-row layout-align-start-start">
+                                <span class="kbq-text-compact runtime-feature-settings-permissions-card-label">
+                                    {{ tRuntime('Runtime.SettingsPage.Permissions.Label.Pods') }}
+                                </span>
+                                <ul class="layout-row runtime-feature-settings-permissions-card-list">
+                                    @for (pod of group.value.pods; track pod) {
+                                        <li>
+                                            <kbq-badge [badgeColor]="badgeColors.FadeError" [attr.data-testid]="pod">{{ pod }}</kbq-badge>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                        @if (group.value.labels.length) {
+                            <div class="layout-row layout-row layout-align-start-start">
+                                <span class="kbq-text-compact runtime-feature-settings-permissions-card-label">
+                                    {{ tRuntime('Runtime.SettingsPage.Permissions.Label.Labels') }}
+                                </span>
+                                <ul class="layout-row runtime-feature-settings-permissions-card-list">
+                                    @for (label of group.value.labels; track label) {
+                                        <li>
+                                            <kbq-badge [badgeColor]="badgeColors.FadeTheme" [attr.data-testid]="label">{{ label }}</kbq-badge>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                        <div class="runtime-feature-settings-permissions-card-action">
+                            <button kbq-button
+                                    kbqStyle="transparent"
+                                    color="contrast"
+                                    type="button"
+                                    class="kbq-button-icon"
+                                    [disabled]="!permissions[permissionName.SYSTEM].has(permissionType.UPDATE)"
+                                    (click)="openEditPermissionSidepanel(group.key, group.value)"
+                                    data-testid="runtime-permissions-update-button">
+                                <i kbq-icon="kbq-pencil_16"></i>
+                            </button>
+                            <button kbq-button
+                                    kbqStyle="transparent"
+                                    color="contrast"
+                                    type="button"
+                                    class="kbq-button-icon"
+                                    [disabled]="!permissions[permissionName.SYSTEM].has(permissionType.DELETE) || permissionCounter.allow + permissionCounter.deny <= 1"
+                                    (click)="removePermissionEntity(group.key)"
+                                    data-testid="runtime-permissions-delete-button">
+                                <i kbq-icon="kbq-trash_16"></i>
+                            </button>
+                        </div>
+                    </article>
+                }
+
+                @if (!permissionCounter.allow && !permissionCounter.deny) {
+                    <p class="cs-text-gray">{{ tRuntime('Runtime.SettingsPage.Permissions.Text.EmptyResult') }}</p>
+                }
+            </section>
+
+            <kbq-divider></kbq-divider>
+
+            <h3 class="kbq-title runtime-feature-settings-headline">
+                {{ tRuntime('Runtime.SettingsPage.SubTitle.EventProcessor') }}
+            </h3>
+
+            <section class="kbq-form__row">
+                <kbq-radio-group
+                        class="layout-column runtime-feature-settings-row-radio-group"
+                        formControlName="historyControl"
+                        data-testid="runtime-event-processor-radio-group">
+                    @for (option of runtimeEventProcessorOptions; track option.id) {
+                        <kbq-radio-button
+                                [value]="option.id"
+                                [attr.data-testid]="tRuntime(option.localizationKey)">
+                            {{ tRuntime(option.localizationKey) }}
+                        </kbq-radio-button>
+                    }
+                </kbq-radio-group>
+            </section>
+
+            <section class="runtime-feature-settings-confirm-drawer"
+                     [ngClass]="{ 'runtime-feature-settings-confirm-drawer--sticky': (runtimeHasChanges$ | async) && permissions[permissionName.SYSTEM].has(permissionType.CREATE) }"
+                     *ngrxLet="runtimeIsOverlayed$ as isOverlayed"
+                     [isOverlayed]="isOverlayed"
+                     overlay>
+                <div class="layout-row layout-align-space-between-center">
+                    <h4 class="kbq-subheading runtime-feature-settings-confirm-drawer-title">
+                        {{ tRuntime('Runtime.SettingsPage.ConfirmationDrawer.Title.Changes') }}
+                    </h4>
+                    <div class="runtime-feature-settings-confirm-drawer-actions">
+                        @if (isOverlayed) {
+                            <button kbq-button
+                                    type="button"
+                                    (click)="cancel()"
+                                    data-testid="runtime-settings-change-edit-button">
+                                {{ tRuntime('Runtime.SettingsPage.ConfirmationDrawer.Button.Edit') }}
+                            </button>
+                        }
+                        <button kbq-button
+                                kbqStyle="outline"
+                                color="theme-fade"
+                                type="button"
+                                (click)="create()"
+                                data-testid="runtime-settings-change-save-button">
+                            {{ tRuntime('Runtime.SettingsPage.ConfirmationDrawer.Button.Save') }}
+                        </button>
+                        <button kbq-button
+                                type="button"
+                                (click)="reset()"
+                                data-testid="runtime-settings-change-cancel-button">
+                            {{ tRuntime('Runtime.SettingsPage.ConfirmationDrawer.Button.Cancel') }}
+                        </button>
+                    </div>
+                </div>
+
+                @if (rxlet.runtimeHasPoliciesChanges) {
+                    <kbq-alert class="layout-margin-top-m"
+                               [alertStyle]="'colored'"
+                               [alertColor]="alertColors.Success"
+                               [compact]="true">
+                        <i kbq-icon="kbq-exclamation-triangle_16"></i>
+                        {{ tRuntime('Runtime.SettingsPage.Text.ExpertWarning') }}
+                    </kbq-alert>
+                }
+            </section>
+        </form>
+
+        <cs-runtime-feature-rules-container
+                class="runtime-feature-settings-rules"
+                [permissions]="permissions[permissionName.RULES]"></cs-runtime-feature-rules-container>
+    </div>
+</section>

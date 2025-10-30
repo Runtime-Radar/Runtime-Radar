@@ -1,0 +1,40 @@
+{
+    "User.Pseudo.Notification.Created": "The user is added",
+    "User.Pseudo.Notification.Updated": "The user parameters are edited",
+    "User.Pseudo.Notification.Deleted": "The user is deleted",
+    "User.Pseudo.Notification.UserAlreadyExist": "This user already exists",
+    "User.Pseudo.Notification.PasswordUpdated": "The password was changed",
+    "User.Pseudo.Notification.UserDoesNotExist": "Cannot change the password. A user with this username does not exist.",
+    "User.Pseudo.Notification.PasswordHasBeenUsedBefore": "The new and previous passwords are the same. Enter another password.",
+    "User.Pseudo.Notification.PasswordFoundInPassList": "This password is too common. Enter another password.",
+    "User.Pseudo.Notification.PasswordUpdateFailed": "Failed to change the password. Try again in several minutes.",
+    "User.Pseudo.Notification.PasswordChangeRestricted": "Cannot change a corporate account password",
+    "User.Pseudo.Notification.LastAdminRemovingDenied": "Cannot delete the account. This is the only account with the Administrator role.",
+
+    "User.Pseudo.Navigation.List": "User list",
+
+    "User.Pseudo.Header.Title": "Users",
+
+    "User.ListPage.Header.Title": "Users",
+    "User.ListPage.Button.Create": "Add user",
+    "User.ListPage.Table.Username": "Login",
+    "User.ListPage.Table.Email": "Email",
+    "User.ListPage.Table.Role": "Role",
+
+    "User.CreateForm.Title.Create": "New user",
+    "User.CreateForm.Label.Username": "Login",
+    "User.CreateForm.Label.Email": "Email",
+    "User.CreateForm.Label.Password": "Password",
+    "User.CreateForm.Label.Role": "Role",
+    "User.CreateForm.Hint.ShowPassword": "Show password",
+    "User.CreateForm.Hint.HidePassword": "Hide password",
+    "User.CreateForm.Button.Confirm": "Add",
+    "User.CreateForm.Button.Cancel": "Cancel",
+
+    "User.EditForm.Title.Edit": "Editing the account",
+    "User.EditForm.Button.Confirm": "Save",
+
+    "User.DeleteModal.Content.Text": "Delete the user?",
+    "User.DeleteModal.Button.Confirm": "Delete",
+    "User.DeleteModal.Button.Cancel": "Cancel"
+}

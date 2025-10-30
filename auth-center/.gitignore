@@ -1,0 +1,12 @@
+# .vscode
+.idea
+.task
+/.task/checksum/tools
+*.exe
+/bin
+cmd/auth-center/auth-center
+/tmp
+
+# helm dependencies
+.helm/charts
+.helm/Chart.lock

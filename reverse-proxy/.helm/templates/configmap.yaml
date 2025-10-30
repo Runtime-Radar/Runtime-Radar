@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.name" . }}
+data:
+  {{- $isChildCluster := eq (include "common.cs.isChildCluster" .) "true" }}
+  env.js: |
+    (function (window) {
+        window['env'] = window['env'] || {};
+        window['env']['isChildCluster'] = '{{ $isChildCluster }}' === 'true';
+    })(this);

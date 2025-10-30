@@ -1,0 +1,23 @@
+{
+    "name": "domain-detector",
+    "projectType": "library",
+    "root": "libs/domains/detector",
+    "sourceRoot": "libs/domains/detector/src",
+    "prefix": "runtime-radar",
+    "targets": {
+        "lint": {
+            "executor": "@nx/linter:eslint",
+            "options": {
+                "lintFilePatterns": ["libs/domains/detector/src/**/*.ts", "libs/domains/detector/src/**/*.html"]
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": ["coverage/libs/domains/detector"],
+            "options": {
+                "jestConfig": "libs/domains/detector/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    }
+}

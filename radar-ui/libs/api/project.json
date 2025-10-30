@@ -1,0 +1,23 @@
+{
+    "name": "api",
+    "projectType": "library",
+    "root": "libs/api",
+    "sourceRoot": "libs/api/src",
+    "prefix": "runtime-radar",
+    "targets": {
+        "lint": {
+            "executor": "@nx/linter:eslint",
+            "options": {
+                "lintFilePatterns": ["libs/api/src/**/*.ts", "libs/api/src/**/*.html"]
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": ["coverage/libs/api"],
+            "options": {
+                "jestConfig": "libs/api/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    }
+}

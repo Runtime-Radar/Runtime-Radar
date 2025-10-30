@@ -1,0 +1,21 @@
+.cluster-abstract-feature-form {
+    position: relative;
+
+    &-headline {
+        margin: 24px 0;
+    }
+
+    &-toggle-hint {
+        display: block;
+        white-space: normal;
+    }
+
+    &-textarea {
+        min-height: 80px !important;
+    }
+
+    &-interval {
+        width: 150px;
+        margin-right: 16px;
+    }
+}

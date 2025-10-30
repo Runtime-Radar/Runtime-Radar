@@ -1,0 +1,63 @@
+:host {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    height: 100%;
+}
+
+.runtime-feature-sidepanel-threats {
+    position: relative;
+
+    &-cap-sys {
+        min-height: 20px;
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+    }
+
+    &-item {
+        margin-top: 24px;
+
+        &:first-child {
+            margin-top: 0;
+        }
+
+        &-info {
+            margin-left: 48px;
+
+            &-description {
+                margin: 16px 0 0 0;
+            }
+        }
+    }
+
+    &-detect-errors {
+        margin-top: 16px;
+        padding: 24px !important;
+
+        &-icon {
+            transform: translateY(-12px);
+        }
+
+        &-break {
+            display: block;
+            width: calc(100% - 24px);
+            white-space: break-spaces;
+            word-wrap: break-word;
+        }
+
+        &-truncate {
+            max-width: 100%;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+    }
+}
+
+// @todo: replace ::ng-deep to class props
+::ng-deep .runtime-feature-sidepanel-threats-detect-errors .kbq-alert__content {
+    width: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+}

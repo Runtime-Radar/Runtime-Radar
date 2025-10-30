@@ -1,0 +1,322 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Enforcer API",
+    "version": "version not set",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "Enforcer"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/evaluate-policy/runtime": {
+      "post": {
+        "summary": "EvaluatePolicyRuntimeEvent returns EvaluatePolicyRuntimeEventReq enriched with evaluated policies.",
+        "operationId": "Enforcer_EvaluatePolicyRuntimeEvent",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/enforcerEvaluatePolicyRuntimeEventReq"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/enforcerEvaluatePolicyRuntimeEventReq"
+            }
+          }
+        ],
+        "tags": [
+          "Enforcer"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "ActionArgs": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "type": "string"
+        },
+        "pod": {
+          "type": "string"
+        },
+        "container": {
+          "type": "string"
+        },
+        "binary": {
+          "type": "string"
+        },
+        "node": {
+          "type": "string"
+        },
+        "imageName": {
+          "type": "string"
+        },
+        "registry": {
+          "type": "string"
+        }
+      }
+    },
+    "EvaluatePolicyRuntimeEventReqAction": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "args": {
+          "$ref": "#/definitions/ActionArgs"
+        }
+      }
+    },
+    "EvaluatePolicyRuntimeEventReqResult": {
+      "type": "object",
+      "properties": {
+        "events": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/ResultEvent"
+          }
+        }
+      }
+    },
+    "ResultEvent": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "name and version are not used at the moment and are added for consistency reasons and future purposes"
+        },
+        "version": {
+          "type": "string"
+        },
+        "detectorId": {
+          "type": "string",
+          "title": "detector_id is identifier of detector which processes events within event-processor"
+        },
+        "severity": {
+          "type": "string"
+        },
+        "policy": {
+          "$ref": "#/definitions/enforcerPolicy"
+        }
+      }
+    },
+    "RuleJSONBlock": {
+      "type": "object",
+      "properties": {
+        "severity": {
+          "type": "string"
+        }
+      }
+    },
+    "RuleJSONNotify": {
+      "type": "object",
+      "properties": {
+        "severity": {
+          "type": "string"
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "RuleJSONWhitelist": {
+      "type": "object",
+      "properties": {
+        "threats": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "binaries": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "RuleRuleJSON": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "block": {
+          "$ref": "#/definitions/RuleJSONBlock"
+        },
+        "notify": {
+          "$ref": "#/definitions/RuleJSONNotify"
+        },
+        "whitelist": {
+          "$ref": "#/definitions/RuleJSONWhitelist"
+        }
+      }
+    },
+    "RuleScope": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "imageNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "registries": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "clusters": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "namespaces": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pods": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "containers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "enforcerEvaluatePolicyRuntimeEventReq": {
+      "type": "object",
+      "properties": {
+        "actor": {
+          "type": "string"
+        },
+        "action": {
+          "$ref": "#/definitions/EvaluatePolicyRuntimeEventReqAction"
+        },
+        "result": {
+          "$ref": "#/definitions/EvaluatePolicyRuntimeEventReqResult"
+        }
+      }
+    },
+    "enforcerPolicy": {
+      "type": "object",
+      "properties": {
+        "blockBy": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/ruleRule"
+          }
+        },
+        "notifyBy": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/ruleRule"
+          }
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "ruleRule": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "rule": {
+          "$ref": "#/definitions/RuleRuleJSON"
+        },
+        "type": {
+          "$ref": "#/definitions/ruleRuleType",
+          "title": "type indicates what type of enforcement rule is used for (now support just runtime.)"
+        },
+        "scope": {
+          "$ref": "#/definitions/RuleScope"
+        }
+      }
+    },
+    "ruleRuleType": {
+      "type": "string",
+      "enum": [
+        "TYPE_RUNTIME"
+      ],
+      "default": "TYPE_RUNTIME"
+    }
+  }
+}

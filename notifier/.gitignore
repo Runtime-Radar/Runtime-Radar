@@ -1,0 +1,12 @@
+# .vscode
+.idea
+# .task
+/.task/checksum/tools
+*.exe
+/bin
+/cmd/notifier/notifier
+.helm/Chart.lock
+.helm/charts
+testdata/syslog/logs
+
+*.http

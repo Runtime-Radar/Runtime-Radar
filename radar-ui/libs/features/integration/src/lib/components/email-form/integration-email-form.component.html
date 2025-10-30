@@ -1,0 +1,131 @@
+<ng-container *transloco="let tIntegration; prefix: 'integration'">
+    <form [formGroup]="form" *transloco="let tCommon; prefix: 'common'">
+        <section class="kbq-form__row kbq-form-row_margin">
+            <label for="name" class="kbq-form__label">
+                {{ tIntegration('Integration.CreateForm.Label.Name') }}
+            </label>
+            <kbq-form-field class="kbq-form__control">
+                <input kbqInput
+                       cdkFocusInitial
+                       type="text"
+                       id="name"
+                       formControlName="name"
+                       data-testid="integration-name-input">
+            </kbq-form-field>
+        </section>
+
+        <section class="kbq-form__row kbq-form-row_margin">
+            <h4 class="kbq-subheading layout-margin-no-top layout-margin-no-bottom">
+                {{ tIntegration('Integration.CreateForm.SubTitle.Params') }}
+            </h4>
+        </section>
+
+        <section class="kbq-form__row kbq-form-row_margin">
+            <label for="authType" class="kbq-form__label">
+                {{ tIntegration('Integration.CreateForm.Label.AuthType') }}
+            </label>
+            <kbq-form-field class="kbq-form__control">
+                <kbq-select id="authType"
+                            formControlName="authType"
+                            data-testid="integration-authtype-select">
+                    @for (option of integrationEmailAuthTypeOptions; track option.id) {
+                        <kbq-option [value]="option.id"
+                                    [attr.data-testid]="tIntegration(option.localizationKey)">
+                            {{ tIntegration(option.localizationKey) }}
+                        </kbq-option>
+                    }
+                </kbq-select>
+            </kbq-form-field>
+        </section>
+
+        <section class="kbq-form__row kbq-form-row_margin">
+            <label for="server" class="kbq-form__label">
+                {{ tIntegration('Integration.CreateForm.Label.Server') }}
+            </label>
+            <kbq-form-field class="kbq-form__control">
+                <input kbqInput
+                       type="text"
+                       id="server"
+                       formControlName="server"
+                       placeholder="{{ tIntegration('Integration.CreateForm.Placeholder.Server') }}"
+                       data-testid="integration-server-input">
+                @if (form.get('server')?.hasError('pattern')) {
+                    <kbq-hint color="error">{{ tCommon('Common.Form.Error.Format') }}</kbq-hint>
+                }
+                @if (form.get('server')?.hasError('segment')) {
+                    <kbq-hint color="error">{{ tCommon('Common.Form.Error.Segment') }}</kbq-hint>
+                }
+            </kbq-form-field>
+        </section>
+
+        <section class="kbq-form__row kbq-form-row_margin">
+            <label for="username" class="kbq-form__label">
+                {{ tIntegration('Integration.CreateForm.Label.Username') }}
+            </label>
+            <kbq-form-field class="kbq-form__control">
+                <input kbqInput
+                       type="text"
+                       id="username"
+                       formControlName="username"
+                       data-testid="integration-username-input">
+            </kbq-form-field>
+        </section>
+
+        <section class="kbq-form__row kbq-form-row_margin">
+            <label for="password" class="kbq-form__label">
+                {{ tIntegration('Integration.CreateForm.Label.Password') }}
+            </label>
+            <kbq-form-field class="kbq-form__control">
+                <input kbqInputPassword
+                       type="password"
+                       id="password"
+                       formControlName="password"
+                       data-testid="integration-password-input">
+                <kbq-password-toggle
+                        [kbqTooltipNotHidden]="tIntegration('Integration.CreateForm.Hint.HidePassword')"
+                        [kbqTooltipHidden]="tIntegration('Integration.CreateForm.Hint.ShowPassword')"></kbq-password-toggle>
+            </kbq-form-field>
+        </section>
+
+        <section class="kbq-form__row kbq-form-row_margin">
+            <label for="ca" class="kbq-form__label">
+                {{ tIntegration('Integration.CreateForm.Label.Ca') }}
+            </label>
+            <kbq-form-field class="kbq-form__control">
+                <textarea kbqTextarea
+                          [freeRowsHeight]="0"
+                          id="ca"
+                          formControlName="ca"
+                          data-testid="integration-ca-textarea"></textarea>
+            </kbq-form-field>
+        </section>
+
+        <section class="kbq-form__row kbq-form-row_margin">
+            <label for="from" class="kbq-form__label">
+                {{ tIntegration('Integration.CreateForm.Label.From') }}
+            </label>
+            <kbq-form-field class="kbq-form__control">
+                <input kbqInput
+                       type="text"
+                       id="from"
+                       formControlName="from"
+                       data-testid="integration-from-input">
+                @if (form.get('from')?.invalid) {
+                    <kbq-hint color="error">{{ tCommon('Common.Form.Error.Format') }}</kbq-hint>
+                }
+            </kbq-form-field>
+        </section>
+
+        <section class="kbq-form__row kbq-form-row_margin">
+            <cs-integration-feature-protocol-checkbox-group-component
+                    formControlName="protocol"></cs-integration-feature-protocol-checkbox-group-component>
+        </section>
+
+        <section class="kbq-form__row">
+            <kbq-checkbox formControlName="isInsecure"
+                          data-testid="integration-insecure-checkbox">
+                {{ tIntegration('Integration.CreateForm.Label.Insecure') }}
+            </kbq-checkbox>
+        </section>
+    </form>
+</ng-container>

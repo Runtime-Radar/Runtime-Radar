@@ -1,0 +1,6 @@
+apiVersion: v2
+appVersion: 0.0.1
+description: A Library Helm Chart for grouping common logic between cs charts.
+name: common
+type: library
+version: 0.0.1

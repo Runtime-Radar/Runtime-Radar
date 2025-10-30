@@ -1,0 +1,15 @@
+@use 'sass:map';
+@use 'sass:meta';
+
+@use '../../../../node_modules/@koobiq/components/core/styles/tokens';
+@use '../../../../node_modules/@koobiq/components/core/styles/typography/typography';
+@use '../../../../node_modules/@koobiq/components/core/styles/theming/theming';
+@use '../../../../node_modules/@koobiq/components/prebuilt-themes/theme.css';
+
+$tokens: meta.module-variables(tokens);
+
+$typography-config: typography.kbq-typography-config($tokens);
+$markdown-typography-config: typography.kbq-markdown-typography-config($tokens);
+
+$light: theming.kbq-light-theme($tokens);
+$dark: theming.kbq-dark-theme($tokens);

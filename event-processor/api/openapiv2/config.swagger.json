@@ -1,0 +1,136 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Event Processor Config API",
+    "description": "Package is called \"runtime_config\" in order to distinguish it from future more generic \"config\" package\r\nwhich could be used for keeping dynamic config interfaces exposed by cs_manager, however this is not yet implemented.",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "ConfigController"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/config/event-processor": {
+      "get": {
+        "operationId": "ConfigController_Read",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/runtime_configConfig"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "ConfigController"
+        ]
+      },
+      "post": {
+        "operationId": "ConfigController_Add",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/runtime_configConfig"
+            }
+          }
+        ],
+        "tags": [
+          "ConfigController"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "ConfigConfigJSON": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "historyControl": {
+          "$ref": "#/definitions/ConfigJSONHistoryControl"
+        }
+      }
+    },
+    "ConfigJSONHistoryControl": {
+      "type": "string",
+      "enum": [
+        "NONE",
+        "WITH_THREATS",
+        "ALL"
+      ],
+      "default": "NONE",
+      "title": "- NONE: Do not save processed events\n - WITH_THREATS: Save only events with at least one threat detected\n - ALL: Save all events after processing"
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "runtime_configConfig": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "config": {
+          "$ref": "#/definitions/ConfigConfigJSON"
+        }
+      }
+    }
+  }
+}

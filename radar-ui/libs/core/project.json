@@ -1,0 +1,23 @@
+{
+    "name": "core",
+    "projectType": "library",
+    "root": "libs/core",
+    "sourceRoot": "libs/core/src",
+    "prefix": "runtime-radar",
+    "targets": {
+        "lint": {
+            "executor": "@nx/linter:eslint",
+            "options": {
+                "lintFilePatterns": ["libs/core/src/**/*.ts", "libs/core/src/**/*.html"]
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": ["coverage/libs/core"],
+            "options": {
+                "jestConfig": "libs/core/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    }
+}

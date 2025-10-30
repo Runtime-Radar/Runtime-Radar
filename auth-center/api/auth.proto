@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package auth;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/protobuf/empty.proto";
+
+option go_package = "./api";
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "Auth API";
+  };
+};
+
+
+// The auth service definition.
+service AuthController {
+    // Sign in and get token pair
+    rpc SignIn (SignInReq) returns (SignInResp) {
+      option (google.api.http) = {
+        post: "/api/v1/signin"
+        body: "*"
+      };
+    }
+
+    // Refresh token pair
+    rpc RefreshTokens (google.protobuf.Empty) returns (SignInResp) {
+      option (google.api.http) = {
+        get: "/api/v1/tokens"
+      };
+    }
+}
+
+message SignInReq {
+    string username = 1;
+    string password = 2;
+}
+
+message SignInResp {
+    string access_token = 1;
+    string token_type = 2;
+    string refresh_token = 3;
+}
+

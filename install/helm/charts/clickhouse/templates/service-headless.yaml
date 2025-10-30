@@ -1,0 +1,72 @@
+{{- $tlsEnabled := eq (include "common.tls.enabled" .) "true" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "common.fullname" . }}-headless
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+  {{- with (include "common.mergeAnnotations" (dict "context" . "value" .Values.service.headless.annotations)) }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+    - name: http
+      targetPort: http
+      port: {{ .Values.service.ports.http }}
+      protocol: TCP
+    {{- if $tlsEnabled }}
+    - name: https
+      targetPort: https
+      port: {{ .Values.service.ports.https }}
+      protocol: TCP
+    {{- end }}
+    - name: tcp
+      targetPort: tcp
+      port: {{ .Values.service.ports.tcp }}
+      protocol: TCP
+    {{- if $tlsEnabled }}
+    - name: tcp-secure
+      targetPort: tcp-secure
+      port: {{ .Values.service.ports.tcpSecure }}
+      protocol: TCP
+    {{- end }}
+    {{- if .Values.keeper.enabled }}
+    - name: tcp-keeper
+      targetPort: tcp-keeper
+      port: {{ .Values.service.ports.keeper }}
+      protocol: TCP
+    - name: tcp-keeperinter
+      targetPort: tcp-keeperinter
+      port: {{ .Values.service.ports.keeperInter }}
+      protocol: TCP
+    {{- if $tlsEnabled }}
+    - name: tcp-keepertls
+      targetPort: tcp-keepertls
+      port: {{ .Values.service.ports.keeperSecure }}
+      protocol: TCP
+    {{- end }}
+    {{- end }}
+    - name: tcp-mysql
+      targetPort: tcp-mysql
+      port: {{ .Values.service.ports.mysql }}
+      protocol: TCP
+    - name: tcp-postgresql
+      targetPort: tcp-postgresql
+      port: {{ .Values.service.ports.postgresql }}
+      protocol: TCP
+    - name: http-intersrv
+      targetPort: http-intersrv
+      port: {{ .Values.service.ports.interserver }}
+      protocol: TCP
+    {{- if (eq (include "common.metrics.enabled" .) "true") }}
+    - name: http-metrics
+      targetPort: http-metrics
+      port: {{ .Values.service.ports.metrics }}
+      protocol: TCP
+    {{- end }}
+  selector:
+    {{- include "common.selectorLabels" . | nindent 4 }}

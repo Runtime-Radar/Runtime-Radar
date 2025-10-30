@@ -1,0 +1,40 @@
+name: golangci-lint
+on:
+  pull_request:
+    paths:
+      - '**/go.mod'
+      - '**/go.sum'
+      - '**/*.go'
+      - '.golangci.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - '**/go.mod'
+      - '**/go.sum'
+      - '**/*.go'
+      - '.golangci.yml'
+
+env:
+  GO_VERSION: '1.24'
+  TASK_VERSION: '3.38.0'
+
+jobs:
+  golangci-lint:
+    name: Linter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Task
+        uses: go-task/setup-task@v1
+        with:
+          version: ${{ env.TASK_VERSION }}
+
+      - name: Setup Go ${{ env.GO_VERSION }}
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ env.GO_VERSION }}
+
+      - name: Lint
+        run: task lint

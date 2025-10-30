@@ -1,0 +1,25 @@
+services:
+  postgres:
+    extends:
+      file: docker-compose.yml
+      service: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=cs_test
+
+  test:
+    image: golang:1.24
+    working_dir: /go/src/repo
+    volumes:
+      - .:/go/src/repo
+    depends_on:
+      - postgres
+    networks:
+      - local
+    environment:
+      - POSTGRES_ADDR=postgres
+    command: "go test -race -count=1 -vet=off ./..."
+
+networks:
+  local:

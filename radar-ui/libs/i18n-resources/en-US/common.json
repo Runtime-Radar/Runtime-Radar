@@ -1,0 +1,109 @@
+{
+    "Common.Pseudo.Text.AppName": "Runtime Radar",
+
+    "Common.Pseudo.Notification.BadRequest": "Incorrect request parameters",
+    "Common.Pseudo.Notification.Forbidden": "You do not have permissions to view this page. Contact the administrator.",
+    "Common.Pseudo.Notification.NotFound": "Page not found",
+    "Common.Pseudo.Notification.UnprocessableEntity": "Failed to get a response from the server. Contact the administrator.",
+    "Common.Pseudo.Notification.ServiceUnavailable": "The server is temporarily unavailable. Contact the administrator.",
+    "Common.Pseudo.Notification.TranslationLoadError": "Failed to load translation",
+    "Common.Pseudo.Notification.TokenExpired": "Your session is over. Please sign in again.",
+    "Common.Pseudo.Notification.PasswordExpired": "The password was changed by the administrator. Log in again.",
+    "Common.Pseudo.Notification.ChunkLoadFailed": "Failed to load the page",
+    "Common.Pseudo.Notification.UpdatePage": "Reload the page",
+    "Common.Pseudo.Notification.ClusterSwitched": "The cluster is switched",
+    "Common.Pseudo.Notification.HostValidationFailed": "The selected cluster is unavailable. Contact the administrator.",
+
+    "Common.Pseudo.Notification.CertAuthorityInvalid.Title": "Could not connect to the cluster",
+    "Common.Pseudo.Notification.CertAuthorityInvalid.Caption": "Check the network access or follow the child cluster URL by adding the URL to the security exceptions or ignoring the warning about an insecure connection, and then try again.",
+    "Common.Pseudo.Notification.CertAuthorityInvalid.Open": "Open",
+    "Common.Pseudo.Notification.CertAuthorityInvalid.TryAgain": "Try again",
+
+    "Common.Pseudo.Label.Cluster": "Cluster",
+    "Common.Pseudo.Label.CentralCluster": "Central",
+
+    "Common.Pseudo.EventAction.Block": "Block",
+    "Common.Pseudo.EventAction.Notify": "Notify",
+
+    "Common.Form.Label.SelectAll": "Select all",
+    "Common.Form.Placeholder.Datepicker": "yyyy-mm-dd",
+    "Common.Form.Placeholder.Timepicker": "hh:mm:ss",
+    "Common.Form.Error.Format": "Incorrect format",
+    "Common.Form.Error.Segment": "This IP address cannot be used",
+    "Common.Form.PasswordRules.Length": "From <<<min>>> to <<<max>>> characters",
+    "Common.Form.PasswordRules.UpperLatin": "One uppercase Latin letter",
+    "Common.Form.PasswordRules.LowerLatin": "One lowercase Latin letter",
+    "Common.Form.PasswordRules.Digit": "One digit",
+    "Common.Form.Hint.Optional": "Optional field",
+
+    "Common.Pseudo.Locale.En": "English",
+
+    "Common.Pseudo.Menu.Management": "Management",
+    "Common.Pseudo.Menu.Cluster": "Clusters",
+    "Common.Pseudo.Menu.Runtime": "Runtime",
+    "Common.Pseudo.Menu.Rule": "Rules",
+    "Common.Pseudo.Menu.Integration": "Notification services",
+    "Common.Pseudo.Menu.User": "Users",
+    "Common.Pseudo.Menu.Token": "Access tokens",
+    "Common.Pseudo.Menu.Password": "Change password",
+    "Common.Pseudo.Menu.Label.AppVersion": "System version: <<<version>>>",
+
+    "Common.Pseudo.Severity.Undefined": "None",
+    "Common.Pseudo.Severity.None": "Not assigned",
+    "Common.Pseudo.Severity.Low": "Low",
+    "Common.Pseudo.Severity.Medium": "Medium",
+    "Common.Pseudo.Severity.High": "High",
+    "Common.Pseudo.Severity.Critical": "Critical",
+    "Common.Pseudo.Severity.NoneNotifyLabel": "Do not notify",
+
+    "Common.Pseudo.Verdict.None": "Not assigned",
+    "Common.Pseudo.Verdict.Clean": "Benign",
+    "Common.Pseudo.Verdict.Unwanted": "Unwanted",
+    "Common.Pseudo.Verdict.Dangerous": "Dangerous",
+
+    "Common.Pseudo.ClusterStatus.Registered": "Connected",
+    "Common.Pseudo.ClusterStatus.Unregistered": "Not connected",
+
+    "Common.Pseudo.DetectorType.Runtime": "Runtime",
+
+    "Common.Pseudo.ScanType.Runtime": "Runtime",
+
+    "Common.Clipboard.Notification.CopiedToClipboard": "Copied to clipboard",
+    "Common.Clipboard.Notification.ClipboardDenied": "Configure a secure connection to copy to the clipboard",
+    "Common.Clipboard.Button.CopyToClipboard": "Copy",
+
+    "Common.ChangePasswordModal.Title.Change": "Change password",
+    "Common.ChangePasswordModal.Placeholder.Password": "Type new password",
+    "Common.ChangePasswordModal.Hint.ShowPassword": "Show password",
+    "Common.ChangePasswordModal.Hint.HidePassword": "Hide password",
+    "Common.ChangePasswordModal.Button.Confirm": "Save",
+    "Common.ChangePasswordModal.Button.Cancel": "Cancel",
+
+    "Common.RuleSidepanel.Alert.Text.DeletedRule": "The response rule was deleted from the system and is no longer in use",
+    "Common.RuleSidepanel.SubTitle.ImageNames": "Images from the specified repositories",
+    "Common.RuleSidepanel.SubTitle.Registries": "Repositories",
+    "Common.RuleSidepanel.SubTitle.Namespaces": "Namespaces",
+    "Common.RuleSidepanel.SubTitle.Pods": "Pods",
+    "Common.RuleSidepanel.SubTitle.Nodes": "Nodes",
+    "Common.RuleSidepanel.SubTitle.Containers": "Containers",
+    "Common.RuleSidepanel.SubTitle.Binaries": "Binaries",
+    "Common.RuleSidepanel.SubTitle.Notify": "Notify",
+    "Common.RuleSidepanel.Text.RuntimeSeverityNotify": "Notify about threats of this severity and higher.",
+    "Common.RuleSidepanel.SubTitle.Recipients": "Notification templates",
+    "Common.RuleSidepanel.SubTitle.WhiteList": "Exclusions",
+    "Common.RuleSidepanel.Text.RuntimeWhiteList" : "Skip the rule for these threats.",
+    "Common.RuleSidepanel.Button.Update": "Edit",
+    "Common.RuleSidepanel.Button.Delete": "Delete",
+
+    "Common.DetectorTreeSelect.Text.EmptySearch": "Nothing found",
+    "Common.DetectorTreeSelect.Text.Deleted": "This detector is deleted.",
+    "Common.DetectorTreeSelect.Link.RemoveOption": "Remove from list",
+
+    "Common.ErrorPage.Header.Title": "Page not found",
+    "Common.ErrorPage.Text.NotFound": "Page not found",
+    "Common.ErrorPage.Button.MainPage": "Go to main page",
+
+    "Common.ForbiddenPage.Header.Title": "Access denied",
+    "Common.ForbiddenPage.Text.NoPermission": "You have no permissions to view this page. Contact the administrator.",
+    "Common.ForbiddenPage.Button.MainPage": "Go to main page"
+}

@@ -1,0 +1,21 @@
+:host {
+    display: block;
+}
+
+.shared-empty-screen {
+    &-image {
+        width: 256px;
+        height: 185px;
+        position: relative;
+
+        img {
+            display: block;
+            position: absolute;
+            bottom: 0;
+        }
+    }
+
+    &-actions:empty {
+        margin: 0 !important;
+    }
+}

@@ -1,0 +1,34 @@
+services:
+  postgres:
+    extends:
+      file: docker-compose.yml
+      service: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=cs_test
+
+  redis:
+    extends:
+      file: docker-compose.yml
+      service: redis
+    ports:
+      - "6379:6379"
+
+  test:
+    image: golang:1.24
+    working_dir: /go/src/repo
+    volumes:
+      - .:/go/src/repo
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - local
+    environment:
+      - POSTGRES_ADDR=postgres
+      - REDIS_ADDR=redis
+    command: "go test -race -count=1 -vet=off ./..."
+
+networks:
+  local:

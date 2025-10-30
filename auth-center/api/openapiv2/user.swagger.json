@@ -1,0 +1,437 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "User API",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "UserController"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/user": {
+      "get": {
+        "summary": "Get information about all users",
+        "operationId": "UserController_ReadList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userUserListResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "UserController"
+        ]
+      },
+      "post": {
+        "summary": "Create new user",
+        "operationId": "UserController_Create",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userUserResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/userCreateUserReq"
+            }
+          }
+        ],
+        "tags": [
+          "UserController"
+        ]
+      }
+    },
+    "/api/v1/user/{id}": {
+      "get": {
+        "summary": "Get information about user by id",
+        "operationId": "UserController_Read",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userUserResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "example: 3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UserController"
+        ]
+      },
+      "delete": {
+        "summary": "Delete user",
+        "operationId": "UserController_Delete",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userDeleteUserResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "example: 3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "UserController"
+        ]
+      },
+      "patch": {
+        "summary": "Update information about user",
+        "operationId": "UserController_Update",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/userUserResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "example: 3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "roleId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "example: 3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                },
+                "mappingRoleId": {
+                  "type": "string",
+                  "format": "uuid",
+                  "description": "example: 3fa85f64-5717-4562-b3fc-2c963f66afa6"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "UserController"
+        ]
+      }
+    },
+    "/api/v1/user/{id}/password": {
+      "patch": {
+        "summary": "Change user password",
+        "operationId": "UserController_ChangePassword",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/authSignInResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "description": "example: 3fa85f64-5717-4562-b3fc-2c963f66afa6",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "UserController"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "ReadRoleRespPermission": {
+      "type": "object",
+      "properties": {
+        "actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "ReadRoleRespRolePermissions": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "roles": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "rules": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "scanning": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "events": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "registries": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "images": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "integrations": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "notifications": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "systemSettings": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "clusters": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "invalidatePublicAccessTokens": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "publicAccessTokens": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        }
+      }
+    },
+    "authSignInResp": {
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "type": "string"
+        },
+        "tokenType": {
+          "type": "string"
+        },
+        "refreshToken": {
+          "type": "string"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "roleReadRoleResp": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "roleName": {
+          "type": "string"
+        },
+        "rolePermissions": {
+          "$ref": "#/definitions/ReadRoleRespRolePermissions"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "userCreateUserReq": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "authType": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "roleId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "example: 3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        },
+        "mappingRoleId": {
+          "type": "string"
+        }
+      }
+    },
+    "userDeleteUserResp": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "example: 3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        }
+      }
+    },
+    "userUserListResp": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/userUserResp"
+          }
+        }
+      }
+    },
+    "userUserResp": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "example: 3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        },
+        "username": {
+          "type": "string"
+        },
+        "authType": {
+          "type": "string"
+        },
+        "lastPasswordChangedAt": {
+          "type": "string",
+          "format": "int64"
+        },
+        "email": {
+          "type": "string"
+        },
+        "roleId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "example: 3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        },
+        "mappingRoleId": {
+          "type": "string",
+          "format": "uuid",
+          "description": "example: 3fa85f64-5717-4562-b3fc-2c963f66afa6"
+        },
+        "role": {
+          "$ref": "#/definitions/roleReadRoleResp"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{{- define "common.cs.service" -}}
+{{- $context := hasKey . "context" | ternary .context . -}}
+{{- with $context -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "common.name" . }}
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+  {{- $annotations := include "common.mergeAnnotations" (dict "context" . "value" (.Values.service).annotations) | fromYaml }}
+  {{- if eq (include "common.tls.enabled" .) "true" }}
+  {{- $annotations = (.Values.service).tlsAnnotations | default dict | merge $annotations }}
+  {{- end }}
+  {{- with $annotations }}
+  annotations:
+    {{- tpl (toYaml .) $ | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ default "ClusterIP" (.Values.service).type }}
+  ports:
+    {{- range $key, $val := (.Values.service).ports }}
+    - name: {{ $key }}
+      targetPort: {{ $key }}
+      port: {{ $val }}
+      protocol: TCP
+      {{- if and (eq ($context.Values.service).type "NodePort") (($context.Values.service).nodePorts | default dict | pluck $key) }}
+      nodePort: {{ get ($context.Values.service).nodePorts $key }}
+      {{- end }}
+    {{- end }}
+  selector:
+    {{- include "common.selectorLabels" . | nindent 4 }}
+{{- end -}}
+{{- end -}}

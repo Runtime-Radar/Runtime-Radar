@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15.0
+    ports:
+      - "5432:5432"
+    networks:
+      - local
+    environment:
+      - POSTGRES_USER=cs
+      - POSTGRES_PASSWORD=cs
+      - POSTGRES_DB=cs
+
+  public-api:
+    build:
+      context: .
+    image: public-api
+    ports:
+      - "9000:9000"
+    command: --postgresAddr=postgres --logLevel=INFO
+    depends_on:
+      - postgres
+    networks:
+      cs:
+        aliases:
+          - public-api
+      local:
+
+networks:
+  local:
+  cs:
+    external: true

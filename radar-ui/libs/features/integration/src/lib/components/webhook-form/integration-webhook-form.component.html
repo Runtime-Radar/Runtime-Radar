@@ -1,0 +1,90 @@
+<form [formGroup]="form" *transloco="let tIntegration; prefix: 'integration'">
+    <section class="kbq-form__row kbq-form-row_margin">
+        <label for="name" class="kbq-form__label">
+            {{ tIntegration('Integration.CreateForm.Label.Name') }}
+        </label>
+        <kbq-form-field class="kbq-form__control">
+            <input kbqInput
+                   cdkFocusInitial
+                   type="text"
+                   id="name"
+                   formControlName="name"
+                   data-testid="integration-name-input">
+        </kbq-form-field>
+    </section>
+
+    <section class="kbq-form__row kbq-form-row_margin">
+        <h4 class="kbq-subheading layout-margin-no-top layout-margin-no-bottom">
+            {{ tIntegration('Integration.CreateForm.SubTitle.Params') }}
+        </h4>
+    </section>
+
+    <section class="kbq-form__row kbq-form-row_margin"
+             *transloco="let tCommon; prefix: 'common'">
+        <label for="url" class="kbq-form__label">
+            {{ tIntegration('Integration.CreateForm.Label.Url') }}
+        </label>
+        <kbq-form-field class="kbq-form__control">
+            <input kbqInput
+                   type="text"
+                   id="url"
+                   formControlName="url"
+                   placeholder="{{ tIntegration('Integration.CreateForm.Placeholder.Url') }}"
+                   data-testid="integration-server-input">
+            @if (form.get('url')?.hasError('pattern')) {
+                <kbq-hint color="error">{{ tCommon('Common.Form.Error.Format') }}</kbq-hint>
+            }
+            @if (form.get('url')?.hasError('segment')) {
+                <kbq-hint color="error">{{ tCommon('Common.Form.Error.Segment') }}</kbq-hint>
+            }
+        </kbq-form-field>
+    </section>
+
+    <section class="kbq-form__row kbq-form-row_margin">
+        <label for="login" class="kbq-form__label">
+            {{ tIntegration('Integration.CreateForm.Label.Username') }}
+        </label>
+        <kbq-form-field class="kbq-form__control">
+            <input kbqInput
+                   type="text"
+                   id="login"
+                   formControlName="login"
+                   data-testid="integration-username-input">
+        </kbq-form-field>
+    </section>
+
+    <section class="kbq-form__row kbq-form-row_margin">
+        <label for="password" class="kbq-form__label">
+            {{ tIntegration('Integration.CreateForm.Label.Password') }}
+        </label>
+        <kbq-form-field class="kbq-form__control">
+            <input kbqInputPassword
+                   type="password"
+                   id="password"
+                   formControlName="password"
+                   data-testid="integration-password-input">
+            <kbq-password-toggle
+                    [kbqTooltipNotHidden]="tIntegration('Integration.CreateForm.Hint.HidePassword')"
+                    [kbqTooltipHidden]="tIntegration('Integration.CreateForm.Hint.ShowPassword')"></kbq-password-toggle>
+        </kbq-form-field>
+    </section>
+
+    <section class="kbq-form__row kbq-form-row_margin">
+        <label for="ca" class="kbq-form__label">
+            {{ tIntegration('Integration.CreateForm.Label.Ca') }}
+        </label>
+        <kbq-form-field class="kbq-form__control">
+            <textarea kbqTextarea
+                      id="ca"
+                      formControlName="ca"
+                      data-testid="integration-ca-textarea"></textarea>
+        </kbq-form-field>
+    </section>
+
+    <section class="kbq-form__row">
+        <kbq-checkbox formControlName="isInsecure"
+                      data-testid="integration-insecure-checkbox">
+            {{ tIntegration('Integration.CreateForm.Label.Insecure') }}
+        </kbq-checkbox>
+    </section>
+</form>

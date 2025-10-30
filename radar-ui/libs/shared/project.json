@@ -1,0 +1,23 @@
+{
+    "name": "shared",
+    "projectType": "library",
+    "root": "libs/shared",
+    "sourceRoot": "libs/shared/src",
+    "prefix": "runtime-radar",
+    "targets": {
+        "lint": {
+            "executor": "@nx/linter:eslint",
+            "options": {
+                "lintFilePatterns": ["libs/shared/src/**/*.ts", "libs/shared/src/**/*.html"]
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": ["coverage/libs/shared"],
+            "options": {
+                "jestConfig": "libs/shared/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    }
+}

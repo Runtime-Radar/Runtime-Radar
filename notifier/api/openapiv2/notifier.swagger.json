@@ -1,0 +1,246 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Notifier API",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "Notifier"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/notify": {
+      "post": {
+        "summary": "Sends a notification",
+        "operationId": "Notifier_Notify",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/notifierNotifyReq"
+            }
+          }
+        ],
+        "tags": [
+          "Notifier"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "EventThreat": {
+      "type": "object",
+      "properties": {
+        "detectorId": {
+          "type": "string"
+        },
+        "detectorName": {
+          "type": "string"
+        },
+        "detectorVersion": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "detectorDescription": {
+          "type": "string"
+        },
+        "severity": {
+          "type": "string"
+        }
+      }
+    },
+    "RuntimeEventEvent": {
+      "type": "object",
+      "properties": {
+        "threats": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/EventThreat"
+          }
+        },
+        "eventType": {
+          "type": "string"
+        },
+        "processPid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "processUid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "processBinary": {
+          "type": "string"
+        },
+        "processArguments": {
+          "type": "string"
+        },
+        "processSetuid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "processSetgid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "processCapEffective": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "processCapPermitted": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "parentPid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "parentUid": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "parentBinary": {
+          "type": "string"
+        },
+        "parentArguments": {
+          "type": "string"
+        },
+        "podNamespace": {
+          "type": "string"
+        },
+        "podName": {
+          "type": "string"
+        },
+        "containerId": {
+          "type": "string"
+        },
+        "containerName": {
+          "type": "string"
+        },
+        "containerImage": {
+          "type": "string"
+        },
+        "nodeName": {
+          "type": "string"
+        },
+        "functionName": {
+          "type": "string"
+        },
+        "functionArgs": {
+          "type": "string",
+          "title": "function_args represents json-serialized list of function's args"
+        },
+        "functionReturn": {
+          "type": "string",
+          "title": "function_return represents json-serialized function's return value"
+        }
+      }
+    },
+    "notifierMessage": {
+      "type": "object",
+      "properties": {
+        "notificationId": {
+          "type": "string"
+        },
+        "runtimeEvent": {
+          "$ref": "#/definitions/notifierRuntimeEvent"
+        }
+      },
+      "description": "The request message containing notification's id and event to notify about."
+    },
+    "notifierNotifyReq": {
+      "type": "object",
+      "properties": {
+        "notifications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/notifierMessage"
+          }
+        }
+      }
+    },
+    "notifierRuntimeEvent": {
+      "type": "object",
+      "properties": {
+        "event": {
+          "$ref": "#/definitions/RuntimeEventEvent"
+        },
+        "severity": {
+          "type": "string"
+        },
+        "registeredAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ruleName": {
+          "type": "string"
+        },
+        "block": {
+          "type": "boolean"
+        },
+        "eventId": {
+          "type": "string",
+          "title": "id of event in history-api"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

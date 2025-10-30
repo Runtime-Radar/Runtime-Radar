@@ -1,0 +1,34 @@
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:25.4.3
+    networks:
+      - local
+    environment:
+      - CLICKHOUSE_USER=clickhouse
+      - CLICKHOUSE_PASSWORD=clickhouse
+      - CLICKHOUSE_DB=cs
+      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
+
+  rabbitmq:
+    image: rabbitmq:4.0-management
+    networks:
+      - local
+
+  history-api:
+    build:
+      context: .
+    image: history-api
+    restart: always
+    ports:
+      - "8000:8000"
+      - "9000:9000"
+    command: --postgresAddr=postgres --clickhouseAddr=clickhouse:9000 --rabbitAddr=rabbitmq --logLevel=INFO
+    depends_on:
+      - postgres
+      - clickhouse
+      - rabbitmq
+    networks:
+      local:
+
+networks:
+  local:

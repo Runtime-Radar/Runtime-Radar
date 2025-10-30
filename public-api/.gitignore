@@ -1,0 +1,12 @@
+# .vscode
+.idea
+# .task
+/.task/checksum/tools
+*.exe
+/bin
+/cmd/public-api/public-api
+
+# helm dependencies
+.helm/charts
+.helm/Chart.lock
+docs/openapi3.0.yaml

@@ -1,0 +1,453 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Rule API",
+    "version": "version not set",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "RuleController"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/rule": {
+      "post": {
+        "operationId": "RuleController_Create",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ruleCreateRuleResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ruleRule"
+            }
+          }
+        ],
+        "tags": [
+          "RuleController"
+        ]
+      }
+    },
+    "/api/v1/rule/notify-targets-in-use": {
+      "get": {
+        "summary": "NotifyTargetsInUse returns true if at least one of given notification targets used by rule.\nMethod is not considering softly deleted rules.",
+        "operationId": "RuleController_NotifyTargetsInUse",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ruleNotifyTargetsInUseResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "targets",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          }
+        ],
+        "tags": [
+          "RuleController"
+        ]
+      }
+    },
+    "/api/v1/rule/page/{pageNum}": {
+      "get": {
+        "operationId": "RuleController_ListPage",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ruleListRulePageResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "pageNum",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RuleController"
+        ]
+      }
+    },
+    "/api/v1/rule/{id}": {
+      "get": {
+        "operationId": "RuleController_Read",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ruleReadRuleResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RuleController"
+        ]
+      },
+      "delete": {
+        "operationId": "RuleController_Delete",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RuleController"
+        ]
+      },
+      "patch": {
+        "operationId": "RuleController_Update",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RuleControllerUpdateBody"
+            }
+          }
+        ],
+        "tags": [
+          "RuleController"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "RuleControllerUpdateBody": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "rule": {
+          "$ref": "#/definitions/RuleRuleJSON"
+        },
+        "type": {
+          "$ref": "#/definitions/ruleRuleType",
+          "title": "type indicates what type of enforcement rule is used for (now support just runtime.)"
+        },
+        "scope": {
+          "$ref": "#/definitions/RuleScope"
+        }
+      }
+    },
+    "RuleJSONBlock": {
+      "type": "object",
+      "properties": {
+        "severity": {
+          "type": "string"
+        }
+      }
+    },
+    "RuleJSONNotify": {
+      "type": "object",
+      "properties": {
+        "severity": {
+          "type": "string"
+        },
+        "targets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "RuleJSONWhitelist": {
+      "type": "object",
+      "properties": {
+        "threats": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "binaries": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "RuleRuleJSON": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "block": {
+          "$ref": "#/definitions/RuleJSONBlock"
+        },
+        "notify": {
+          "$ref": "#/definitions/RuleJSONNotify"
+        },
+        "whitelist": {
+          "$ref": "#/definitions/RuleJSONWhitelist"
+        }
+      }
+    },
+    "RuleScope": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "imageNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "registries": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "clusters": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "namespaces": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pods": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "containers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "ruleCreateRuleResp": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "ruleListRulePageResp": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/ruleRule"
+          }
+        }
+      }
+    },
+    "ruleNotifyTargetsInUseResp": {
+      "type": "object",
+      "properties": {
+        "inUse": {
+          "type": "boolean"
+        }
+      }
+    },
+    "ruleReadRuleResp": {
+      "type": "object",
+      "properties": {
+        "rule": {
+          "$ref": "#/definitions/ruleRule"
+        },
+        "deleted": {
+          "type": "boolean"
+        }
+      }
+    },
+    "ruleRule": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "rule": {
+          "$ref": "#/definitions/RuleRuleJSON"
+        },
+        "type": {
+          "$ref": "#/definitions/ruleRuleType",
+          "title": "type indicates what type of enforcement rule is used for (now support just runtime.)"
+        },
+        "scope": {
+          "$ref": "#/definitions/RuleScope"
+        }
+      }
+    },
+    "ruleRuleType": {
+      "type": "string",
+      "enum": [
+        "TYPE_RUNTIME"
+      ],
+      "default": "TYPE_RUNTIME"
+    }
+  }
+}

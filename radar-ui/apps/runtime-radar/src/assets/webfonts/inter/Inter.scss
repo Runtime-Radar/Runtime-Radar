@@ -1,0 +1,30 @@
+@mixin add-inter-font($path-to-assets) {
+    @include inter-font($path-to-assets, 'Inter','Thin-Italic', 100, italic);
+    @include inter-font($path-to-assets, 'Inter','Thin', 100, normal);
+    @include inter-font($path-to-assets, 'Inter','ExtraLight-Italic', 200, italic);
+    @include inter-font($path-to-assets, 'Inter','ExtraLight', 200, normal);
+    @include inter-font($path-to-assets, 'Inter','Light-Italic', 300, italic);
+    @include inter-font($path-to-assets, 'Inter','Light', 300, normal);
+    @include inter-font($path-to-assets, 'Inter','Regular-Italic', 400, italic);
+    @include inter-font($path-to-assets, 'Inter','Regular', 400, normal);
+    @include inter-font($path-to-assets, 'Inter','Medium-Italic', 500, italic);
+    @include inter-font($path-to-assets, 'Inter','Medium', 500, normal);
+    @include inter-font($path-to-assets, 'Inter','SemiBold-Italic', 600, italic);
+    @include inter-font($path-to-assets, 'Inter','SemiBold', 600, normal);
+    @include inter-font($path-to-assets, 'Inter','Bold-Italic', 700, italic);
+    @include inter-font($path-to-assets, 'Inter','Bold', 700, normal);
+    @include inter-font($path-to-assets, 'Inter','Black-Italic', 900, italic);
+    @include inter-font($path-to-assets, 'Inter','Black', 900, normal);
+}
+
+@mixin inter-font($path-to-assets, $variant, $type, $weight, $style) {
+    $font-full-path: '#{$path-to-assets}/#{$variant}';
+
+    @font-face {
+        font-family: '#{$variant}';
+        src:
+            url('#{$font-full-path}-#{$type}.woff2') format('woff2');
+        font-weight: $weight;
+        font-style: $style;
+    }
+}

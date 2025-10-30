@@ -1,0 +1,130 @@
+<ng-container *transloco="let tCluster; prefix: 'cluster'">
+    <ng-container *ngrxLet="{
+        clustersResponse: (clustersResponse$ | async)!,
+        activeClusterHost: (activeClusterHost$ | async)
+    } as rxlet">
+        <header class="layout-row layout-align-space-between-center">
+            <h1 class="kbq-display-compact cluster-feature-list-title">{{ tCluster('Cluster.ListPage.Header.Title') }}</h1>
+            <section class="layout-row">
+                <cs-cluster-select-component
+                        [clusters]="clusters$ | async"
+                        [activeClusterHost]="activeClusterHost$ | async"
+                        (selectClusterId)="switchCluster($event)"
+                        testLocator="cluster-cluster-select"></cs-cluster-select-component>
+                @if (rxlet.clustersResponse.total) {
+                    <button kbq-button
+                            kbqStyle="outline"
+                            color="theme-fade"
+                            type="button"
+                            class="layout-margin-left-xl"
+                            [disabled]="!permissions[permissionName.CLUSTERS].has(permissionType.CREATE)"
+                            [routerLink]="clusterRouterName.CREATE"
+                            data-testid="cluster-open-sidepanel-form-button">
+                        {{ tCluster('Cluster.ListPage.Button.Create') }}
+                    </button>
+                }
+            </section>
+        </header>
+
+        @if (rxlet.clustersResponse.total) {
+            <section class="layout-row cluster-feature-list">
+                @for (cluster of rxlet.clustersResponse.clusters; track cluster.id) {
+                    <article class="cluster-feature-list-card"
+                             [ngClass]="{ 'active': cluster.config.own_cs_url === rxlet.activeClusterHost }"
+                             [routerLink]="[cluster.id]"
+                             id="{{ cluster.id }}"
+                             [attr.data-testid]="cluster.name"
+                             *transloco="let tCommon; prefix: 'common'">
+                        <h4 class="kbq-subheading layout-row layout-align-start-center layout-margin-no-top layout-margin-bottom-xxl">
+                            <span class="cluster-feature-list-card-title">{{ cluster.name }}</span>
+                            <kbq-badge [badgeColor]="cluster.status === clusterStatus.REGISTERED ? badgeColors.FadeSuccess : badgeColors.FadeError" [outline]="true">
+                                {{ tCommon(cluster.status | clusterStatusLocalization) }}
+                            </kbq-badge>
+                        </h4>
+
+                        <ul class="cluster-feature-list-card-list">
+                            <li class="layout-row layout-align-start-center">
+                                <span class="kbq-text-compact cs-text-gray cluster-feature-list-card-wcolumn">
+                                    {{ tCluster('Cluster.ListPage.Table.Type') }}
+                                </span>
+                                <span>{{ tCluster('Cluster.Pseudo.Type.Parent') }}</span>
+                            </li>
+                            <li class="layout-row layout-align-start-center">
+                                <span class="kbq-text-compact cs-text-gray cluster-feature-list-card-wcolumn">
+                                    {{ tCluster('Cluster.ListPage.Table.Date') }}
+                                </span>
+                                <span>{{ cluster.created_at | dateFormatter: dateShortFormat }}</span>
+                            </li>
+                            <li class="layout-row layout-align-start-center">
+                                <span class="kbq-text-compact cs-text-gray cluster-feature-list-card-wcolumn">
+                                    {{ tCluster('Cluster.ListPage.Table.Url') }}
+                                </span>
+                                @if (cluster.config.own_cs_url) {
+                                    <a class="kbq-link" href="{{ cluster.config.own_cs_url }}" target="_blank">
+                                        {{ cluster.config.own_cs_url || '—' }}
+                                    </a>
+                                } @else {
+                                    —
+                                }
+                            </li>
+                        </ul>
+
+                        <div class="layout-row cluster-feature-list-card-action">
+                            <cs-cluster-feature-edit-popover-component
+                                    [cluster]="cluster"
+                                    [disabled]="!permissions[permissionName.CLUSTERS].has(permissionType.UPDATE)"
+                                    (click)="$event.stopPropagation()"
+                                    (nameChange)="changeName($event)"></cs-cluster-feature-edit-popover-component>
+                            @if (cluster.config.own_cs_url === rxlet.activeClusterHost) {
+                                <span kbqTooltip="{{ tCluster('Cluster.ListPage.Hint.DeleteCluster') }}"
+                                      [kbqPlacement]="tooltipPlacements.Left">
+                                    <ng-container *ngTemplateOutlet="deleteClusterButton"></ng-container>
+                                </span>
+                            } @else {
+                                <ng-container *ngTemplateOutlet="deleteClusterButton"></ng-container>
+                            }
+
+                            <ng-template #deleteClusterButton>
+                                <button kbq-button
+                                        kbqStyle="transparent"
+                                        color="contrast"
+                                        type="button"
+                                        class="kbq-button-icon"
+                                        [disabled]="!permissions[permissionName.CLUSTERS].has(permissionType.DELETE) || cluster.config.own_cs_url === rxlet.activeClusterHost"
+                                        (click)="openDeleteModal(cluster.id, cluster.status); $event.stopPropagation()"
+                                        data-testid="cluster-delete-button">
+                                    <i kbq-icon="kbq-trash_16"></i>
+                                </button>
+                            </ng-template>
+                        </div>
+                    </article>
+                }
+            </section>
+        }
+
+        <cs-paginator-component
+                isShowFirstLastButtons
+                [count]="rxlet.clustersResponse.total"
+                [pageSize]="paginatorPageSize"
+                [pageIndex]="(pageIndex$ | async)!"
+                (pageChange)="changePage($event)"
+                testLocator="cluster"></cs-paginator-component>
+
+        @if (!rxlet.clustersResponse.total) {
+            <cs-empty-screen-component
+                    imageUrl="/assets/koobiq/light/folder-plus_256@2x.png"
+                    [title]="tCluster('Cluster.ListPage.SubHeading.EmptyResult')"
+                    [description]="tCluster('Cluster.ListPage.Text.EmptyResult')">
+                <button kbq-button
+                        kbqStyle="outline"
+                        color="theme-fade"
+                        type="button"
+                        [disabled]="!permissions[permissionName.CLUSTERS].has(permissionType.CREATE)"
+                        [routerLink]="clusterRouterName.CREATE"
+                        data-testid="cluster-open-sidepanel-form-empty-button">
+                    {{ tCluster('Cluster.ListPage.Button.Create') }}
+                </button>
+            </cs-empty-screen-component>
+        }
+    </ng-container>
+</ng-container>

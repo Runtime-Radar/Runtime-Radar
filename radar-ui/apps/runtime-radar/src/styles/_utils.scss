@@ -1,0 +1,20 @@
+.kbq-table .cs-separator {
+    display: inline-block;
+}
+
+.cs-separator:not(:last-child)::after {
+    margin-right: 4px;
+    content: ',';
+}
+
+.cs-cursor-pointer {
+    cursor: pointer;
+}
+
+.cs-text-gray {
+    color: #6d7a86; // @todo: replace to koobiq token
+}
+
+.cs-help-hover {
+    cursor: help;
+}

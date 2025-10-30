@@ -1,0 +1,422 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Notification API",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "NotificationController"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/notification": {
+      "post": {
+        "operationId": "NotificationController_Create",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/notificationCreateNotificationResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "Notifications is a list of provider's ids to send notification to.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/notificationNotification"
+            }
+          }
+        ],
+        "tags": [
+          "NotificationController"
+        ]
+      }
+    },
+    "/api/v1/notification/default-template": {
+      "get": {
+        "operationId": "NotificationController_DefaultTemplate",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/notificationDefaultTemplateResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "integrationType",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "eventType",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "NotificationController"
+        ]
+      }
+    },
+    "/api/v1/notification/list": {
+      "get": {
+        "operationId": "NotificationController_List",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/notificationListNotificationResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "integrationId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "eventType",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "NotificationController"
+        ]
+      }
+    },
+    "/api/v1/notification/{id}": {
+      "get": {
+        "operationId": "NotificationController_Read",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/notificationReadNotificationResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "NotificationController"
+        ]
+      },
+      "delete": {
+        "operationId": "NotificationController_Delete",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "NotificationController"
+        ]
+      },
+      "patch": {
+        "operationId": "NotificationController_Update",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/notificationNotificationControllerUpdateBody"
+            }
+          }
+        ],
+        "tags": [
+          "NotificationController"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "notificationCreateNotificationResp": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "notificationDefaultTemplateResp": {
+      "type": "object",
+      "properties": {
+        "template": {
+          "type": "string"
+        }
+      }
+    },
+    "notificationEmailConfig": {
+      "type": "object",
+      "properties": {
+        "subjectTemplate": {
+          "type": "string"
+        }
+      }
+    },
+    "notificationListNotificationResp": {
+      "type": "object",
+      "properties": {
+        "notifications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/notificationNotification"
+          }
+        }
+      }
+    },
+    "notificationNotification": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "integrationType": {
+          "type": "string"
+        },
+        "integrationId": {
+          "type": "string"
+        },
+        "recipients": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "eventType": {
+          "type": "string",
+          "title": "one notification can only handle one type of event, because template depends on it"
+        },
+        "template": {
+          "type": "string"
+        },
+        "email": {
+          "$ref": "#/definitions/notificationEmailConfig"
+        },
+        "webhook": {
+          "$ref": "#/definitions/notificationWebhookConfig"
+        },
+        "syslog": {
+          "$ref": "#/definitions/notificationSyslogConfig"
+        },
+        "centralCsUrl": {
+          "type": "string"
+        },
+        "csClusterId": {
+          "type": "string"
+        },
+        "csClusterName": {
+          "type": "string"
+        },
+        "ownCsUrl": {
+          "type": "string"
+        }
+      },
+      "description": "Notifications is a list of provider's ids to send notification to."
+    },
+    "notificationNotificationControllerUpdateBody": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "integrationType": {
+          "type": "string"
+        },
+        "integrationId": {
+          "type": "string"
+        },
+        "recipients": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "eventType": {
+          "type": "string",
+          "title": "one notification can only handle one type of event, because template depends on it"
+        },
+        "template": {
+          "type": "string"
+        },
+        "email": {
+          "$ref": "#/definitions/notificationEmailConfig"
+        },
+        "webhook": {
+          "$ref": "#/definitions/notificationWebhookConfig"
+        },
+        "syslog": {
+          "$ref": "#/definitions/notificationSyslogConfig"
+        },
+        "centralCsUrl": {
+          "type": "string"
+        },
+        "csClusterId": {
+          "type": "string"
+        },
+        "csClusterName": {
+          "type": "string"
+        },
+        "ownCsUrl": {
+          "type": "string"
+        }
+      },
+      "description": "Notifications is a list of provider's ids to send notification to."
+    },
+    "notificationReadNotificationResp": {
+      "type": "object",
+      "properties": {
+        "notification": {
+          "$ref": "#/definitions/notificationNotification"
+        },
+        "deleted": {
+          "type": "boolean"
+        }
+      }
+    },
+    "notificationSyslogConfig": {
+      "type": "object"
+    },
+    "notificationWebhookConfig": {
+      "type": "object",
+      "properties": {
+        "headers": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "path": {
+          "type": "string"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

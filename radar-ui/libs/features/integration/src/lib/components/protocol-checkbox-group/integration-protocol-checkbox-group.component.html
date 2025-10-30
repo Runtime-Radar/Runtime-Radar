@@ -1,0 +1,14 @@
+<ng-container *transloco="let tIntegration; prefix: 'integration'">
+    <kbq-checkbox [checked]="isTls"
+                  [disabled]="isDisabled || isStartTls"
+                  (change)="changeTls()"
+                  data-testid="integration-tls-checkbox">
+        {{ tIntegration('Integration.CreateForm.Label.UseTls') }}
+    </kbq-checkbox>
+    <kbq-checkbox [checked]="isStartTls"
+                  [disabled]="isDisabled || isTls"
+                  (change)="changeStartTls()"
+                  data-testid="integration-start-tls-checkbox">
+        {{ tIntegration('Integration.CreateForm.Label.UseStartTls') }}
+    </kbq-checkbox>
+</ng-container>

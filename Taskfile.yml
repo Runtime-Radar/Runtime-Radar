@@ -1,0 +1,112 @@
+version: '3'
+
+vars:
+  APP_NAME: cs
+  DOCKER_IMAGE: cs
+  WORKING_DIR:
+    sh: "echo `pwd`"
+  TOOLS_DIR: "{{.WORKING_DIR}}/bin"
+
+includes:
+  radar-ui:
+    taskfile: ./radar-ui/Taskfile.yml
+    dir: ./radar-ui
+  reverse-proxy:
+    taskfile: ./reverse-proxy/Taskfile.yml
+    dir: ./reverse-proxy
+  cluster-manager:
+    taskfile: ./cluster-manager/Taskfile.yml
+    dir: ./cluster-manager
+  history-api:
+    taskfile: ./history-api/Taskfile.yml
+    dir: ./history-api
+  policy-enforcer:
+    taskfile: ./policy-enforcer/Taskfile.yml
+    dir: ./policy-enforcer
+  notifier:
+    taskfile: ./notifier/Taskfile.yml
+    dir: ./notifier
+  event-processor:
+    taskfile: ./event-processor/Taskfile.yml
+    dir: ./event-processor
+  runtime-monitor:
+    taskfile: ./runtime-monitor/Taskfile.yml
+    dir: ./runtime-monitor
+  auth-center:
+    taskfile: ./auth-center/Taskfile.yml
+    dir: ./auth-center
+  public-api:
+    taskfile: ./public-api/Taskfile.yml
+    dir: ./public-api
+  cs-manager:
+    taskfile: ./cs-manager/Taskfile.yml
+    dir: ./cs-manager
+
+tasks:
+  proto:
+    desc: "Generate proto files for all backend services"
+    cmds:
+      - for: &backend-services
+          - auth-center
+          - cluster-manager
+          - history-api
+          - policy-enforcer
+          - notifier
+          - event-processor
+          - runtime-monitor
+          - cs-manager
+        task: "{{.ITEM}}:proto"
+
+  proto-clean:
+    desc: "Clean generated proto files for all backend services"
+    cmds:
+      - for: *backend-services
+        task: "{{.ITEM}}:clean"
+
+  docker-build:
+    desc: "Build docker images for all services"
+    cmds:
+      - for: &docker-services
+          - auth-center
+          - cluster-manager
+          - history-api
+          - policy-enforcer
+          - notifier
+          - event-processor
+          - runtime-monitor
+          - public-api
+          - cs-manager
+          - reverse-proxy
+        task: "{{.ITEM}}:docker-build"
+
+  docker-push:
+    desc: "Push docker images"
+    requires:
+      vars: [IMAGE_REGISTRY]
+    cmds:
+      - for: *docker-services
+        task: "{{.ITEM}}:docker-push"
+        vars:
+          IMAGE_REGISTRY: "{{.IMAGE_REGISTRY}}"
+          IMAGE_TAG: "{{.IMAGE_TAG}}"
+
+  test-backend:
+    desc: "Test all backend services using docker"
+    cmds:
+      - for: *backend-services
+        task: "{{.ITEM}}:test-docker"
+
+  tools:
+    status:
+      - test -e {{.TOOLS_DIR}}/golangci-lint{{exeExt}}
+      - test -e {{.TOOLS_DIR}}/govulncheck{{exeExt}}
+    cmds:
+      - GOBIN={{.TOOLS_DIR}} go install github.com/golangci/golangci-lint/cmd/golangci-lint
+      - GOBIN={{.TOOLS_DIR}} go install golang.org/x/vuln/cmd/govulncheck
+
+  lint:
+    desc: "Run golangci-lint for all backend services"
+    deps: [tools]
+    cmds:
+      - for: *backend-services
+        task: "{{.ITEM}}:lint"

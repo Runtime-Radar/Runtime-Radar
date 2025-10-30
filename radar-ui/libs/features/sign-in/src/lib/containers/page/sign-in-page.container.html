@@ -1,0 +1,55 @@
+<section class="sign-in-feature-page-block layout-row layout-align-center-center"
+         *transloco="let tAuth; prefix: 'auth'">
+    <section class="sign-in-feature-page-form">
+        <div class="layout-row layout-align-center-center sign-in-feature-page-form-logo"
+             *transloco="let tCommon; prefix: 'common'">
+            <img ngSrc="/assets/logotypes/logo.svg"
+                 width="36"
+                 height="36"
+                 alt="{{ tCommon('Common.Pseudo.Text.AppName') }}">
+            <strong class="kbq-title">{{ tCommon('Common.Pseudo.Text.AppName') }}</strong>
+        </div>
+        <form [formGroup]="form" (ngSubmit)="signIn()">
+            <h2 class="kbq-headline sign-in-feature-page-form-title">
+                {{ tAuth('Auth.SignInPage.Header.Title') }}
+            </h2>
+            <kbq-form-field class="sign-in-feature-page-form-field">
+                <input kbqInput
+                       cdkFocusInitial
+                       type="text"
+                       id="username"
+                       formControlName="username"
+                       placeholder="{{ tAuth('Auth.SignInForm.Label.Login') }}"
+                       data-testid="auth-login-input">
+            </kbq-form-field>
+            <kbq-form-field class="sign-in-feature-page-form-field">
+                <input kbqInputPassword
+                       type="password"
+                       id="password"
+                       formControlName="password"
+                       placeholder="{{ tAuth('Auth.SignInForm.Label.Password') }}"
+                       data-testid="auth-password-input">
+                <kbq-password-toggle
+                        [kbqTooltipNotHidden]="tAuth('Auth.SignInForm.Hint.HidePassword')"
+                        [kbqTooltipHidden]="tAuth('Auth.SignInForm.Hint.ShowPassword')"></kbq-password-toggle>
+            </kbq-form-field>
+            <!-- @todo: implement rememberMe checkbox -->
+            <kbq-checkbox class="sign-in-feature-page-form-field"
+                          formControlName="rememberMe"
+                          data-testid="auth-remember-checkbox">
+                {{ tAuth('Auth.SignInForm.Label.RememberMe') }}
+            </kbq-checkbox>
+            <button kbq-button
+                    kbqStyle="outline"
+                    color="theme-fade"
+                    type="submit"
+                    class="sign-in-feature-page-form-button"
+                    *ngrxLet="isSignInProgress$ as isSignInProgress"
+                    [class.kbq-progress]="isSignInProgress"
+                    [disabled]="(isFormValid$ | async) === false || isSignInProgress"
+                    data-testid="auth-sign-in-button">
+                {{ tAuth('Auth.SignInForm.Button.SignIn') }}
+            </button>
+        </form>
+    </section>
+</section>

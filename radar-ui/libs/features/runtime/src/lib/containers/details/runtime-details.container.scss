@@ -1,0 +1,275 @@
+:host {
+    display: block;
+    padding: 32px;
+}
+
+.runtime-feature-details {
+    &-header {
+        margin-bottom: 32px;
+
+        &-title {
+            margin: 0;
+        }
+
+        &-label {
+            max-width: 300px;
+            margin: 0 0 0 32px;
+            transform: translateY(8px);
+            word-wrap: break-word;
+        }
+    }
+
+    &-wrapper {
+        width: 100%;
+        gap: 32px;
+    }
+
+    &-card {
+        position: relative;
+        flex: 1;
+        padding-left: 32px;
+
+        &-container {
+            position: relative;
+            padding: 24px 24px 24px 32px;
+            border-radius: 12px;
+            background-color: #f2f5f9; // @todo: replace to koobiq token
+
+            &-section {
+                position: relative;
+                margin-bottom: 16px;
+                padding: 24px;
+                background-color: #fff; // @todo: replace to koobiq token
+                border: 1px solid #d7dee4;
+                border-radius: 12px;
+                box-shadow: 0 1px 6px rgba(33, 33, 33, 0.06);
+
+                &-title {
+                    margin: 0;
+                }
+
+                &-binary {
+                    max-width: 150px;
+                    word-break: break-all;
+                }
+
+                &-arguments {
+                    flex: 1;
+                    margin-left: 24px;
+                    word-break: break-all;
+                }
+
+                &-list {
+                    gap: 32px;
+                    margin-top: 16px;
+
+                    .kbq-dd {
+                        word-wrap: break-word;
+                    }
+
+                    &-dl {
+                        width: 115px;
+                        max-width: 115px;
+                        min-width: 115px;
+                    }
+
+                    &-dlb {
+                        grid-template-columns: 135px 1fr;
+                    }
+                }
+            }
+        }
+
+        &-entity {
+            position: relative;
+            gap: 24px;
+            margin-top: 24px;
+            padding: 0 24px;
+            word-wrap: break-word;
+
+            &::after {
+                width: 20px;
+                height: calc(100% + 103px);
+                position: absolute;
+                bottom: -103px;
+                left: -64px;
+                border-width: 0 0 1px 1px;
+                border-style: solid;
+                border-color: #bdc7d1; // @todo: replace to koobiq token
+                border-bottom-left-radius: 24px;
+                content: '';
+            }
+
+            &::before {
+                width: 5px;
+                height: 5px;
+                position: absolute;
+                bottom: -105px;
+                left: -50px;
+                z-index: 1;
+                background-color: #fff; // @todo: replace to koobiq token
+                border: 1px solid #bdc7d1;
+                border-radius: 50%;
+                content: '';
+            }
+        }
+    }
+
+    &-grid {
+        min-height: 220px;
+        position: relative;
+        margin-top: 32px;
+        padding: 24px;
+        border: 1px solid #d7dee4; // @todo: replace to koobiq token
+        border-radius: 12px;
+        box-shadow: 0px 1px 6px rgba(33, 33, 33, 0.06);
+
+        &-loader {
+            inset: 24px;
+        }
+
+        &-scroll {
+            width: calc(100vw - 665px);
+            margin: 0 auto 24px auto;
+            overflow: auto;
+        }
+
+        &-paginator {
+            display: flex;
+            gap: 4px;
+        }
+    }
+
+    &-meta {
+        width: 300px;
+        position: relative;
+
+        &-connector {
+            position: relative;
+            margin-bottom: 62px;
+
+            &::after {
+                width: 2px;
+                height: 24px;
+                margin-left: -1px;
+                position: absolute;
+                bottom: -40px;
+                left: 50%;
+                background-color: #bdc7d1; // @todo: replace to koobiq token
+                content: '';
+            }
+
+            &::before {
+                width: 6px;
+                height: 6px;
+                margin-left: -3px;
+                position: absolute;
+                bottom: -22px;
+                left: 50%;
+                background-color: #bdc7d1; // @todo: replace to koobiq token
+                border-radius: 50%;
+                box-shadow: 0 24px #bdc7d1;
+                content: '';
+            }
+        }
+
+        &-incident-card {
+            border-radius: 16px;
+            margin-top: 16px;
+            padding: 24px;
+            background: inherit;
+            gap: 12px;
+        }
+
+        &-threat-button {
+            width: 100%;
+            margin-bottom: 16px;
+            padding: 0;
+            background-color: inherit;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+
+            &:last-of-type {
+                margin-bottom: 0;
+            }
+
+            &-truncate {
+                max-width: 100%;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+            }
+        }
+
+        &-detect-errors {
+            margin-top: 16px;
+            padding: 24px !important;
+
+            &-icon {
+                transform: translateY(-12px);
+            }
+
+            &-break {
+                display: block;
+                width: calc(100% - 24px);
+                white-space: break-spaces;
+                word-wrap: break-word;
+            }
+
+            &-truncate {
+                max-width: 100%;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+            }
+        }
+    }
+}
+
+.runtime-feature-details-card-container-line {
+    &::after {
+        width: 50px;
+        height: 100%;
+        position: absolute;
+        top: 50%;
+        left: -65px;
+        border-width: 1px 0 0 1px;
+        border-style: solid;
+        border-color: #bdc7d1; // @todo: replace to koobiq token
+        border-top-left-radius: 24px;
+        content: '';
+    }
+
+    &::before {
+        width: 5px;
+        height: 5px;
+        position: absolute;
+        top: calc(50% - 3px);
+        left: -20px;
+        z-index: 1;
+        background-color: #fff; // @todo: replace to koobiq token
+        border: 1px solid #bdc7d1;
+        border-radius: 50%;
+        content: '';
+    }
+
+    &--secondary {
+        &::after {
+            top: calc(-50% - 1px);
+            border-width: 1px 0 1px 1px;
+            border-bottom-left-radius: 24px;
+        }
+
+        &::before {
+            top: calc(-50% - 3px);
+        }
+    }
+}
+
+// @todo: replace ::ng-deep to class props
+::ng-deep .runtime-feature-details-meta-detect-errors .kbq-alert__content {
+    width: 100%;
+    margin: 0 !important;
+    padding: 0 !important;
+}

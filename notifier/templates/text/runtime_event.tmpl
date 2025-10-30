@@ -1,0 +1,86 @@
+{
+    {{$event := .event.GetEvent}}
+    "threats": [
+        {{$threats := $event.GetThreats}}
+        {{range $i, $t := $threats}}
+            {
+                "detector_id": "{{$t.GetDetectorId}}",
+                "detector_name": "{{$t.GetDetectorName}}",
+                "detector_version": "{{$t.GetDetectorVersion}}",
+                "detector_description": {{$t.GetDetectorDescription | printf "%q"}},
+                "severity": "{{$t.GetSeverity}}"
+            }{{if not (eq $i (sub (len $threats) 1))}},{{end}}
+        {{end}}
+    ],
+    "event_type": "{{$event.GetEventType}}",
+    "pod_namespace": "{{$event.GetPodNamespace}}",
+    "pod_name": "{{$event.GetPodName}}",
+    "container_id": "{{$event.GetContainerId}}",
+    "container_name": "{{$event.GetContainerName}}",
+    "container_image": "{{$event.GetContainerImage}}",
+    "function_name": "{{$event.GetFunctionName}}",
+    {{if $args := $event.GetFunctionArgs}}
+        "function_args": {{$args}},
+    {{end}}
+    {{if $ret := $event.GetFunctionReturn}}
+        "function_return": {{$ret}},
+    {{end}}
+    {{if $pid := $event.ProcessPid}}
+        "process_pid": {{$pid}},
+    {{end}}
+    {{if $uid := $event.ProcessUid}}
+        "process_uid": {{$uid}},
+    {{end}}
+    {{if $setuid := $event.ProcessSetuid}}
+        "process_setuid": {{$setuid}},
+    {{end}}
+    {{if $setgid := $event.ProcessSetgid}}
+        "process_setgid": {{$setgid}},
+    {{end}}
+    "process_cap_effective": [
+        {{$caps := $event.GetProcessCapEffective}}
+        {{range $i, $cap := $caps}}
+            "{{$cap}}"{{if not (eq $i (sub (len $caps) 1))}},{{end}}
+        {{end}}
+    ],
+    "process_cap_permitted": [
+        {{$caps := $event.GetProcessCapPermitted}}
+        {{range $i, $cap := $caps}}
+            "{{$cap}}"{{if not (eq $i (sub (len $caps) 1))}},{{end}}
+        {{end}}
+    ],
+    "process_binary": "{{$event.GetProcessBinary}}",
+    "process_arguments": "{{$event.GetProcessArguments | escapeJSON}}",
+    "parent_binary": "{{$event.GetParentBinary}}",
+    "parent_arguments": "{{$event.GetParentArguments | escapeJSON}}",
+    {{if $pid := $event.ParentPid}}
+        "parent_pid": {{$pid}},
+    {{end}}
+    {{if $uid := $event.ParentUid}}
+        "parent_uid": {{$uid}},
+    {{end}}
+    "node_name": "{{$event.GetNodeName}}",
+    "severity": "{{.event.GetSeverity}}",
+    "registered_at": {
+        "seconds": {{.event.GetRegisteredAt.GetSeconds}},
+        "nanos": {{.event.GetRegisteredAt.GetNanos}}
+    },
+    "rule_name": "{{.event.GetRuleName}}",
+    "block": {{.event.GetBlock}},
+    {{if .centralCSURL}}
+        "central_cs_url": "{{.centralCSURL}}",
+    {{end}}
+    {{if .csClusterID}}
+        "cs_cluster_id": "{{.csClusterID}}",
+    {{end}}
+    {{if .csClusterName}}
+        "cs_cluster_name": "{{.csClusterName}}",
+    {{end}}
+    {{if .ownCSURL}}
+        "own_cs_url": "{{.ownCSURL}}",
+    {{end}}
+    {{if and .centralCSURL .event.GetEventId}}
+        "event_url": "{{.centralCSURL}}/runtime/events/{{.event.GetEventId}}{{if ne .ownCSURL .centralCSURL}}?clusterUrl={{.ownCSURL}}{{end}}",
+    {{end}}
+    "event_id": "{{.event.GetEventId}}"
+}

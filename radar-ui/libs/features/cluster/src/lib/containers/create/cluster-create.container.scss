@@ -1,0 +1,24 @@
+:host {
+    display: block;
+    padding: 32px;
+}
+
+.cluster-feature-create {
+    &-header {
+        margin-bottom: 32px;
+
+        &-title {
+            margin: 0;
+        }
+    }
+
+    &-form {
+        display: block;
+        max-width: 560px;
+        padding: 1px;
+
+        &--registry {
+            margin-top: 24px;
+        }
+    }
+}

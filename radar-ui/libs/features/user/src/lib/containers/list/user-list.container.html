@@ -1,0 +1,62 @@
+<ng-container *transloco="let tUser; prefix: 'user'">
+    <header class="layout-row layout-align-space-between-center">
+        <h1 class="kbq-display-compact user-feature-list-title">{{ tUser('User.Pseudo.Header.Title') }}</h1>
+        <button kbq-button
+                kbqStyle="outline"
+                color="theme-fade"
+                type="button"
+                [disabled]="!permissions[permissionName.USERS].has(permissionType.CREATE)"
+                *ngrxLet="roles$ as roles"
+                (click)="openCreateSidepanel(roles.at(0)?.id)"
+                data-testid="user-open-sidepanel-form-button">
+            {{ tUser('User.ListPage.Button.Create') }}
+        </button>
+    </header>
+
+    <table kbq-table [border]="true" class="user-feature-list-table">
+        <thead>
+            <tr>
+                <th>{{ tUser('User.ListPage.Table.Username') }}</th>
+                <th>{{ tUser('User.ListPage.Table.Email') }}</th>
+                <th>{{ tUser('User.ListPage.Table.Role') }}</th>
+                <th width="68"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (user of users$ | async; track user.id) {
+                <tr id="{{ user.id }}"
+                    [attr.data-testid]="user.username">
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email || '—' }}</td>
+                    <td>
+                        @if (role$(user.role_id) | async; as role) {
+                            {{ role.role_name }}
+                        }
+                    </td>
+                    <td>
+                        <button kbq-button
+                                kbqStyle="transparent"
+                                color="contrast"
+                                type="button"
+                                class="kbq-button-icon"
+                                [disabled]="!permissions[permissionName.USERS].has(permissionType.UPDATE)"
+                                (click)="openEditSidepanel(user)"
+                                data-testid="user-update-button">
+                            <i class="kbq kbq-pencil_16"></i>
+                        </button>
+                        <button kbq-button
+                                kbqStyle="transparent"
+                                color="contrast"
+                                type="button"
+                                class="kbq-button-icon"
+                                [disabled]="!permissions[permissionName.USERS].has(permissionType.DELETE)"
+                                (click)="openDeleteModal(user.id)"
+                                data-testid="user-delete-button">
+                            <i class="kbq kbq-trash_16"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</ng-container>

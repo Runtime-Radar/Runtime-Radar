@@ -1,0 +1,119 @@
+<ng-container *transloco="let tCluster; prefix: 'cluster'">
+    <ng-container *ngrxLet="isInternalCluster$ as isInternal">
+        <form [formGroup]="form" class="kbq-form-vertical cluster-abstract-feature-form">
+            <h2 class="kbq-headline cluster-abstract-feature-form-headline">
+                {{ tCluster('Cluster.CreatePage.RabbitForm.SubHeading.Rabbit') }}
+            </h2>
+
+            <section class="kbq-form-row_margin">
+                <kbq-button-toggle-group
+                        formControlName="isInternalCluster"
+                        data-testid="cluster-rabbit-internal-cluster-toggle">
+                    <kbq-button-toggle [value]="true">
+                        {{ tCluster('Cluster.CreatePage.RabbitForm.Toogle.Internal') }}
+                    </kbq-button-toggle>
+                    <kbq-button-toggle [value]="false">
+                        {{ tCluster('Cluster.CreatePage.RabbitForm.Toogle.External') }}
+                    </kbq-button-toggle>
+                </kbq-button-toggle-group>
+            </section>
+
+            <section class="kbq-form__row kbq-form-row_margin">
+                <span class="kbq-text-compact cs-text-gray">
+                    {{ tCluster(isInternal ? 'Cluster.CreatePage.RabbitForm.Hint.Internal' : 'Cluster.CreatePage.RabbitForm.Hint.External') }}
+                </span>
+            </section>
+
+            @if (!isInternal) {
+                <section class="kbq-form__row kbq-form-row_margin">
+                    <label for="address" class="kbq-form__label">
+                        {{ tCluster('Cluster.CreatePage.RabbitForm.Label.Address') }}
+                        <i kbq-icon="kbq-question-circle_16"
+                           class="cs-help-hover"
+                           kbqTooltip="{{ tCluster('Cluster.CreatePage.RabbitForm.Hint.Address') }}"
+                           kbqTooltipClass="cluster-abstract-feature-form-tooltip"
+                           [kbqPlacement]="tooltipPlacement.RightTop"></i>
+                    </label>
+                    <kbq-form-field class="kbq-form__control" *transloco="let tCommon; prefix: 'common'">
+                        <input kbqInput
+                               type="text"
+                               id="address"
+                               formControlName="address"
+                               placeholder="{{ tCluster('Cluster.CreatePage.RabbitForm.Placeholder.Address') }}"
+                               data-testid="cluster-rabbit-address-input">
+                        @if (form.get('address')?.hasError('pattern')) {
+                            <kbq-hint color="error">{{ tCommon('Common.Form.Error.Format') }}</kbq-hint>
+                        }
+                    </kbq-form-field>
+                </section>
+            }
+
+            <section class="kbq-form__row kbq-form-row_margin">
+                <label for="user" class="kbq-form__label">
+                    {{ tCluster('Cluster.CreatePage.RabbitForm.Label.User') }}
+                </label>
+                <kbq-form-field class="kbq-form__control">
+                    <input kbqInput
+                           type="text"
+                           id="user"
+                           formControlName="user"
+                           data-testid="cluster-rabbit-user-input">
+                </kbq-form-field>
+            </section>
+
+            <section class="kbq-form__row" [ngClass]="{ 'kbq-form-row_margin': isInternal }">
+                <label for="password" class="kbq-form__label">
+                    {{ tCluster('Cluster.CreatePage.RabbitForm.Label.Password') }}
+                </label>
+                <kbq-form-field class="kbq-form__control">
+                    <input kbqInputPassword
+                           type="password"
+                           id="password"
+                           formControlName="password"
+                           data-testid="cluster-rabbit-password-input">
+                    <kbq-password-toggle
+                            [kbqTooltipNotHidden]="tCluster('Cluster.CreatePage.Hint.HidePassword')"
+                            [kbqTooltipHidden]="tCluster('Cluster.CreatePage.Hint.ShowPassword')"></kbq-password-toggle>
+                </kbq-form-field>
+            </section>
+
+            @if (isInternal) {
+                <ng-container *ngrxLet="isPersistence$ as isPersistence">
+                    <section class="kbq-form__row" [ngClass]="{ 'kbq-form-row_margin': isPersistence }">
+                        <kbq-toggle formControlName="isPersistence" data-testid="cluster-rabbit-persistence-toggle">
+                            {{ tCluster('Cluster.CreatePage.RabbitForm.Label.Persistence') }}
+                            <span class="kbq-text-compact cs-text-gray cluster-abstract-feature-form-toggle-hint">
+                                {{ tCluster('Cluster.CreatePage.RabbitForm.Hint.Persistence') }}
+                            </span>
+                        </kbq-toggle>
+                    </section>
+
+                    @if (isPersistence) {
+                        <section class="kbq-form__row">
+                            <label for="storageClass" class="kbq-form__label">
+                                {{ tCluster('Cluster.CreatePage.RabbitForm.Label.StorageClass') }}
+                                <i kbq-icon="kbq-question-circle_16"
+                                   class="cs-help-hover"
+                                   kbqTooltip="{{ tCluster('Cluster.CreatePage.RabbitForm.Hint.StorageClass') }}"
+                                   kbqTooltipClass="cluster-abstract-feature-form-tooltip"
+                                   [kbqPlacement]="tooltipPlacement.RightTop"></i>
+                            </label>
+                            <kbq-form-field class="kbq-form__control" *transloco="let tCommon; prefix: 'common'">
+                                <input kbqInput
+                                       type="text"
+                                       id="storageClass"
+                                       formControlName="storageClass"
+                                       placeholder="{{ tCluster('Cluster.CreatePage.RabbitForm.Placeholder.StorageClass') }}"
+                                       data-testid="cluster-rabbit-storage-class-input">
+                                <kbq-hint>{{ tCommon('Common.Form.Hint.Optional') }}</kbq-hint>
+                                @if (form.get('storageClass')?.hasError('pattern')) {
+                                    <kbq-hint color="error">{{ tCommon('Common.Form.Error.Format') }}</kbq-hint>
+                                }
+                            </kbq-form-field>
+                        </section>
+                    }
+                </ng-container>
+            }
+        </form>
+    </ng-container>
+</ng-container>

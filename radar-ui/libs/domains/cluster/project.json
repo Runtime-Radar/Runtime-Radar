@@ -1,0 +1,23 @@
+{
+    "name": "domain-cluster",
+    "projectType": "library",
+    "root": "libs/domains/cluster",
+    "sourceRoot": "libs/domains/cluster/src",
+    "prefix": "runtime-radar",
+    "targets": {
+        "lint": {
+            "executor": "@nx/linter:eslint",
+            "options": {
+                "lintFilePatterns": ["libs/domains/cluster/src/**/*.ts", "libs/domains/cluster/src/**/*.html"]
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": ["coverage/libs/domains/cluster"],
+            "options": {
+                "jestConfig": "libs/domains/cluster/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    }
+}

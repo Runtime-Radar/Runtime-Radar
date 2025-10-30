@@ -1,0 +1,12 @@
+# .vscode
+.idea
+# .task
+/.task/checksum/tools
+*.exe
+/bin
+/cmd/policy-enforcer/test.go
+/cmd/policy-enforcer/policy-enforcer
+
+# helm dependencies
+.helm/charts
+.helm/Chart.lock

@@ -1,0 +1,615 @@
+{
+    "title": "Chart Values",
+    "type": "object",
+    "properties": {
+        "global": {
+            "type": "object",
+            "properties": {
+                "imageRegistry": {
+                    "type": "string",
+                    "description": "Global Docker image registry",
+                    "default": ""
+                },
+                "imagePullSecrets": {
+                    "type": "array",
+                    "description": "Global Docker registry secret names as an array",
+                    "default": [],
+                    "items": {}
+                },
+                "storageClass": {
+                    "type": "string",
+                    "description": "Global StorageClass for Persistent Volume(s)",
+                    "default": ""
+                }
+            }
+        },
+        "nameOverride": {
+            "type": "string",
+            "description": "String to partially override common.fullname template (will maintain the release name)",
+            "default": ""
+        },
+        "fullnameOverride": {
+            "type": "string",
+            "description": "String to fully override common.fullname template",
+            "default": ""
+        },
+        "namespaceOverride": {
+            "type": "string",
+            "description": "String to fully override common.namespace",
+            "default": ""
+        },
+        "clusterDomain": {
+            "type": "string",
+            "description": "Kubernetes Cluster Domain",
+            "default": "cluster.local"
+        },
+        "labels": {
+            "type": "object",
+            "description": "Add labels to all the deployed resources",
+            "default": {}
+        },
+        "annotations": {
+            "type": "object",
+            "description": "Add annotations to all the deployed resources",
+            "default": {}
+        },
+        "imagePullSecrets": {
+            "type": "array",
+            "description": "Global Docker registry secret names as an array",
+            "default": [],
+            "items": {}
+        },
+        "image": {
+            "type": "object",
+            "properties": {
+                "registry": {
+                    "type": "string",
+                    "description": "RabbitMQ image registry",
+                    "default": ""
+                },
+                "repository": {
+                    "type": "string",
+                    "description": "RabbitMQ image repository",
+                    "default": "rabbitmq"
+                },
+                "tag": {
+                    "type": "string",
+                    "description": "RabbitMQ image tag (immutable tags are recommended)",
+                    "default": "4.1.1-management"
+                },
+                "digest": {
+                    "type": "string",
+                    "description": "RabbitMQ image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag",
+                    "default": ""
+                },
+                "pullPolicy": {
+                    "type": "string",
+                    "description": "RabbitMQ image pull policy",
+                    "default": "IfNotPresent"
+                }
+            }
+        },
+        "auth": {
+            "type": "object",
+            "properties": {
+                "username": {
+                    "type": "string",
+                    "description": "RabbitMQ application username",
+                    "default": "user"
+                },
+                "password": {
+                    "type": "string",
+                    "description": "RabbitMQ application password",
+                    "default": ""
+                },
+                "existingSecret": {
+                    "type": "string",
+                    "description": "Existing secret with RabbitMQ credentials (must contain a value for `rabbitmq-password` key)",
+                    "default": ""
+                },
+                "existingSecretPasswordKey": {
+                    "type": "string",
+                    "description": "Password key to be retrieved from existing secret",
+                    "default": "rabbitmq-password"
+                }
+            }
+        },
+        "logs": {
+            "type": "string",
+            "description": "Path of the RabbitMQ server's Erlang log file. Value for the `RABBITMQ_LOGS` environment variable",
+            "default": "-"
+        },
+        "ulimitNofiles": {
+            "type": "string",
+            "description": "RabbitMQ Max File Descriptors",
+            "default": "65536"
+        },
+        "plugins": {
+            "type": "string",
+            "description": "List of default plugins to enable (should only be altered to remove defaults; for additional plugins use `extraPlugins`)",
+            "default": "rabbitmq_management rabbitmq_peer_discovery_k8s"
+        },
+        "configuration": {
+            "type": "string",
+            "description": "RabbitMQ Configuration file content: required cluster configuration",
+            "default": "\"\""
+        },
+        "existingConfigmap": {
+            "type": "string",
+            "description": "The name of an existing ConfigMap with your custom configuration",
+            "default": ""
+        },
+        "volumeMounts": {
+            "type": "array",
+            "description": "Optionally specify extra list of additional volumeMounts",
+            "default": [],
+            "items": {}
+        },
+        "volumes": {
+            "type": "array",
+            "description": "Optionally specify extra list of additional volumes .",
+            "default": [],
+            "items": {}
+        },
+        "replicaCount": {
+            "type": "number",
+            "description": "Number of RabbitMQ replicas to deploy",
+            "default": 1
+        },
+        "podLabels": {
+            "type": "object",
+            "description": "RabbitMQ Pod labels. Evaluated as a template",
+            "default": {}
+        },
+        "podAnnotations": {
+            "type": "object",
+            "description": "RabbitMQ Pod annotations. Evaluated as a template",
+            "default": {}
+        },
+        "affinity": {
+            "type": "object",
+            "description": "Affinity for pod assignment. Evaluated as a template",
+            "default": {}
+        },
+        "nodeSelector": {
+            "type": "object",
+            "description": "Node labels for pod assignment. Evaluated as a template",
+            "default": {}
+        },
+        "tolerations": {
+            "type": "array",
+            "description": "Tolerations for pod assignment. Evaluated as a template",
+            "default": [],
+            "items": {}
+        },
+        "terminationGracePeriodSeconds": {
+            "type": "number",
+            "description": "Default duration in seconds k8s waits for container to exit before sending kill signal.",
+            "default": 120
+        },
+        "extraEnvVars": {
+            "type": "array",
+            "description": "Extra environment variables to add to RabbitMQ pods",
+            "default": [],
+            "items": {}
+        },
+        "containerPorts": {
+            "type": "object",
+            "properties": {
+                "amqp": {
+                    "type": "number",
+                    "description": "AMQP",
+                    "default": 5672
+                },
+                "dist": {
+                    "type": "number",
+                    "description": "dist",
+                    "default": 25672
+                },
+                "manager": {
+                    "type": "number",
+                    "description": "manager",
+                    "default": 15672
+                },
+                "epmd": {
+                    "type": "number",
+                    "description": "EPMD",
+                    "default": 4369
+                },
+                "metrics": {
+                    "type": "number",
+                    "description": "metrics",
+                    "default": 9419
+                }
+            }
+        },
+        "podSecurityContext": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Enable RabbitMQ pods' Security Context",
+                    "default": true
+                },
+                "fsGroupChangePolicy": {
+                    "type": "string",
+                    "description": "Set filesystem group change policy",
+                    "default": "Always"
+                },
+                "sysctls": {
+                    "type": "array",
+                    "description": "Set kernel settings using the sysctl interface",
+                    "default": [],
+                    "items": {}
+                },
+                "supplementalGroups": {
+                    "type": "array",
+                    "description": "Set filesystem extra groups",
+                    "default": [],
+                    "items": {}
+                },
+                "fsGroup": {
+                    "type": "number",
+                    "description": "Set RabbitMQ pod's Security Context fsGroup",
+                    "default": 1001
+                }
+            }
+        },
+        "containerSecurityContext": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Enabled RabbitMQ containers' Security Context",
+                    "default": true
+                },
+                "runAsUser": {
+                    "type": "number",
+                    "description": "Set RabbitMQ containers' Security Context runAsUser",
+                    "default": 1001
+                },
+                "runAsGroup": {
+                    "type": "number",
+                    "description": "Set RabbitMQ containers' Security Context runAsGroup",
+                    "default": 1001
+                },
+                "runAsNonRoot": {
+                    "type": "boolean",
+                    "description": "Set RabbitMQ container's Security Context runAsNonRoot",
+                    "default": true
+                },
+                "allowPrivilegeEscalation": {
+                    "type": "boolean",
+                    "description": "Set container's privilege escalation",
+                    "default": false
+                },
+                "readOnlyRootFilesystem": {
+                    "type": "boolean",
+                    "description": "Set container's Security Context readOnlyRootFilesystem",
+                    "default": true
+                },
+                "capabilities": {
+                    "type": "object",
+                    "properties": {
+                        "drop": {
+                            "type": "array",
+                            "description": "Set container's Security Context runAsNonRoot",
+                            "default": [
+                                "ALL"
+                            ],
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "seccompProfile": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "Set container's Security Context seccomp profile",
+                            "default": "RuntimeDefault"
+                        }
+                    }
+                }
+            }
+        },
+        "livenessProbe": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Enable livenessProbe",
+                    "default": true
+                },
+                "initialDelaySeconds": {
+                    "type": "number",
+                    "description": "Initial delay seconds for livenessProbe",
+                    "default": 120
+                },
+                "timeoutSeconds": {
+                    "type": "number",
+                    "description": "Timeout seconds for livenessProbe",
+                    "default": 20
+                },
+                "periodSeconds": {
+                    "type": "number",
+                    "description": "Period seconds for livenessProbe",
+                    "default": 30
+                },
+                "failureThreshold": {
+                    "type": "number",
+                    "description": "Failure threshold for livenessProbe",
+                    "default": 6
+                },
+                "successThreshold": {
+                    "type": "number",
+                    "description": "Success threshold for livenessProbe",
+                    "default": 1
+                }
+            }
+        },
+        "readinessProbe": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Enable readinessProbe",
+                    "default": true
+                },
+                "initialDelaySeconds": {
+                    "type": "number",
+                    "description": "Initial delay seconds for readinessProbe",
+                    "default": 10
+                },
+                "timeoutSeconds": {
+                    "type": "number",
+                    "description": "Timeout seconds for readinessProbe",
+                    "default": 20
+                },
+                "periodSeconds": {
+                    "type": "number",
+                    "description": "Period seconds for readinessProbe",
+                    "default": 30
+                },
+                "failureThreshold": {
+                    "type": "number",
+                    "description": "Failure threshold for readinessProbe",
+                    "default": 3
+                },
+                "successThreshold": {
+                    "type": "number",
+                    "description": "Success threshold for readinessProbe",
+                    "default": 1
+                }
+            }
+        },
+        "startupProbe": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Enable startupProbe",
+                    "default": false
+                },
+                "initialDelaySeconds": {
+                    "type": "number",
+                    "description": "Initial delay seconds for startupProbe",
+                    "default": 10
+                },
+                "timeoutSeconds": {
+                    "type": "number",
+                    "description": "Timeout seconds for startupProbe",
+                    "default": 20
+                },
+                "periodSeconds": {
+                    "type": "number",
+                    "description": "Period seconds for startupProbe",
+                    "default": 30
+                },
+                "failureThreshold": {
+                    "type": "number",
+                    "description": "Failure threshold for startupProbe",
+                    "default": 3
+                },
+                "successThreshold": {
+                    "type": "number",
+                    "description": "Success threshold for startupProbe",
+                    "default": 1
+                }
+            }
+        },
+        "service": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "description": "Kubernetes Service type",
+                    "default": "ClusterIP"
+                },
+                "ports": {
+                    "type": "object",
+                    "properties": {
+                        "amqp": {
+                            "type": "number",
+                            "description": "Amqp service port",
+                            "default": 5672
+                        },
+                        "dist": {
+                            "type": "number",
+                            "description": "Erlang distribution service port",
+                            "default": 25672
+                        },
+                        "manager": {
+                            "type": "number",
+                            "description": "RabbitMQ Manager service port",
+                            "default": 15672
+                        },
+                        "metrics": {
+                            "type": "number",
+                            "description": "RabbitMQ Prometheues metrics service port",
+                            "default": 9419
+                        },
+                        "epmd": {
+                            "type": "number",
+                            "description": "EPMD Discovery service port",
+                            "default": 4369
+                        }
+                    }
+                },
+                "annotations": {
+                    "type": "object",
+                    "description": "Service annotations. Evaluated as a template",
+                    "default": {}
+                },
+                "headless": {
+                    "type": "object",
+                    "properties": {
+                        "annotations": {
+                            "type": "object",
+                            "description": "Annotations for the headless service.",
+                            "default": {}
+                        }
+                    }
+                }
+            }
+        },
+        "persistence": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Enable persistence using Persistent Volume Claims",
+                    "default": true
+                },
+                "existingClaim": {
+                    "type": "string",
+                    "description": "Name of an existing PVC to use",
+                    "default": ""
+                },
+                "storageClass": {
+                    "type": "string",
+                    "description": "Storage class of backing PVC",
+                    "default": ""
+                },
+                "labels": {
+                    "type": "object",
+                    "description": "Persistent Volume Claim labels",
+                    "default": {}
+                },
+                "annotations": {
+                    "type": "object",
+                    "description": "Persistent Volume Claim annotations",
+                    "default": {}
+                },
+                "accessModes": {
+                    "type": "array",
+                    "description": "Persistent Volume Access Modes",
+                    "default": [
+                        "ReadWriteOnce"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "size": {
+                    "type": "string",
+                    "description": "Size of data volume",
+                    "default": "8Gi"
+                },
+                "selector": {
+                    "type": "object",
+                    "description": "Selector to match an existing Persistent Volume for ClickHouse data PVC",
+                    "default": {}
+                },
+                "dataSource": {
+                    "type": "object",
+                    "description": "Custom PVC data source",
+                    "default": {}
+                },
+                "persistentVolumeClaimRetentionPolicy": {
+                    "type": "object",
+                    "description": "PostgreSQL Persistent Volume Claim Retention Policy",
+                    "default": {}
+                }
+            }
+        },
+        "serviceAccount": {
+            "type": "object",
+            "properties": {
+                "create": {
+                    "type": "boolean",
+                    "description": "Enable creation of ServiceAccount for RabbitMQ pods",
+                    "default": true
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the created serviceAccount",
+                    "default": ""
+                },
+                "automount": {
+                    "type": "boolean",
+                    "description": "Auto-mount the service account token in the pod",
+                    "default": true
+                },
+                "annotations": {
+                    "type": "object",
+                    "description": "Annotations for service account. Evaluated as a template. Only used if `create` is `true`.",
+                    "default": {}
+                }
+            }
+        },
+        "networkPolicy": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Specifies whether a NetworkPolicy should be created",
+                    "default": true
+                },
+                "allowExternal": {
+                    "type": "boolean",
+                    "description": "Don't require server label for connections",
+                    "default": true
+                },
+                "extraIngress": {
+                    "type": "array",
+                    "description": "Add extra ingress rules to the NetworkPolicy",
+                    "default": "[]",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "extraEgress": {
+                    "type": "array",
+                    "description": "Add extra ingress rules to the NetworkPolicy",
+                    "default": "[]",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "metrics": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Enable exposing RabbitMQ metrics to be gathered by Prometheus",
+                    "default": false
+                },
+                "externalHost": {
+                    "type": "string",
+                    "description": "RabbitMQ metrics external host",
+                    "default": ""
+                },
+                "plugins": {
+                    "type": "string",
+                    "description": "Plugins to enable Prometheus metrics in RabbitMQ",
+                    "default": "rabbitmq_prometheus"
+                }
+            }
+        }
+    }
+}

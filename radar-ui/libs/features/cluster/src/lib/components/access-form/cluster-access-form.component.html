@@ -1,0 +1,102 @@
+<ng-container *transloco="let tCluster; prefix: 'cluster'">
+    <form [formGroup]="form" class="kbq-form-vertical cluster-abstract-feature-form">
+        <h2 class="kbq-headline cluster-abstract-feature-form-headline">
+            {{ tCluster('Cluster.CreatePage.AccessForm.SubHeading.Params') }}
+        </h2>
+
+        <section class="kbq-form__row kbq-form-row_margin">
+            <label for="proxyUrl" class="kbq-form__label">
+                {{ tCluster('Cluster.CreatePage.AccessForm.Label.ProxyUrl') }}
+                <i kbq-icon="kbq-question-circle_16"
+                   class="cs-help-hover"
+                   kbqTooltip="{{ tCluster('Cluster.CreatePage.AccessForm.Hint.ProxyUrl') }}"
+                   kbqTooltipClass="cluster-abstract-feature-form-tooltip"
+                   [kbqPlacement]="tooltipPlacement.RightTop"></i>
+            </label>
+            <kbq-form-field class="kbq-form__control" *transloco="let tCommon; prefix: 'common'">
+                <input kbqInput
+                       type="text"
+                       id="proxyUrl"
+                       formControlName="proxyUrl"
+                       placeholder="{{ tCluster('Cluster.CreatePage.AccessForm.Placeholder.ProxyUrl') }}"
+                       data-testid="cluster-access-proxy-url-input">
+                @if (form.get('proxyUrl')?.hasError('pattern')) {
+                    <kbq-hint color="error">{{ tCommon('Common.Form.Error.Format') }}</kbq-hint>
+                }
+            </kbq-form-field>
+        </section>
+
+        <section class="kbq-form__row kbq-form-row_margin">
+            <label for="ownCsUrl" class="kbq-form__label">
+                {{ tCluster('Cluster.CreatePage.AccessForm.Label.OwnCsUrl') }}
+            </label>
+            <kbq-form-field class="kbq-form__control" *transloco="let tCommon; prefix: 'common'">
+                <input kbqInput
+                       type="text"
+                       id="ownCsUrl"
+                       formControlName="ownCsUrl"
+                       placeholder="{{ tCluster('Cluster.CreatePage.AccessForm.Placeholder.OwnCsUrl') }}"
+                       data-testid="cluster-access-own-url-input">
+                @if (form.get('ownCsUrl')?.hasError('pattern')) {
+                    <kbq-hint color="error">{{ tCommon('Common.Form.Error.Format') }}</kbq-hint>
+                }
+                @if (form.get('ownCsUrl')?.hasError('urlExists')) {
+                    <kbq-hint color="error">{{ tCluster('Cluster.CreatePage.AccessForm.Error.OwnCsUrl') }}</kbq-hint>
+                }
+            </kbq-form-field>
+        </section>
+
+        <section class="kbq-form__row kbq-form-row_margin">
+            <label for="centralCsUrl" class="kbq-form__label">
+                {{ tCluster('Cluster.CreatePage.AccessForm.Label.CentralCsUrl') }}
+                <i kbq-icon="kbq-question-circle_16"
+                   class="cs-help-hover"
+                   kbqTooltip="{{ tCluster('Cluster.CreatePage.AccessForm.Hint.CentralCsUrl') }}"
+                   kbqTooltipClass="cluster-abstract-feature-form-tooltip"
+                   [kbqPlacement]="tooltipPlacement.RightTop"></i>
+            </label>
+            <kbq-form-field class="kbq-form__control" *transloco="let tCommon; prefix: 'common'">
+                <input kbqInput
+                       type="text"
+                       id="centralCsUrl"
+                       formControlName="centralCsUrl"
+                       placeholder="{{ tCluster('Cluster.CreatePage.AccessForm.Placeholder.CentralCsUrl') }}"
+                       data-testid="cluster-access-central-url-input">
+                @if (form.get('centralCsUrl')?.hasError('pattern')) {
+                    <kbq-hint color="error">{{ tCommon('Common.Form.Error.Format') }}</kbq-hint>
+                }
+            </kbq-form-field>
+        </section>
+
+        <section class="kbq-form__row kbq-form-row_margin">
+            <label for="namespace" class="kbq-form__label">
+                {{ tCluster('Cluster.CreatePage.AccessForm.Label.Namespace') }}
+            </label>
+            <kbq-form-field class="kbq-form__control">
+                <input kbqInput
+                       type="text"
+                       id="namespace"
+                       formControlName="namespace"
+                       data-testid="cluster-access-namespace-input">
+            </kbq-form-field>
+        </section>
+
+        <section class="kbq-form__row">
+            <label for="name" class="kbq-form__label">
+                {{ tCluster('Cluster.CreatePage.AccessForm.Label.Name') }}
+                <i kbq-icon="kbq-question-circle_16"
+                   class="cs-help-hover"
+                   kbqTooltip="{{ tCluster('Cluster.CreatePage.AccessForm.Hint.Name') }}"
+                   kbqTooltipClass="cluster-abstract-feature-form-tooltip"
+                   [kbqPlacement]="tooltipPlacement.RightTop"></i>
+            </label>
+            <kbq-form-field class="kbq-form__control">
+                <input kbqInput
+                       type="text"
+                       id="name"
+                       formControlName="name"
+                       data-testid="cluster-access-name-input">
+            </kbq-form-field>
+        </section>
+    </form>
+</ng-container>

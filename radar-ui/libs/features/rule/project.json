@@ -1,0 +1,23 @@
+{
+    "name": "feature-rule",
+    "projectType": "library",
+    "root": "libs/features/rule",
+    "sourceRoot": "libs/features/rule/src",
+    "prefix": "runtime-radar",
+    "targets": {
+        "lint": {
+            "executor": "@nx/linter:eslint",
+            "options": {
+                "lintFilePatterns": ["libs/features/rule/src/**/*.ts", "libs/features/rule/src/**/*.html"]
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": ["coverage/libs/features/rule"],
+            "options": {
+                "jestConfig": "libs/features/rule/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    }
+}

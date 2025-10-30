@@ -1,0 +1,29 @@
+:host {
+    display: block;
+}
+
+.runtime-feature-context-popover {
+    &-reset-icon {
+        display: inline-block;
+        position: relative;
+        z-index: 1;
+        margin: 0 0 0 4px;
+        padding: 0;
+        border: 0;
+        background: none;
+        cursor: pointer;
+    }
+
+    &-exec-id {
+        word-wrap: break-word;
+    }
+
+    &-radio-group {
+        gap: 8px;
+    }
+
+    &-hint {
+        display: block;
+        padding: 16px;
+    }
+}

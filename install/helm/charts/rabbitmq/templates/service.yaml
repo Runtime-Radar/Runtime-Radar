@@ -1,0 +1,38 @@
+{{- $tlsEnabled := eq (include "common.tls.enabled" .) "true" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "common.fullname" . }}
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+  {{- with (include "common.mergeAnnotations" (dict "context" . "value" .Values.service.annotations)) }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: amqp
+      targetPort: amqp
+      port: {{ .Values.service.ports.amqp }}
+      protocol: TCP
+    - name: epmd
+      targetPort: epmd
+      port: {{ .Values.service.ports.epmd }}
+      protocol: TCP
+    - name: dist
+      targetPort: dist
+      port: {{ .Values.service.ports.dist }}
+      protocol: TCP
+    - name: manager
+      targetPort: stats
+      port: {{ .Values.service.ports.manager  }}
+      protocol: TCP
+    {{- if (eq (include "common.metrics.enabled" .) "true") }}
+    - name: metrics
+      targetPort: metrics
+      port: {{ .Values.service.ports.metrics }}
+      protocol: TCP
+    {{- end }}
+  selector:
+    {{- include "common.selectorLabels" . | nindent 4 }}

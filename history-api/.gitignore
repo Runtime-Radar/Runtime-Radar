@@ -1,0 +1,12 @@
+# .vscode
+.idea
+# .task
+/.task/checksum/tools
+*.exe
+/bin
+/cmd/history-api/test.go
+/cmd/history-api/history-api
+
+# helm
+.helm/charts
+.helm/Chart.lock

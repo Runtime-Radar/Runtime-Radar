@@ -1,0 +1,13 @@
+@use './styles/theme';
+@use './styles/theme-kbq';
+@use './styles/utils';
+@use './styles/custom';
+@use './styles/tokens';
+
+.app {
+    @include theme-kbq.app-typography(
+        theme.$tokens,
+        theme.$typography-config,
+        theme.$markdown-typography-config
+    );
+}

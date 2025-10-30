@@ -1,0 +1,189 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Role API",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "RoleController"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/role": {
+      "get": {
+        "summary": "Get list of all roles",
+        "operationId": "RoleController_ReadList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/roleReadListRoleResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "RoleController"
+        ]
+      }
+    },
+    "/api/v1/role/{id}": {
+      "get": {
+        "summary": "Get role by id",
+        "operationId": "RoleController_Read",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/roleReadRoleResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RoleController"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "ReadRoleRespPermission": {
+      "type": "object",
+      "properties": {
+        "actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "ReadRoleRespRolePermissions": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "roles": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "rules": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "scanning": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "events": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "registries": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "images": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "integrations": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "notifications": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "systemSettings": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "clusters": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "invalidatePublicAccessTokens": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        },
+        "publicAccessTokens": {
+          "$ref": "#/definitions/ReadRoleRespPermission"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "roleReadListRoleResp": {
+      "type": "object",
+      "properties": {
+        "roles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/roleReadRoleResp"
+          }
+        }
+      }
+    },
+    "roleReadRoleResp": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "roleName": {
+          "type": "string"
+        },
+        "rolePermissions": {
+          "$ref": "#/definitions/ReadRoleRespRolePermissions"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

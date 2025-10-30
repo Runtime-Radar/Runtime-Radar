@@ -1,0 +1,11 @@
+<div *transloco="let tCommon; prefix: 'common'" class="error-feature-not-found">
+    <section class="layout-column layout-align-center-center error-feature-not-found-content">
+        <img ngSrc="/assets/koobiq/light/404_256@2x.png" width="256" height="256" alt="{{ tCommon('Common.ErrorPage.Text.NotFound') }}" priority>
+        <h3 class="kbq-title error-feature-not-found-content-message">
+            {{ tCommon('Common.ErrorPage.Text.NotFound') }}
+        </h3>
+        <a kbq-link [routerLink]="routerName.DEFAULT">
+            {{ tCommon('Common.ErrorPage.Button.MainPage') }}
+        </a>
+    </section>
+</div>

@@ -1,0 +1,89 @@
+<ng-container *transloco="let tCluster; prefix: 'cluster'">
+    <header class="layout-row layout-align-start-center cluster-feature-details-header">
+        <a kbq-link [routerLink]="'..'" [noUnderline]="true" class="layout-margin-right-l" data-testid="cluster-details-back-link">
+            <i kbq-icon="kbq-chevron-left_16"></i>
+        </a>
+        <h1 class="kbq-display-compact cluster-feature-details-header-title">{{ cluster.name }}</h1>
+    </header>
+
+    <kbq-dl class="cluster-feature-details-meta" *transloco="let tCommon; prefix: 'common'">
+        @if (!isCurrentlyCreated) {
+            <kbq-dt>{{ tCluster('Cluster.DetailsPage.Label.Date') }}</kbq-dt>
+            <kbq-dd>{{ cluster.created_at | dateFormatter: dateShortFormat }}</kbq-dd>
+        }
+        <kbq-dt class="cluster-feature-details-meta-badgeline">{{ tCluster('Cluster.DetailsPage.Label.Status') }}</kbq-dt>
+        <kbq-dd>
+            <kbq-badge [badgeColor]="cluster.status === clusterStatus.REGISTERED ? badgeColors.FadeSuccess : badgeColors.FadeError" [outline]="true">
+                {{ tCommon(cluster.status | clusterStatusLocalization) }}
+            </kbq-badge>
+        </kbq-dd>
+        <kbq-dt>{{ tCluster('Cluster.DetailsPage.Label.Type') }}</kbq-dt>
+        <kbq-dd>{{ tCluster('Cluster.Pseudo.Type.Parent') }}</kbq-dd>
+        <kbq-dt>{{ tCluster('Cluster.DetailsPage.Label.Url') }}</kbq-dt>
+        <kbq-dd>
+            @if (cluster.config.own_cs_url) {
+                <a class="kbq-link" href="{{ cluster.config.own_cs_url }}" target="_blank">
+                    {{ cluster.config.own_cs_url || '—' }}
+                </a>
+            } @else {
+                —
+            }
+        </kbq-dd>
+        <ng-container *ngrxLet="installCommandFiles$ as files">
+            @if (files && files.length) {
+                <kbq-dt>{{ tCluster('Cluster.DetailsPage.Label.InstallCommand') }}</kbq-dt>
+                <kbq-dd>
+                    <kbq-code-block
+                            [lineNumbers]="false"
+                            [softWrap]="false"
+                            [filled]="false"
+                            [maxHeight]="365"
+                            [files]="files">
+                    </kbq-code-block>
+                </kbq-dd>
+            }
+        </ng-container>
+        <ng-container *ngrxLet="yamlCommandFiles$ as files">
+            @if (files && files.length) {
+                <kbq-dt>{{ tCluster('Cluster.DetailsPage.Label.YamlCommand') }}</kbq-dt>
+                <kbq-dd>
+                    <kbq-code-block
+                            [lineNumbers]="false"
+                            [softWrap]="false"
+                            [filled]="false"
+                            [files]="files">
+                    </kbq-code-block>
+                </kbq-dd>
+            }
+        </ng-container>
+        <ng-container *ngrxLet="yamlValues$ as yaml">
+            @if (yaml) {
+                <kbq-dt>&nbsp;</kbq-dt>
+                <kbq-dd>
+                    <a kbq-button
+                       kbqStyle="outline"
+                       color="theme-fade"
+                       [href]="yaml"
+                       download="{{ yamlFileName$ | async }}"
+                       target="_blank"
+                       data-testid="cluster-details-download-yaml-link">
+                        <i kbq-icon="kbq-arrow-down-to-bracket_16"></i>
+                        <span>{{ tCluster('Cluster.DetailsPage.Button.Yaml') }}</span>
+                    </a>
+                </kbq-dd>
+            }
+        </ng-container>
+    </kbq-dl>
+
+    @if (isCurrentlyCreated) {
+        <footer class="layout-row layout-align-end-center cluster-feature-details-footer">
+            <a kbq-button
+               kbqStyle="outline"
+               color="theme-fade"
+               [routerLink]="[routerName.DEFAULT, routerName.CLUSTERS]"
+               data-testid="cluster-details-confirm-link">
+                {{ tCluster('Cluster.DetailsPage.Button.Finish') }}
+            </a>
+        </footer>
+    }
+</ng-container>

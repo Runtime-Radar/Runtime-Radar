@@ -1,0 +1,81 @@
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicy
+metadata:
+  name: connect
+spec:
+  kprobes:
+  # SYNOPSIS
+  # int tcp_connect(struct sock *sk)
+  #     @sk: socket information
+  #
+  # DESCRIPTION
+  # Build a SYN and send it off
+  # 
+  # SYSCALLS
+  #     connect()
+  # 
+  - call: "tcp_connect"
+    syscall: false
+    return: false
+    args:
+    - index: 0
+      returnCopy: false
+      type: "sock"
+    selectors:
+    - matchNamespaces:
+      - namespace: Pid
+        operator: NotIn
+        values:
+        - "host_ns"
+  # SYNOPSIS
+  # int tcp_close(struct sock *sk, long timeout)
+  #     @sk: socket information
+  #     @timeout: timeout for data stream to be closed
+  #
+  # DESCRIPTION
+  # Terminating a stream socket connection
+  #
+  # SYSCALLS
+  #     close()
+  # 
+  - call: "tcp_close"
+    syscall: false
+    return: false
+    args:
+    - index: 0
+      returnCopy: false
+      type: "sock"
+    selectors:
+    - matchNamespaces:
+      - namespace: Pid
+        operator: NotIn
+        values:
+        - "host_ns"
+  # SYNOPSIS
+  # int tcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
+  #     @sk: socket information
+  #     @msg: Data with service headers and control information (ancillary data)
+  #     @size: used to increment the count of bytes sent without checking for an error
+  #
+  # DESCRIPTION
+  # Takes data from user space, fills skb data with it, and push it to sock transmit queue.
+  #
+  # SYSCALLS
+  #     sendmsg()
+  # 
+  - call: "tcp_sendmsg"
+    syscall: false
+    return: false
+    args:
+    - index: 0
+      returnCopy: false
+      type: "sock"
+    - index: 2
+      returnCopy: false
+      type: "int"
+    selectors:
+    - matchNamespaces:
+      - namespace: Pid
+        operator: NotIn
+        values:
+        - "host_ns"

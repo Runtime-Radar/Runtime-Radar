@@ -1,0 +1,23 @@
+{
+    "name": "feature-sign-in",
+    "projectType": "library",
+    "root": "libs/features/sign-in",
+    "sourceRoot": "libs/features/sign-in/src",
+    "prefix": "runtime-radar",
+    "targets": {
+        "lint": {
+            "executor": "@nx/linter:eslint",
+            "options": {
+                "lintFilePatterns": ["libs/features/sign-in/src/**/*.ts", "libs/features/sign-in/src/**/*.html"]
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": ["coverage/libs/features/sign-in"],
+            "options": {
+                "jestConfig": "libs/features/sign-in/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    }
+}

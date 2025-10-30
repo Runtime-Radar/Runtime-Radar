@@ -1,0 +1,76 @@
+image:
+  registry: ghcr.io/runtime-radar
+  repository: policy-enforcer
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+containerPorts:
+  http: 9000
+  grpc: 8000
+  instrumentation: 9090
+service:
+  ports:
+    http: 9000
+    grpc: 8000
+containerSecurityContext:
+  enabled: true
+  seLinuxOptions: {}
+  privileged: false
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  seccompProfile:
+    type: "RuntimeDefault"
+podSecurityContext:
+  enabled: true
+  fsGroupChangePolicy: Always
+  sysctls: []
+  supplementalGroups: []
+env: []
+postgresql:
+  enabled: true
+redis:
+  enabled: true
+serviceAccount:
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+    ephemeral-storage: 250Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+    ephemeral-storage: 1Mi
+livenessProbe:
+  enabled: true
+  httpGet:
+    path: /live
+    scheme: HTTP
+    port: instrumentation
+  periodSeconds: 600
+  successThreshold: 1
+  failureThreshold: 2
+readinessProbe:
+  enabled: true
+  httpGet:
+    path: /ready
+    scheme: HTTP
+    port: instrumentation
+  periodSeconds: 360
+  successThreshold: 1
+  failureThreshold: 3
+startupProbe:
+  enabled: true
+  httpGet:
+    path: /ready
+    scheme: HTTP
+    port: instrumentation
+  initialDelaySeconds: 1
+  periodSeconds: 3
+  successThreshold: 1
+  failureThreshold: 3

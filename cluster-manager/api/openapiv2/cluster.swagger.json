@@ -1,0 +1,730 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Cluster API",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "ClusterController"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/cluster": {
+      "post": {
+        "operationId": "ClusterController_Create",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/clusterCreateClusterResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/clusterCluster"
+            }
+          }
+        ],
+        "tags": [
+          "ClusterController"
+        ]
+      }
+    },
+    "/api/v1/cluster/page/{pageNum}": {
+      "get": {
+        "operationId": "ClusterController_ListPage",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/clusterListClusterPageResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "pageNum",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ClusterController"
+        ]
+      }
+    },
+    "/api/v1/cluster/register": {
+      "post": {
+        "operationId": "ClusterController_Register",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ClusterController"
+        ]
+      }
+    },
+    "/api/v1/cluster/registered": {
+      "get": {
+        "operationId": "ClusterController_ListRegistered",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/clusterListRegisteredResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "ClusterController"
+        ]
+      }
+    },
+    "/api/v1/cluster/unregister": {
+      "post": {
+        "operationId": "ClusterController_Unregister",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ClusterController"
+        ]
+      }
+    },
+    "/api/v1/cluster/{id}": {
+      "get": {
+        "operationId": "ClusterController_Read",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/clusterReadClusterResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ClusterController"
+        ]
+      },
+      "delete": {
+        "operationId": "ClusterController_Delete",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ClusterController"
+        ]
+      },
+      "patch": {
+        "operationId": "ClusterController_Update",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ClusterControllerUpdateBody"
+            }
+          }
+        ],
+        "tags": [
+          "ClusterController"
+        ]
+      }
+    },
+    "/api/v1/cluster/{id}/cmd/install": {
+      "get": {
+        "operationId": "ClusterController_GenerateInstallCmd",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/clusterGenerateInstallCmdResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "useValuesFile",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "ClusterController"
+        ]
+      }
+    },
+    "/api/v1/cluster/{id}/cmd/uninstall": {
+      "get": {
+        "operationId": "ClusterController_GenerateUninstallCmd",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/clusterGenerateUninstallCmdResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ClusterController"
+        ]
+      }
+    },
+    "/api/v1/cluster/{id}/cmd/values": {
+      "get": {
+        "operationId": "ClusterController_GenerateValuesYAML",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/clusterGenerateValuesResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ClusterController"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "ClusterConfig": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "ownCsUrl": {
+          "type": "string"
+        },
+        "centralCsUrl": {
+          "type": "string"
+        },
+        "postgres": {
+          "$ref": "#/definitions/ConfigPostgres"
+        },
+        "clickhouse": {
+          "$ref": "#/definitions/ConfigClickhouse"
+        },
+        "redis": {
+          "$ref": "#/definitions/ConfigRedis"
+        },
+        "rabbit": {
+          "$ref": "#/definitions/ConfigRabbit"
+        },
+        "registry": {
+          "$ref": "#/definitions/ConfigRegistry"
+        },
+        "ingress": {
+          "$ref": "#/definitions/ConfigIngress"
+        },
+        "nodePort": {
+          "$ref": "#/definitions/ConfigNodePort"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "proxyUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "ClusterControllerUpdateBody": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/clusterClusterStatus"
+        },
+        "config": {
+          "$ref": "#/definitions/ClusterConfig"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ConfigClickhouse": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "user": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "useTls": {
+          "type": "boolean"
+        },
+        "checkCert": {
+          "type": "boolean"
+        },
+        "ca": {
+          "type": "string"
+        },
+        "persistence": {
+          "type": "boolean"
+        },
+        "storageClass": {
+          "type": "string"
+        },
+        "database": {
+          "type": "string"
+        }
+      }
+    },
+    "ConfigIngress": {
+      "type": "object",
+      "properties": {
+        "ingressClass": {
+          "type": "string"
+        },
+        "hostname": {
+          "type": "string"
+        },
+        "cert": {
+          "type": "string"
+        },
+        "certKey": {
+          "type": "string"
+        }
+      }
+    },
+    "ConfigNodePort": {
+      "type": "object",
+      "properties": {
+        "port": {
+          "type": "string"
+        }
+      }
+    },
+    "ConfigPostgres": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "user": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "useTls": {
+          "type": "boolean"
+        },
+        "checkCert": {
+          "type": "boolean"
+        },
+        "ca": {
+          "type": "string"
+        },
+        "persistence": {
+          "type": "boolean"
+        },
+        "storageClass": {
+          "type": "string"
+        },
+        "database": {
+          "type": "string"
+        }
+      }
+    },
+    "ConfigRabbit": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "user": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "persistence": {
+          "type": "boolean"
+        },
+        "storageClass": {
+          "type": "string"
+        }
+      }
+    },
+    "ConfigRedis": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "user": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "useTls": {
+          "type": "boolean"
+        },
+        "checkCert": {
+          "type": "boolean"
+        },
+        "ca": {
+          "type": "string"
+        },
+        "persistence": {
+          "type": "boolean"
+        },
+        "storageClass": {
+          "type": "string"
+        }
+      }
+    },
+    "ConfigRegistry": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "user": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "imageShortNames": {
+          "type": "boolean"
+        }
+      }
+    },
+    "clusterCluster": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/clusterClusterStatus"
+        },
+        "config": {
+          "$ref": "#/definitions/ClusterConfig"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "clusterClusterStatus": {
+      "type": "string",
+      "enum": [
+        "STATUS_UNREGISTERED",
+        "STATUS_REGISTERED"
+      ],
+      "default": "STATUS_UNREGISTERED"
+    },
+    "clusterCreateClusterResp": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "clusterGenerateInstallCmdResp": {
+      "type": "object",
+      "properties": {
+        "cmd": {
+          "type": "string"
+        }
+      }
+    },
+    "clusterGenerateUninstallCmdResp": {
+      "type": "object",
+      "properties": {
+        "cmd": {
+          "type": "string"
+        }
+      }
+    },
+    "clusterGenerateValuesResp": {
+      "type": "object",
+      "properties": {
+        "yaml": {
+          "type": "string"
+        }
+      }
+    },
+    "clusterListClusterPageResp": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "clusters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/clusterCluster"
+          }
+        }
+      }
+    },
+    "clusterListRegisteredResp": {
+      "type": "object",
+      "properties": {
+        "clusters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/clusterListRegisteredRespCluster"
+          }
+        }
+      }
+    },
+    "clusterListRegisteredRespCluster": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "ownCsUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "clusterReadClusterResp": {
+      "type": "object",
+      "properties": {
+        "cluster": {
+          "$ref": "#/definitions/clusterCluster"
+        },
+        "deleted": {
+          "type": "boolean"
+        }
+      }
+    },
+    "googlerpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    }
+  }
+}

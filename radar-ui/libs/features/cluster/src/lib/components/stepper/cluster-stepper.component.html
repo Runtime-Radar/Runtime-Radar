@@ -1,0 +1,62 @@
+<section class="cluster-feature-stepper" *transloco="let tCluster; prefix: 'cluster'">
+    <kbq-tab-group [selectedIndex]="activeTabIndex$()"
+                   (selectedTabChange)="onSelectedTabChange($event)"
+                   data-testid="cluster-stepper-tab-group">
+        @for (tab of clusterStepperTabs; track $index) {
+            <kbq-tab [attr.data-testid]="tab.id">
+                <ng-template kbq-tab-label>
+                    <div class="layout-column layout-align-center-start cluster-feature-stepper-tab"
+                         [attr.data-counter]="$index + 1"
+                         [ngClass]="{ 'done': $index < activeTabIndex$(),
+                                      'active': $index === activeTabIndex$() }">
+                        <strong class="kbq-text-normal-strong cluster-feature-stepper-tab-title">
+                            {{ tCluster(tab.title) }}
+                        </strong>
+                        <span class="kbq-text-compact cs-text-gray cluster-feature-stepper-tab-description">
+                            {{ tCluster(tab.description) }}
+                        </span>
+                    </div>
+                </ng-template>
+
+                @if (steps.length) {
+                    <ng-container *ngTemplateOutlet="steps.get(activeTabIndex$())!"></ng-container>
+                }
+            </kbq-tab>
+        }
+    </kbq-tab-group>
+
+    <section class="layout-row cluster-feature-stepper-action"
+             [ngClass]="{ 'layout-align-end': isFirstStep$(),
+                          'layout-align-space-between': !isFirstStep$() }">
+        @if (!isFirstStep$()) {
+            <button kbq-button
+                    type="button"
+                    (click)="prev()"
+                    data-testid="cluster-stepper-prev-step-button">
+                {{ tCluster('Cluster.CreatePage.Button.PrevStep') }}
+            </button>
+        }
+        @if (!isLastStep$()) {
+            <button kbq-button
+                    kbqStyle="outline"
+                    color="theme-fade"
+                    type="button"
+                    [disabled]="!isStepValid"
+                    (click)="next()"
+                    data-testid="cluster-stepper-next-step-button">
+                {{ tCluster('Cluster.CreatePage.Button.NextStep') }}
+            </button>
+        }
+        @if (isLastStep$()) {
+            <button kbq-button
+                    kbqStyle="outline"
+                    color="theme-fade"
+                    type="button"
+                    [disabled]="!isStepValid"
+                    (click)="complete()"
+                    data-testid="cluster-stepper-finish-button">
+                {{ tCluster('Cluster.CreatePage.Button.Complete') }}
+            </button>
+        }
+    </section>
+</section>

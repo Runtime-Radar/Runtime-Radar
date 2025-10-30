@@ -1,0 +1,337 @@
+<ng-container *transloco="let tRuntime; prefix: 'runtime'">
+    <header class="layout-row layout-align-space-between-center runtime-feature-details-header">
+        <section class="layout-row layout-align-start-center">
+            <a kbq-link [routerLink]="'..'" [noUnderline]="true" class="layout-margin-right-l" data-testid="runtime-details-back-link">
+                <i kbq-icon="kbq-chevron-left_16"></i>
+            </a>
+            <h1 class="kbq-display-compact runtime-feature-details-header-title">
+                {{ tRuntime('Runtime.DetailsPage.Header.Title') }}
+            </h1>
+            <ng-container *ngrxLet="event$ as event">
+                <p class="kbq-text-compact runtime-feature-details-header-label">
+                    <span class="cs-text-gray">{{ tRuntime('Runtime.DetailsPage.Label.Id') }}:</span> {{ event.id }}
+                </p>
+                @if (event.event && event.event.time) {
+                    <p class="kbq-text-compact runtime-feature-details-header-label">
+                        <span class="cs-text-gray">{{ tRuntime('Runtime.DetailsPage.Label.Date') }}:</span> {{ event.event.time | runtimeNanosecondsFormatter }}
+                    </p>
+                }
+            </ng-container>
+        </section>
+    </header>
+
+    <section class="layout-row runtime-feature-details-wrapper"
+             *ngrxLet="event$ as event">
+        <div class="runtime-feature-details-card">
+            <div class="runtime-feature-details-card-container">
+                @if (eventEntity?.parent; as parent) {
+                    <section class="runtime-feature-details-card-container-section">
+                        <h4 class="kbq-subheading runtime-feature-details-card-container-section-title">{{ tRuntime('Runtime.DetailsPage.SubTitle.Parent') }}</h4>
+                        @if (parent.binary) {
+                            <p class="layout-row kbq-mono-normal layout-margin-top-s layout-margin-bottom-s">
+                                <span class="runtime-feature-details-card-container-section-binary">{{ parent.binary }}</span>
+                                <span class="runtime-feature-details-card-container-section-arguments">{{ parent.arguments }}</span>
+                            </p>
+                        }
+                        <div class="layout-row runtime-feature-details-card-container-section-list">
+                            <kbq-dl [vertical]="false" [wide]="false" class="runtime-feature-details-card-container-section-list-dl">
+                                <kbq-dt>{{ tRuntime('Runtime.DetailsPage.Label.Pid') }}:</kbq-dt>
+                                <kbq-dd>{{ parent.pid }}</kbq-dd>
+                                <kbq-dt>{{ tRuntime('Runtime.DetailsPage.Label.Uid') }}:</kbq-dt>
+                                <kbq-dd>{{ parent.uid }}</kbq-dd>
+                            </kbq-dl>
+                            <kbq-dl [vertical]="false" [wide]="false" class="runtime-feature-details-card-container-section-list-dlb">
+                                <kbq-dt>{{ tRuntime('Runtime.DetailsPage.Label.Cwd') }}:</kbq-dt>
+                                <kbq-dd>{{ parent.cwd }}</kbq-dd>
+                                <kbq-dt>{{ tRuntime('Runtime.DetailsPage.Label.StartDate') }}:</kbq-dt>
+                                <kbq-dd>{{ parent.start_time | runtimeNanosecondsFormatter }}</kbq-dd>
+                            </kbq-dl>
+                        </div>
+                    </section>
+                }
+
+                @if (eventEntity?.process; as process) {
+                    <div class="layout-row layout-align-space-between runtime-feature-details-card-container-section runtime-feature-details-card-container-line">
+                        <section class="flex runtime-feature-details-card-container-line"
+                                 [ngClass]="{ 'runtime-feature-details-card-container-line--secondary': eventEntity?.parent }">
+                            <h4 class="kbq-subheading runtime-feature-details-card-container-section-title">{{ tRuntime('Runtime.DetailsPage.SubTitle.Process') }}</h4>
+                            @if (process.binary) {
+                                <p class="layout-row kbq-mono-normal layout-margin-top-s layout-margin-bottom-s">
+                                    <span class="runtime-feature-details-card-container-section-binary">{{ process.binary }}</span>
+                                    <span class="runtime-feature-details-card-container-section-arguments">{{ process.arguments }}</span>
+                                </p>
+                            }
+                            <div class="layout-row runtime-feature-details-card-container-section-list">
+                                <kbq-dl [vertical]="false" [wide]="false" class="runtime-feature-details-card-container-section-list-dl">
+                                    <kbq-dt>{{ tRuntime('Runtime.DetailsPage.Label.Pid') }}:</kbq-dt>
+                                    <kbq-dd>{{ process.pid }}</kbq-dd>
+                                    <kbq-dt>{{ tRuntime('Runtime.DetailsPage.Label.Uid') }}:</kbq-dt>
+                                    <kbq-dd>{{ process.uid }}</kbq-dd>
+                                </kbq-dl>
+                                <kbq-dl [vertical]="false" [wide]="false" class="runtime-feature-details-card-container-section-list-dlb">
+                                    <kbq-dt>{{ tRuntime('Runtime.DetailsPage.Label.Cwd') }}:</kbq-dt>
+                                    <kbq-dd>{{ process.cwd }}</kbq-dd>
+                                    <kbq-dt>{{ tRuntime('Runtime.DetailsPage.Label.StartDate') }}:</kbq-dt>
+                                    <kbq-dd>{{ process.start_time | runtimeNanosecondsFormatter }}</kbq-dd>
+                                </kbq-dl>
+                            </div>
+                        </section>
+
+                        <div class="layout-row">
+                            <button kbq-button
+                                    kbqStyle="transparent"
+                                    color="contrast"
+                                    type="button"
+                                    class="kbq-button-icon"
+                                    (click)="openViewCodeSidepanel(event.event)">
+                                <i kbq-icon="kbq-code_16"></i>
+                            </button>
+                            <button kbq-button
+                                    kbqStyle="transparent"
+                                    color="contrast"
+                                    type="button"
+                                    class="kbq-button-icon"
+                                    [kbqDropdownTriggerFor]="dropdownContextMenu"
+                                    data-testid="event-details-open-context-menu-button">
+                                <i kbq-icon="kbq-branch_16"></i>
+                            </button>
+
+                            <kbq-dropdown #dropdownContextMenu="kbqDropdown">
+                                @for (option of runtimeContextOptions; track option.id) {
+                                    <button kbq-dropdown-item
+                                            (click)="goToListPageWithContext(option.id)"
+                                            [attr.data-testid]="tRuntime(option.localizationKey)">
+                                        {{ tRuntime(option.localizationKey) }}
+                                    </button>
+                                }
+                            </kbq-dropdown>
+                        </div>
+                    </div>
+                }
+
+                <div class="layout-row runtime-feature-details-card-entity">
+                    <kbq-dl [vertical]="false" [wide]="false">
+                        <kbq-dt>{{ tRuntime('Runtime.DetailsPage.Label.Type') }}:</kbq-dt>
+                        <kbq-dd class="layout-row">
+                            @if (eventType) {
+                                <i runtimeEventTypeIcon [type]="eventType"></i>
+                                <span class="layout-margin-left-xs">{{ tRuntime(eventType | runtimeEventTypeLocalization) }}</span>
+                            } @else {
+                                —
+                            }
+                        </kbq-dd>
+                        <kbq-dt>{{ tRuntime('Runtime.DetailsPage.Label.Function') }}:</kbq-dt>
+                        <kbq-dd>{{ eventEntity?.function_name || '—' }}</kbq-dd>
+                        @if (eventEntity?.process?.pod; as pod) {
+                            <kbq-dt>{{ tRuntime('Runtime.DetailsPage.Label.Namespace') }}:</kbq-dt>
+                            <kbq-dd>{{ pod.namespace }}</kbq-dd>
+                            <kbq-dt>{{ tRuntime('Runtime.DetailsPage.Label.Pod') }}:</kbq-dt>
+                            <kbq-dd>{{ pod.name }}</kbq-dd>
+                        }
+                    </kbq-dl>
+                    <kbq-dl [vertical]="false" [wide]="false">
+                        <kbq-dt>{{ tRuntime('Runtime.DetailsPage.Label.NodeName') }}:</kbq-dt>
+                        <kbq-dd>{{ event.event.node_name }}</kbq-dd>
+                        @if (eventEntity?.process?.pod; as pod) {
+                            <kbq-dt>{{ tRuntime('Runtime.DetailsPage.Label.Image') }}:</kbq-dt>
+                            <kbq-dd>{{ pod.container.image.name }}</kbq-dd>
+                            <kbq-dt>{{ tRuntime('Runtime.DetailsPage.Label.Container') }}:</kbq-dt>
+                            <kbq-dd>{{ pod.container.name }}</kbq-dd>
+                            <kbq-dt>{{ tRuntime('Runtime.DetailsPage.Label.ContainerStartDate') }}:</kbq-dt>
+                            <kbq-dd>{{ pod.container.start_time | dateFormatter }}</kbq-dd>
+                        }
+                    </kbq-dl>
+                </div>
+
+                @if ((cardLoadStatus$ | async) === loadStatus.IN_PROGRESS) {
+                    <kbq-loader-overlay [transparent]="true"></kbq-loader-overlay>
+                }
+            </div>
+
+            <div class="runtime-feature-details-grid">
+                <h4 class="kbq-subheading layout-margin-no-top layout-margin-no-bottom">
+                    {{ tRuntime('Runtime.DetailsPage.SubTitle.Sibling') }}
+                </h4>
+                <ng-container *ngrxLet="eventsResponse$ as eventsResponse">
+                    <div class="runtime-feature-details-grid-scroll">
+                        @if (eventsResponse.runtime_events.length) {
+                            <cs-runtime-feature-events-grid-container
+                                    [events]="eventsResponse.runtime_events"
+                                    [rulePermissions]="permissions[permissionName.RULES]"></cs-runtime-feature-events-grid-container>
+                        }
+                    </div>
+
+                    @if (eventsResponse.runtime_events.length) {
+                        <div class="layout-row layout-align-space-between-center">
+                            <div class="layout-row layout-align-start-center runtime-feature-details-grid-paginator">
+                                <button kbq-button
+                                        kbqStyle="transparent"
+                                        color="contrast"
+                                        type="button"
+                                        (click)="goToStartPage()"
+                                        data-testid="runtime-paginator-start-button">
+                                    {{ tRuntime('Runtime.EventsPage.Paginator.Button.Start') }}
+                                </button>
+                                <button kbq-button
+                                        kbqStyle="transparent"
+                                        color="contrast"
+                                        type="button"
+                                        [disabled]="!eventsResponse.left_cursor"
+                                        (click)="changePage(runtimeEventCursorDirection.LEFT, eventsResponse.left_cursor)"
+                                        data-testid="runtime-paginator-prev-button">
+                                    <i kbq-icon="kbq-chevron-left_16"></i>
+                                    {{ tRuntime('Runtime.EventsPage.Paginator.Button.Next') }}
+                                </button>
+                                <button kbq-button
+                                        kbqStyle="transparent"
+                                        color="contrast"
+                                        type="button"
+                                        [disabled]="!eventsResponse.right_cursor"
+                                        (click)="changePage(runtimeEventCursorDirection.RIGHT, eventsResponse.right_cursor)"
+                                        data-testid="runtime-paginator-next-button">
+                                    {{ tRuntime('Runtime.EventsPage.Paginator.Button.Prev') }}
+                                    <i kbq-icon="kbq-chevron-right_16"></i>
+                                </button>
+                                <button kbq-button
+                                        kbqStyle="transparent"
+                                        color="contrast"
+                                        type="button"
+                                        (click)="goToEndPage()"
+                                        data-testid="runtime-paginator-end-button">
+                                    {{ tRuntime('Runtime.EventsPage.Paginator.Button.End') }}
+                                </button>
+                            </div>
+                            <a kbq-link [noUnderline]="true" (click)="goToListPage()" data-testid="runtime-events-with-context-link">
+                                <span class="kbq-link__text kbq-text-compact">{{ tRuntime('Runtime.DetailsPage.Link.GoToList') }}</span>
+                                <i kbq-icon="kbq-chevron-right_16"></i>
+                            </a>
+                        </div>
+                    }
+                </ng-container>
+
+                @if ((loadStatus$ | async) === loadStatus.IN_PROGRESS) {
+                    <kbq-loader-overlay
+                            [transparent]="true"
+                            class="runtime-feature-details-grid-loader"></kbq-loader-overlay>
+                }
+            </div>
+        </div>
+
+        <div class="runtime-feature-details-meta">
+            @if (event.incident_severity !== ruleSeverity.NONE) {
+                <section class="runtime-feature-details-meta-connector">
+                    <h4 class="kbq-subheading layout-margin-no-top layout-margin-no-bottom">
+                        {{ tRuntime('Runtime.DetailsPage.Meta.Title.Incident') }}
+                    </h4>
+
+                    <section class="layout-column runtime-feature-details-meta-incident-card"
+                             severityBgColor
+                             [severity]="event.incident_severity">
+                        <cs-severity-label-component
+                                class="runtime-feature-details-meta-incident-card-severity"
+                                isLabelColored
+                                isWidthAuto
+                                [severity]="event.incident_severity"></cs-severity-label-component>
+                        <cs-event-action-component
+                                isIconVisible
+                                [blockIds]="event.block_by"
+                                [notifyIds]="event.notify_by"></cs-event-action-component>
+                    </section>
+                </section>
+            }
+
+            @if (event.threats.length) {
+                <cs-runtime-feature-rules-container
+                        [ruleIds]="ruleIds"
+                        [ngClass]="{ 'runtime-feature-details-meta-connector': event.threats.length }"
+                        [permissions]="permissions[permissionName.RULES]"></cs-runtime-feature-rules-container>
+            }
+
+            @if (event.detect_errors.length) {
+                <section [ngClass]="{ 'runtime-feature-details-meta-connector': event.threats.length }">
+                    <h4 class="kbq-subheading layout-margin-no-top layout-margin-no-bottom">
+                        <span>{{ tRuntime('Runtime.DetailsPage.Meta.Title.Error') }}</span>
+                        <span class="cs-text-gray layout-margin-left-xxs">({{ event.detect_errors.length }})</span>
+                    </h4>
+                    <div class="layout-column">
+                        @for (error of event.detect_errors | slice: 0:expandErrorsLimit; track i; let i = $index) {
+                            <kbq-alert
+                                    [alertColor]="alertColors.Error"
+                                    [alertStyle]="'colored'"
+                                    [compact]="true"
+                                    class="runtime-feature-details-meta-detect-errors">
+                                <i kbq-icon="kbq-exclamation-triangle_16" class="runtime-feature-details-meta-detect-errors-icon"></i>
+                                <div kbq-alert-title class="runtime-feature-details-meta-detect-errors-truncate">{{ error.detector.id }}</div>
+                                <div class="kbq-text-normal-strong">{{ error.detector.name }}</div>
+                                <span class="runtime-feature-details-meta-detect-errors-break">{{ error.error }}</span>
+                            </kbq-alert>
+                        }
+                    </div>
+
+                    @if (expandErrorsLimit && expandErrorsLimit < event.detect_errors.length) {
+                        <div class="layout-row layout-align-center layout-margin-top-xxl">
+                            <button kbq-button
+                                    kbqStyle="transparent"
+                                    color="contrast"
+                                    type="button"
+                                    class="kbq-button-icon"
+                                    (click)="expandErrors()"
+                                    data-testid="event-details-detect-errors-expand-button">
+                                <i kbq-icon="kbq-chevron-down_16"></i>
+                            </button>
+                        </div>
+                    }
+                </section>
+            }
+
+            @if (event.threats.length) {
+                <section class="layout-column">
+                    <h4 class="kbq-subheading layout-margin-no-top layout-margin-bottom-l">
+                        <span>{{ tRuntime('Runtime.DetailsPage.Meta.Title.Threat') }}</span>
+                        <span class="cs-text-gray layout-margin-left-xxs">({{ event.threats.length }})</span>
+                    </h4>
+
+                    @for (threat of event.threats | slice: 0:expandThreatsLimit; track threat.detector.id) {
+                        <button type="button"
+                                class="layout-row layout-align-space-between-center runtime-feature-details-meta-threat-button"
+                                (click)="openThreatsSidepanel(event.threats, event.detect_errors)"
+                                data-testid="event-details-open-threat-sidepanel-button">
+                            <span class="kbq-text-normal-strong runtime-feature-details-meta-threat-button-truncate">
+                                {{ threat.detector.id }}
+                            </span>
+                            <cs-severity-component
+                                    isWidthAuto
+                                    [kbqTooltip]="severityTooltip"
+                                    [kbqPlacement]="tooltipPlacements.Left"
+                                    [severity]="threat.severity"></cs-severity-component>
+
+                            <ng-template #severityTooltip>
+                                <ng-container *transloco="let tCommon; prefix: 'common'">
+                                    @for (option of ruleSeverityOptions; track option.id) {
+                                        @if ([threat] | runtimeSeverityThreatsCounter: option.id) {
+                                            <span>{{ tCommon(option.localizationKey) }}</span>
+                                        }
+                                    }
+                                </ng-container>
+                            </ng-template>
+                        </button>
+                    }
+
+                    @if (expandThreatsLimit && expandThreatsLimit < event.threats.length) {
+                        <div class="layout-row layout-align-center layout-margin-top-xxl">
+                            <button kbq-button
+                                    kbqStyle="transparent"
+                                    color="contrast"
+                                    type="button"
+                                    class="kbq-button-icon"
+                                    (click)="expandThreats()"
+                                    data-testid="event-details-threat-expand-button">
+                                <i kbq-icon="kbq-chevron-down_16"></i>
+                            </button>
+                        </div>
+                    }
+                </section>
+            }
+        </div>
+    </section>
+</ng-container>

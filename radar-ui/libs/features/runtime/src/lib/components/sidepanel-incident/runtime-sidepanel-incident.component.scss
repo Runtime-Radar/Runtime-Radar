@@ -1,0 +1,21 @@
+:host {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    height: 100%;
+}
+
+.runtime-feature-sidepanel-incident {
+    position: relative;
+
+    &-card {
+        padding: 16px;
+        margin-bottom: 24px;
+        border-radius: 16px;
+
+        &-severity {
+            display: block;
+            margin-bottom: 16px;
+        }
+    }
+}

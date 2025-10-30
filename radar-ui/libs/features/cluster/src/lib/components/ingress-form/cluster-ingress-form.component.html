@@ -1,0 +1,121 @@
+<ng-container *transloco="let tCluster; prefix: 'cluster'">
+    <form [formGroup]="form" class="kbq-form-vertical cluster-abstract-feature-form">
+        <h2 class="kbq-headline cluster-abstract-feature-form-headline">
+            {{ tCluster('Cluster.CreatePage.IngressForm.SubHeading.Ingress') }}
+        </h2>
+
+        <section class="kbq-form__row kbq-form-row_margin">
+            <kbq-toggle formControlName="isIngressEnabled" data-testid="cluster-ingress-enabled-toggle">
+                {{ tCluster('Cluster.CreatePage.IngressForm.Label.IngressEnabled') }}
+            </kbq-toggle>
+        </section>
+
+        @if (isIngressEnabled$ | async) {
+            <section class="kbq-form__row kbq-form-row_margin">
+                <label for="ingressClass" class="kbq-form__label">
+                    {{ tCluster('Cluster.CreatePage.IngressForm.Label.IngressClass') }}
+                    <i kbq-icon="kbq-question-circle_16"
+                       class="cs-help-hover"
+                       kbqTooltip="{{ tCluster('Cluster.CreatePage.IngressForm.Hint.IngressClass') }}"
+                       kbqTooltipClass="cluster-abstract-feature-form-tooltip"
+                       [kbqPlacement]="tooltipPlacement.RightTop"></i>
+                </label>
+                <kbq-form-field class="kbq-form__control" *transloco="let tCommon; prefix: 'common'">
+                    <input kbqInput
+                           type="text"
+                           id="ingressClass"
+                           formControlName="ingressClass"
+                           placeholder="{{ tCluster('Cluster.CreatePage.IngressForm.Placeholder.IngressClass') }}"
+                           data-testid="cluster-ingress-class-input">
+                    <kbq-hint>{{ tCommon('Common.Form.Hint.Optional') }}</kbq-hint>
+                </kbq-form-field>
+            </section>
+
+            <section class="kbq-form__row kbq-form-row_margin">
+                <label for="hostname" class="kbq-form__label">
+                    {{ tCluster('Cluster.CreatePage.IngressForm.Label.Hostname') }}
+                    <i kbq-icon="kbq-question-circle_16"
+                       class="cs-help-hover"
+                       kbqTooltip="{{ tCluster('Cluster.CreatePage.IngressForm.Hint.Hostname') }}"
+                       kbqTooltipClass="cluster-abstract-feature-form-tooltip"
+                       [kbqPlacement]="tooltipPlacement.RightTop"></i>
+                </label>
+                <kbq-form-field class="kbq-form__control" *transloco="let tCommon; prefix: 'common'">
+                    <input kbqInput
+                           type="text"
+                           id="hostname"
+                           formControlName="hostname"
+                           placeholder="{{ tCluster('Cluster.CreatePage.IngressForm.Placeholder.Hostname') }}"
+                           data-testid="cluster-ingress-hostname-input">
+                    @if (form.get('hostname')?.hasError('pattern')) {
+                        <kbq-hint color="error">{{ tCommon('Common.Form.Error.Format') }}</kbq-hint>
+                    }
+                </kbq-form-field>
+            </section>
+
+            <section class="kbq-form__row kbq-form-row_margin">
+                <label for="cert" class="kbq-form__label">
+                    {{ tCluster('Cluster.CreatePage.IngressForm.Label.Cert') }}
+                </label>
+                <kbq-form-field class="kbq-form__control" *transloco="let tCommon; prefix: 'common'">
+                    <textarea kbqTextarea
+                              id="cert"
+                              formControlName="cert"
+                              class="cluster-abstract-feature-form-textarea"
+                              placeholder="{{ tCluster('Cluster.CreatePage.IngressForm.Placeholder.Cert') }}"
+                              data-testid="cluster-ingress-cert-textarea"></textarea>
+                    <kbq-hint>{{ tCluster('Cluster.CreatePage.IngressForm.Hint.Cert') }}</kbq-hint>
+                    <kbq-hint>{{ tCommon('Common.Form.Hint.Optional') }}</kbq-hint>
+                </kbq-form-field>
+            </section>
+
+            <section class="kbq-form__row kbq-form-row_margin">
+                <label for="certKey" class="kbq-form__label">
+                    {{ tCluster('Cluster.CreatePage.IngressForm.Label.CertKey') }}
+                </label>
+                <kbq-form-field class="kbq-form__control" *transloco="let tCommon; prefix: 'common'">
+                    <textarea kbqTextarea
+                              id="certKey"
+                              formControlName="certKey"
+                              class="cluster-abstract-feature-form-textarea"
+                              placeholder="{{ tCluster('Cluster.CreatePage.IngressForm.Placeholder.CertKey') }}"
+                              data-testid="cluster-ingress-cert-key-textarea"></textarea>
+                    <kbq-hint>{{ tCluster('Cluster.CreatePage.IngressForm.Hint.CertKey') }}</kbq-hint>
+                    <kbq-hint>{{ tCommon('Common.Form.Hint.Optional') }}</kbq-hint>
+                </kbq-form-field>
+            </section>
+        }
+
+        <h2 class="kbq-headline cluster-abstract-feature-form-headline">
+            {{ tCluster('Cluster.CreatePage.IngressForm.SubHeading.NodePort') }}
+        </h2>
+
+        <section class="kbq-form__row kbq-form-row_margin">
+            <kbq-toggle formControlName="isNodePortEnabled" data-testid="cluster-ingress-node-port-enabled-toggle">
+                {{ tCluster('Cluster.CreatePage.IngressForm.Label.NodePortEnabled') }}
+                <span class="kbq-text-compact cs-text-gray cluster-abstract-feature-form-toggle-hint">
+                    {{ tCluster('Cluster.CreatePage.IngressForm.Hint.NodePortEnabled') }}
+                </span>
+            </kbq-toggle>
+        </section>
+
+        @if (isNodePortEnabled$ | async) {
+            <section class="kbq-form__row kbq-form-row_margin">
+                <label for="port" class="kbq-form__label">
+                    {{ tCluster('Cluster.CreatePage.IngressForm.Label.Port') }}
+                </label>
+                <kbq-form-field class="kbq-form__control" *transloco="let tCommon; prefix: 'common'">
+                    <input kbqInput
+                           type="text"
+                           id="port"
+                           formControlName="port"
+                           data-testid="cluster-ingress-port-input">
+                    <kbq-hint>{{ tCluster('Cluster.CreatePage.IngressForm.Hint.Port') }}</kbq-hint>
+                    @if (form.get('port')?.hasError('pattern') || form.get('port')?.hasError('min') || form.get('port')?.hasError('max')) {
+                        <kbq-hint color="error">{{ tCommon('Common.Form.Error.Format') }}</kbq-hint>
+                    }
+                </kbq-form-field>
+            </section>
+        }
+    </form>
+</ng-container>

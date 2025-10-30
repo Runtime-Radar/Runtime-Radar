@@ -1,0 +1,23 @@
+{
+    "name": "domain-integration",
+    "projectType": "library",
+    "root": "libs/domains/integration",
+    "sourceRoot": "libs/domains/integration/src",
+    "prefix": "runtime-radar",
+    "targets": {
+        "lint": {
+            "executor": "@nx/linter:eslint",
+            "options": {
+                "lintFilePatterns": ["libs/domains/integration/src/**/*.ts", "libs/domains/integration/src/**/*.html"]
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": ["coverage/libs/domains/integration"],
+            "options": {
+                "jestConfig": "libs/domains/integration/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    }
+}

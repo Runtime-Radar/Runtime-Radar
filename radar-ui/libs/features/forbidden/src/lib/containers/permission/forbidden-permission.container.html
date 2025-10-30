@@ -1,0 +1,11 @@
+<div *transloco="let tCommon; prefix: 'common'" class="forbidden-feature-permission">
+    <section class="layout-column layout-align-center-center forbidden-feature-permission-content">
+        <img ngSrc="/assets/koobiq/light/403_256@2x.png" width="256" height="256" alt="{{ tCommon('Common.ForbiddenPage.Text.NoPermission') }}">
+        <h3 class="kbq-title forbidden-feature-permission-content-message">
+            {{ tCommon('Common.ForbiddenPage.Text.NoPermission') }}
+        </h3>
+        <a kbq-link [routerLink]="routerName.DEFAULT">
+            {{ tCommon('Common.ForbiddenPage.Button.MainPage') }}
+        </a>
+    </section>
+</div>

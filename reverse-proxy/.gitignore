@@ -1,0 +1,9 @@
+CaddyfileRoutes
+bin
+build
+srv
+.helm/charts
+.helm/Chart.lock
+.task
+.temp
+.idea

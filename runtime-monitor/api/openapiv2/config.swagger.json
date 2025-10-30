@@ -1,0 +1,404 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Runtime Monitor Config API",
+    "description": "Package is called \"runtime_config\" in order to distinguish it from future more generic \"config\" package\nwhich could be used for keeping dynamic config interfaces exposed by cs_manager, however this is not yet implemented.",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "ConfigController"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/config/runtime-monitor": {
+      "get": {
+        "operationId": "ConfigController_Read",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/runtime_configConfig"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "ConfigController"
+        ]
+      },
+      "post": {
+        "operationId": "ConfigController_Add",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/runtime_configConfig"
+            }
+          }
+        ],
+        "tags": [
+          "ConfigController"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "ConfigConfigJSON": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string"
+        },
+        "tracingPolicies": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/runtime_configTracingPolicy"
+          }
+        },
+        "allowList": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/tetragonFilter"
+          },
+          "description": "Tetragon options\n================\nallow_list specifies a list of filters to apply to only return certain\nevents. If multiple filters are specified, at least one of them has to\nmatch for an event to be included in the results."
+        },
+        "denyList": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/tetragonFilter"
+          },
+          "description": "deny_list specifies a list of filters to apply to exclude certain events\nfrom the results. If multiple filters are specified, at least one of\nthem has to match for an event to be excluded.\nIf both allow_list and deny_list are specified, the results contain the\nset difference allow_list - deny_list."
+        },
+        "aggregationOptions": {
+          "$ref": "#/definitions/tetragonAggregationOptions",
+          "description": "aggregation_options configures aggregation options for this request.\nIf this field is not set, responses will not be aggregated.\nNote that currently only process_accept and process_connect events are\naggregated. Other events remain unaggregated."
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "runtime_configConfig": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "config": {
+          "$ref": "#/definitions/ConfigConfigJSON"
+        }
+      }
+    },
+    "runtime_configTracingPolicy": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "yaml": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        }
+      }
+    },
+    "tetragonAggregationOptions": {
+      "type": "object",
+      "properties": {
+        "windowSize": {
+          "type": "string",
+          "description": "Aggregation window size. Defaults to 15 seconds if this field is not set."
+        },
+        "channelBufferSize": {
+          "type": "string",
+          "format": "uint64",
+          "description": "Size of the buffer for the aggregator to receive incoming events. If the\nbuffer becomes full, the aggregator will log a warning and start dropping\nincoming events."
+        }
+      },
+      "description": "AggregationOptions defines configuration options for aggregating events."
+    },
+    "tetragonCapFilter": {
+      "type": "object",
+      "properties": {
+        "permitted": {
+          "$ref": "#/definitions/tetragonCapFilterSet",
+          "description": "Filter over the set of permitted capabilities."
+        },
+        "effective": {
+          "$ref": "#/definitions/tetragonCapFilterSet",
+          "description": "Filter over the set of effective capabilities."
+        },
+        "inheritable": {
+          "$ref": "#/definitions/tetragonCapFilterSet",
+          "description": "Filter over the set of inheritable capabilities."
+        }
+      },
+      "description": "Filter over a set of Linux process capabilities. See `message Capabilities`\nfor more info.  WARNING: Multiple sets are ANDed. For example, if the\npermitted filter matches, but the effective filter does not, the filter will\nNOT match."
+    },
+    "tetragonCapFilterSet": {
+      "type": "object",
+      "properties": {
+        "any": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/tetragonCapabilitiesType"
+          },
+          "description": "Match if the capability set contains any of the capabilities defined in this filter."
+        },
+        "all": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/tetragonCapabilitiesType"
+          },
+          "description": "Match if the capability set contains all of the capabilities defined in this filter."
+        },
+        "exactly": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/tetragonCapabilitiesType"
+          },
+          "description": "Match if the capability set exactly matches all of the capabilities defined in this filter."
+        },
+        "none": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/tetragonCapabilitiesType"
+          },
+          "description": "Match if the capability set contains none of the capabilities defined in this filter."
+        }
+      },
+      "description": "Capability set to filter over. NOTE: you may specify only ONE set here."
+    },
+    "tetragonCapabilitiesType": {
+      "type": "string",
+      "enum": [
+        "CAP_CHOWN",
+        "DAC_OVERRIDE",
+        "CAP_DAC_READ_SEARCH",
+        "CAP_FOWNER",
+        "CAP_FSETID",
+        "CAP_KILL",
+        "CAP_SETGID",
+        "CAP_SETUID",
+        "CAP_SETPCAP",
+        "CAP_LINUX_IMMUTABLE",
+        "CAP_NET_BIND_SERVICE",
+        "CAP_NET_BROADCAST",
+        "CAP_NET_ADMIN",
+        "CAP_NET_RAW",
+        "CAP_IPC_LOCK",
+        "CAP_IPC_OWNER",
+        "CAP_SYS_MODULE",
+        "CAP_SYS_RAWIO",
+        "CAP_SYS_CHROOT",
+        "CAP_SYS_PTRACE",
+        "CAP_SYS_PACCT",
+        "CAP_SYS_ADMIN",
+        "CAP_SYS_BOOT",
+        "CAP_SYS_NICE",
+        "CAP_SYS_RESOURCE",
+        "CAP_SYS_TIME",
+        "CAP_SYS_TTY_CONFIG",
+        "CAP_MKNOD",
+        "CAP_LEASE",
+        "CAP_AUDIT_WRITE",
+        "CAP_AUDIT_CONTROL",
+        "CAP_SETFCAP",
+        "CAP_MAC_OVERRIDE",
+        "CAP_MAC_ADMIN",
+        "CAP_SYSLOG",
+        "CAP_WAKE_ALARM",
+        "CAP_BLOCK_SUSPEND",
+        "CAP_AUDIT_READ",
+        "CAP_PERFMON",
+        "CAP_BPF",
+        "CAP_CHECKPOINT_RESTORE"
+      ],
+      "default": "CAP_CHOWN",
+      "title": "- CAP_CHOWN: In a system with the [_POSIX_CHOWN_RESTRICTED] option defined, this\noverrides the restriction of changing file ownership and group\nownership.\n - DAC_OVERRIDE: Override all DAC access, including ACL execute access if\n[_POSIX_ACL] is defined. Excluding DAC access covered by\nCAP_LINUX_IMMUTABLE.\n - CAP_DAC_READ_SEARCH: Overrides all DAC restrictions regarding read and search on files\nand directories, including ACL restrictions if [_POSIX_ACL] is\ndefined. Excluding DAC access covered by \"$1\"_LINUX_IMMUTABLE.\n - CAP_FOWNER: Overrides all restrictions about allowed operations on files, where\nfile owner ID must be equal to the user ID, except where CAP_FSETID\nis applicable. It doesn't override MAC and DAC restrictions.\n - CAP_FSETID: Overrides the following restrictions that the effective user ID\nshall match the file owner ID when setting the S_ISUID and S_ISGID\nbits on that file; that the effective group ID (or one of the\nsupplementary group IDs) shall match the file owner ID when setting\nthe S_ISGID bit on that file; that the S_ISUID and S_ISGID bits are\ncleared on successful return from chown(2) (not implemented).\n - CAP_KILL: Overrides the restriction that the real or effective user ID of a\nprocess sending a signal must match the real or effective user ID\nof the process receiving the signal.\n - CAP_SETGID: Allows forged gids on socket credentials passing.\n - CAP_SETUID: Allows forged pids on socket credentials passing.\n - CAP_SETPCAP: Without VFS support for capabilities:\n  Transfer any capability in your permitted set to any pid,\n  remove any capability in your permitted set from any pid\nWith VFS support for capabilities (neither of above, but)\n  Add any capability from current's capability bounding set\n      to the current process' inheritable set\n  Allow taking bits out of capability bounding set\n  Allow modification of the securebits for a process\n - CAP_LINUX_IMMUTABLE: Allow modification of S_IMMUTABLE and S_APPEND file attributes\n - CAP_NET_BIND_SERVICE: Allows binding to ATM VCIs below 32\n - CAP_NET_BROADCAST: Allow broadcasting, listen to multicast\n - CAP_NET_ADMIN: Allow activation of ATM control sockets\n - CAP_NET_RAW: Allow binding to any address for transparent proxying (also via NET_ADMIN)\n - CAP_IPC_LOCK: Allow mlock and mlockall (which doesn't really have anything to do\nwith IPC)\n - CAP_IPC_OWNER: Override IPC ownership checks\n - CAP_SYS_MODULE: Insert and remove kernel modules - modify kernel without limit\n - CAP_SYS_RAWIO: Allow sending USB messages to any device via /dev/bus/usb\n - CAP_SYS_CHROOT: Allow use of chroot()\n - CAP_SYS_PTRACE: Allow ptrace() of any process\n - CAP_SYS_PACCT: Allow configuration of process accounting\n - CAP_SYS_ADMIN: Allow everything under CAP_BPF and CAP_PERFMON for backward compatibility\n - CAP_SYS_BOOT: Allow use of reboot()\n - CAP_SYS_NICE: Allow setting cpu affinity on other processes\n - CAP_SYS_RESOURCE: Control memory reclaim behavior\n - CAP_SYS_TIME: Allow setting the real-time clock\n - CAP_SYS_TTY_CONFIG: Allow vhangup() of tty\n - CAP_MKNOD: Allow the privileged aspects of mknod()\n - CAP_LEASE: Allow taking of leases on files\n - CAP_AUDIT_WRITE: Allow writing the audit log via unicast netlink socket\n - CAP_AUDIT_CONTROL: Allow configuration of audit via unicast netlink socket\n - CAP_SETFCAP: Set or remove capabilities on files\n - CAP_MAC_OVERRIDE: Override MAC access.\nThe base kernel enforces no MAC policy.\nAn LSM may enforce a MAC policy, and if it does and it chooses\nto implement capability based overrides of that policy, this is\nthe capability it should use to do so.\n - CAP_MAC_ADMIN: Allow MAC configuration or state changes.\nThe base kernel requires no MAC configuration.\nAn LSM may enforce a MAC policy, and if it does and it chooses\nto implement capability based checks on modifications to that\npolicy or the data required to maintain it, this is the\ncapability it should use to do so.\n - CAP_SYSLOG: Allow configuring the kernel's syslog (printk behaviour)\n - CAP_WAKE_ALARM: Allow triggering something that will wake the system\n - CAP_BLOCK_SUSPEND: Allow preventing system suspends\n - CAP_AUDIT_READ: Allow reading the audit log via multicast netlink socket\n - CAP_PERFMON: Allow system performance and observability privileged operations\nusing perf_events, i915_perf and other kernel subsystems\n - CAP_BPF: CAP_BPF allows the following BPF operations:\n- Creating all types of BPF maps\n- Advanced verifier features\n  - Indirect variable access\n  - Bounded loops\n  - BPF to BPF function calls\n  - Scalar precision tracking\n  - Larger complexity limits\n  - Dead code elimination\n  - And potentially other features\n- Loading BPF Type Format (BTF) data\n- Retrieve xlated and JITed code of BPF programs\n- Use bpf_spin_lock() helper\nCAP_PERFMON relaxes the verifier checks further:\n- BPF progs can use of pointer-to-integer conversions\n- speculation attack hardening measures are bypassed\n- bpf_probe_read to read arbitrary kernel memory is allowed\n- bpf_trace_printk to print kernel memory is allowed\nCAP_SYS_ADMIN is required to use bpf_probe_write_user.\nCAP_SYS_ADMIN is required to iterate system wide loaded\nprograms, maps, links, BTFs and convert their IDs to file descriptors.\nCAP_PERFMON and CAP_BPF are required to load tracing programs.\nCAP_NET_ADMIN and CAP_BPF are required to load networking programs.\n - CAP_CHECKPOINT_RESTORE: Allow writing to ns_last_pid"
+    },
+    "tetragonEventType": {
+      "type": "string",
+      "enum": [
+        "UNDEF",
+        "PROCESS_EXEC",
+        "PROCESS_EXIT",
+        "PROCESS_KPROBE",
+        "PROCESS_TRACEPOINT",
+        "PROCESS_LOADER",
+        "PROCESS_UPROBE",
+        "PROCESS_THROTTLE",
+        "PROCESS_LSM",
+        "TEST",
+        "RATE_LIMIT_INFO"
+      ],
+      "default": "UNDEF",
+      "description": "Represents the type of a Tetragon event.\n\nNOTE: EventType constants must be in sync with the numbers used in the\nGetEventsResponse event oneof."
+    },
+    "tetragonFilter": {
+      "type": "object",
+      "properties": {
+        "binaryRegex": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "namespace": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "healthCheck": {
+          "type": "boolean"
+        },
+        "pid": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "pidSet": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "description": "Filter by the PID of a process and any of its descendants. Note that this filter is\nintended for testing and development purposes only and should not be used in\nproduction. In particular, PID cycling in the OS over longer periods of time may\ncause unexpected events to pass this filter."
+        },
+        "eventSet": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/tetragonEventType"
+          }
+        },
+        "podRegex": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Filter by process.pod.name field using RE2 regular expression syntax:\nhttps://github.com/google/re2/wiki/Syntax"
+        },
+        "argumentsRegex": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Filter by process.arguments field using RE2 regular expression syntax:\nhttps://github.com/google/re2/wiki/Syntax"
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Filter events by pod labels using Kubernetes label selector syntax:\nhttps://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors\nNote that this filter never matches events without the pod field (i.e.\nhost process events)."
+        },
+        "policyNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Filter events by tracing policy names"
+        },
+        "capabilities": {
+          "$ref": "#/definitions/tetragonCapFilter",
+          "title": "Filter events by Linux process capability"
+        },
+        "parentBinaryRegex": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Filter parent process' binary using RE2 regular expression syntax."
+        },
+        "celExpression": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Filter using CEL expressions. CEL filters support IP and CIDR notiation extensions from the k8s project.\nSee https://pkg.go.dev/k8s.io/apiserver/pkg/cel/library#IP and https://pkg.go.dev/k8s.io/apiserver/pkg/cel/library#CIDR for details."
+        },
+        "parentArgumentsRegex": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Filter by process.parent.arguments field using RE2 regular expression syntax:\nhttps://github.com/google/re2/wiki/Syntax"
+        },
+        "containerId": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Filter by the container ID in the process.docker field using RE2 regular expression syntax:\nhttps://github.com/google/re2/wiki/Syntax"
+        },
+        "inInitTree": {
+          "type": "boolean",
+          "description": "Filter containerized processes based on whether they are descendants of\nthe container's init process. This can be used, for example, to watch\nfor processes injected into a container via docker exec, kubectl exec, or\nsimilar mechanisms."
+        }
+      }
+    }
+  }
+}

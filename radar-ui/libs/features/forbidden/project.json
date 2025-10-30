@@ -1,0 +1,23 @@
+{
+    "name": "feature-forbidden",
+    "projectType": "library",
+    "root": "libs/features/forbidden",
+    "sourceRoot": "libs/features/forbidden/src",
+    "prefix": "runtime-radar",
+    "targets": {
+        "lint": {
+            "executor": "@nx/linter:eslint",
+            "options": {
+                "lintFilePatterns": ["libs/features/forbidden/src/**/*.ts", "libs/features/forbidden/src/**/*.html"]
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": ["coverage/libs/features/forbidden"],
+            "options": {
+                "jestConfig": "libs/features/forbidden/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    }
+}

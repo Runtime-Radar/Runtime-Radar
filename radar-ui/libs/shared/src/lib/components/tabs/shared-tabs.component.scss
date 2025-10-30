@@ -1,0 +1,11 @@
+.shared-tabs {
+    position: relative;
+
+    &-action {
+        position: absolute;
+        top: 50%;
+        right: 0;
+        z-index: 1;
+        transform: translateY(-50%);
+    }
+}

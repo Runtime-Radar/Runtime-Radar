@@ -1,0 +1,11 @@
+apiVersion: v2
+appVersion: 25.9.4
+dependencies:
+- name: common
+  repository: file://../common
+  version: 0.x.x
+description: ClickHouse is an open-source column-oriented OLAP database management
+  system. Use it to boost your database performance while providing linear scalability
+  and hardware efficiency.
+name: clickhouse
+version: 0.0.1

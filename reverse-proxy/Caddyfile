@@ -1,0 +1,192 @@
+(csRoutes) {
+	@grafana path /grafana /grafana/*
+	handle @grafana {
+		@grafana-redirect `{env.GRAFANA_REDIRECT} == "true"`
+		redir @grafana-redirect {$GRAFANA} 301
+
+		reverse_proxy {$GRAFANA}
+	}
+
+	handle /api/* {
+		# route is needed to respond with 404 if no route matches
+		# about precedence: https://caddyserver.com/docs/caddyfile/directives#directive-order
+		route {
+			@auth-center {
+				path /api/v1/signin
+				path /api/v1/tokens
+				path /api/v1/user
+				path /api/v1/user/*
+				path /api/v1/role
+				path /api/v1/role/*
+				path /api/v1/ldap/sync
+				path /api/v1/ldap/sync/*
+				path /api/v1/ldap/mapping_role
+				path /api/v1/ldap/mapping_role/*
+				path /api/v1/ldap/auth
+			}
+			handle @auth-center {
+				# auth-center in child cluster (proxy to central CS)
+				@is-child-cluster `{env.IS_CHILD_CLUSTER} == "true"`
+				handle @is-child-cluster {
+					@insecure-skip-verify `{env.CENTRAL_CS_TLS_CHECK_CERT} != "true"`
+					handle @insecure-skip-verify {
+						reverse_proxy {$CENTRAL_CS_URL} {
+							header_up Host {upstream_hostport}
+							transport http {
+								tls_insecure_skip_verify
+							}
+						}
+					}
+					reverse_proxy {$CENTRAL_CS_URL} {
+						header_up Host {upstream_hostport}
+						transport http {
+							tls_server_name {env.CENTRAL_CS_HOSTNAME}
+						}
+					}
+				}
+
+				# auth-center in central cluster
+				reverse_proxy {args[0]}://auth-center:9000
+			}
+
+			# container-registry-integrator
+			reverse_proxy /api/v1/image {args[0]}://container-registry-integrator:9000
+			reverse_proxy /api/v1/image/* {args[0]}://container-registry-integrator:9000
+			reverse_proxy /api/v1/image_names/* {args[0]}://container-registry-integrator:9000
+			reverse_proxy /api/v1/repository {args[0]}://container-registry-integrator:9000
+			reverse_proxy /api/v1/repository/* {args[0]}://container-registry-integrator:9000
+			reverse_proxy /api/v1/registry {args[0]}://container-registry-integrator:9000
+			reverse_proxy /api/v1/tags {args[0]}://container-registry-integrator:9000
+			reverse_proxy /api/v1/tags/* {args[0]}://container-registry-integrator:9000
+			reverse_proxy /api/v1/periodic-scanning {args[0]}://container-registry-integrator:9000
+			reverse_proxy /api/v1/periodic-scanning/* {args[0]}://container-registry-integrator:9000
+			reverse_proxy /api/v1/registry/by_url {args[0]}://container-registry-integrator:9000
+			reverse_proxy /api/v1/get-timezone {args[0]}://container-registry-integrator:9000
+
+			# policy-enforcer
+			reverse_proxy /api/v1/evaluate-policy/* {args[0]}://policy-enforcer:9000
+			reverse_proxy /api/v1/rule {args[0]}://policy-enforcer:9000
+			reverse_proxy /api/v1/rule/* {args[0]}://policy-enforcer:9000
+			reverse_proxy /api/v1/scope {args[0]}://policy-enforcer:9000
+			reverse_proxy /api/v1/scope/* {args[0]}://policy-enforcer:9000
+			reverse_proxy /api/v1/pre-evaluate-policy/* {args[0]}://policy-enforcer:9000
+
+			# history-api
+			reverse_proxy /api/v1/event {args[0]}://history-api:9000
+			reverse_proxy /api/v1/event/* {args[0]}://history-api:9000
+			reverse_proxy /api/v1/stats/* {args[0]}://history-api:9000
+			reverse_proxy /api/v1/runtime-event/* {args[0]}://history-api:9000
+
+			# vuln-scanner
+			reverse_proxy /api/v1/remote_scan {args[0]}://vuln-scanner:9000
+			reverse_proxy /api/v1/async_priority_remote_scan {args[0]}://vuln-scanner:9000
+			reverse_proxy /api/v1/report_scan {args[0]}://vuln-scanner:9000
+			reverse_proxy /api/v1/scan_iac {args[0]}://vuln-scanner:9000
+			reverse_proxy /api/v1/detector/docker/* {args[0]}://vuln-scanner:9000
+			reverse_proxy /api/v1/detector/kubernetes/* {args[0]}://vuln-scanner:9000
+
+			# av-scanner
+			reverse_proxy /api/v1/remote_malware_scan {args[0]}://av-scanner:9000
+
+			# notifier
+			reverse_proxy /api/v1/integration {args[0]}://notifier:9000
+			reverse_proxy /api/v1/integration/* {args[0]}://notifier:9000
+			reverse_proxy /api/v1/notification {args[0]}://notifier:9000
+			reverse_proxy /api/v1/notification/* {args[0]}://notifier:9000
+			reverse_proxy /api/v1/notify {args[0]}://notifier:9000
+
+			# cs-manager
+			reverse_proxy /api/v1/license {args[0]}://cs-manager:9000
+			reverse_proxy /api/v1/version {args[0]}://cs-manager:9000
+			reverse_proxy /api/v1/vulnkb/* {args[0]}://cs-manager:9000
+			reverse_proxy /api/v1/info/* {args[0]}://cs-manager:9000
+
+			# admission-controller
+			reverse_proxy /api/v1/detector/admission-controller/* {args[0]}://admission-controller:9000
+
+			# runtime-monitor
+			reverse_proxy /api/v1/config/runtime-monitor {args[0]}://runtime-monitor:9000
+
+			# event-processor
+			reverse_proxy /api/v1/config/event-processor {args[0]}://event-processor:9000
+			reverse_proxy /api/v1/detector/event-processor {args[0]}://event-processor:9000
+			reverse_proxy /api/v1/detector/event-processor/* {args[0]}://event-processor:9000
+
+			# cluster-manager
+			reverse_proxy /api/v1/cluster {args[0]}://cluster-manager:9000
+			reverse_proxy /api/v1/cluster/* {args[0]}://cluster-manager:9000
+
+			# public-api
+			reverse_proxy /api/v1/access-token {args[0]}://public-api:9000
+			reverse_proxy /api/v1/access-token/* {args[0]}://public-api:9000
+			reverse_proxy /api/v1/public-api/* {args[0]}://public-api:9000
+
+			respond 404
+		}
+	}
+
+	handle {
+		route {
+			reverse_proxy /license.LicenseController/* {args[1]}://cs-manager:8000
+			reverse_proxy /vulnkb.VulnKBController/* {args[1]}://cs-manager:8000
+
+			reverse_proxy /cluster.ClusterController/* {args[1]}://cluster-manager:8000
+		}
+
+		route {
+			root * /srv
+			try_files {path} index.html
+			file_server
+		}
+	}
+}
+
+(logger.false) {
+}
+
+(logger.true) {
+	log to_file {
+		output file {$LOG_FILE} {
+			roll_size 10MiB
+			roll_keep 3
+		}
+		level {$LOG_LEVEL:INFO}
+		format json
+	}
+}
+
+{
+	servers {
+		protocols h1 h2c h2
+	}
+	log default {
+		level {$LOG_LEVEL:INFO}
+		format json
+	}
+	import logger.{$LOGGER_ENABLED:false}
+}
+
+(TLS.false) {
+	import csRoutes http h2c
+}
+
+(TLS.true) {
+	tls /cert.pem /key.pem
+	import csRoutes https https
+}
+
+# cs routes
+:8000 :9000 {
+	log
+	import TLS.{$TLS:true}
+}
+
+# health api
+:9001 {
+	respond /health "Caddy is up" 200 {
+		close
+	}
+	respond /ready "Caddy is ready" 200 {
+		close
+	}
+}

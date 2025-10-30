@@ -1,0 +1,211 @@
+<ng-container *transloco="let tRuntime; prefix: 'runtime'">
+    <table kbq-table [border]="true" class="runtime-feature-events-grid">
+        <thead>
+            <tr>
+                <th width="34"></th>
+                <th width="18"></th>
+                <th>{{ tRuntime('Runtime.EventsPage.Table.Namespace') }}</th>
+                <th>{{ tRuntime('Runtime.EventsPage.Table.Function') }}</th>
+                <th>{{ tRuntime('Runtime.EventsPage.Table.Binary') }}</th>
+                <th>{{ tRuntime('Runtime.EventsPage.Table.Argument') }}</th>
+                <th width="16"></th>
+                <th width="80"></th>
+                <th width="140">{{ tRuntime('Runtime.EventsPage.Table.Date') }}</th>
+                <th width="{{ isContextChangeAvailable ? 68 : 34 }}"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (event of localEvents; track event.id) {
+                @if (event.event.process_exec) {
+                    <ng-container *ngTemplateOutlet="rowTemplate; context: {
+                        type: runtimeEventType.EXEC,
+                        entity: event.event.process_exec,
+                        item: event
+                    }"></ng-container>
+                } @else if (event.event.process_exit) {
+                    <ng-container *ngTemplateOutlet="rowTemplate; context: {
+                        type: runtimeEventType.EXIT,
+                        entity: event.event.process_exit,
+                        item: event
+                    }"></ng-container>
+                } @else if (event.event.process_kprobe) {
+                    <ng-container *ngTemplateOutlet="rowTemplate; context: {
+                        type: runtimeEventType.KPROBE,
+                        entity: event.event.process_kprobe,
+                        item: event
+                    }"></ng-container>
+                } @else if (event.event.process_loader) {
+                    <ng-container *ngTemplateOutlet="rowTemplate; context: {
+                        type: runtimeEventType.LOADER,
+                        entity: event.event.process_loader,
+                        item: event
+                    }"></ng-container>
+                } @else if (event.event.process_tracepoint) {
+                    <ng-container *ngTemplateOutlet="rowTemplate; context: {
+                        type: runtimeEventType.TRACEPOINT,
+                        entity: event.event.process_tracepoint,
+                        item: event
+                    }"></ng-container>
+                } @else if (event.event.process_uprobe) {
+                    <ng-container *ngTemplateOutlet="rowTemplate; context: {
+                        type: runtimeEventType.UPROBE,
+                        entity: event.event.process_uprobe,
+                        item: event
+                    }"></ng-container>
+                }
+            }
+        </tbody>
+    </table>
+
+    <ng-template #rowTemplate let-type="type" let-item="item" let-entity="entity">
+        <tr class="cs-cursor-pointer"
+            [ngClass]="{ 'active': activeContextId === item.id, 'error': item.detect_errors.length }"
+            (click)="goToDetailsPage(item.id)"
+            id="{{ item.id }}"
+            [attr.data-testid]="item.id">
+            <td>
+                @if (item.threats.length && item.is_incident) {
+                    <button kbq-button
+                            kbqStyle="transparent"
+                            color="contrast"
+                            type="button"
+                            class="kbq-button-icon"
+                            (click)="openIncidentSidepanel(type, entity, item); $event.stopPropagation()"
+                            kbqTooltip="{{ tRuntime('Runtime.EventsPage.Hint.Rules') }}"
+                            [kbqPlacement]="tooltipPlacements.Left"
+                            data-testid="runtime-open-sidepanel-incident-button">
+                        <i kbq-icon="kbq-shield-check_16" class="runtime-feature-events-grid-incident-icon"></i>
+                    </button>
+                }
+                @if (item.threats.length && !item.is_incident) {
+                    <button kbq-button
+                            kbqStyle="transparent"
+                            color="contrast"
+                            type="button"
+                            class="kbq-button-icon"
+                            [disabled]="!rulePermissions.has(permissionType.CREATE)"
+                            (click)="openCreateRuleSidepanel(item, entity); $event.stopPropagation()"
+                            kbqTooltip="{{ tRuntime('Runtime.EventsPage.Hint.NoRules') }}"
+                            [kbqPlacement]="tooltipPlacements.Left"
+                            data-testid="runtime-open-sidepanel-rule-form-button">
+                        <i kbq-icon="kbq-shield-o_16" class="cs-text-gray"></i>
+                    </button>
+                }
+            </td>
+            <td>
+                <i runtimeEventTypeIcon
+                   [type]="type"
+                   class="runtime-feature-events-grid-valign-middle"
+                   kbqTooltip="{{ tRuntime(type | runtimeEventTypeLocalization) }}"
+                   [kbqPlacement]="tooltipPlacements.Left"></i>
+            </td>
+            <td>
+                <span class="runtime-feature-events-grid-valign-middle">
+                    @if (entity.process.pod) {
+                        <span class="runtime-feature-events-grid-truncate"
+                              title="{{ entity.process.pod.namespace }}/{{ entity.process.pod.name }}"
+                              [attr.data-testid]="entity.process.pod.namespace + '/' + entity.process.pod.name">
+                            {{ entity.process.pod.namespace }}/{{ entity.process.pod.name }}
+                        </span>
+                    } @else {
+                        —
+                    }
+                </span>
+            </td>
+            <td>
+                <span class="runtime-feature-events-grid-truncate" title="{{ entity.function_name || '—' }}">
+                    {{ entity.function_name || '—' }}
+                </span>
+            </td>
+            <td>
+                <span class="runtime-feature-events-grid-truncate" title="{{ entity.process.binary }}">
+                    {{ entity.process.binary }}
+                </span>
+            </td>
+            <td>
+                <span class="runtime-feature-events-grid-truncate" title="{{ entity.process.arguments || '—' }}">
+                    {{ entity.process.arguments || '—' }}
+                </span>
+            </td>
+            <td>
+                @if (entity.process.cap.effective.includes(runtimeCapabilityType.CAP_SYS_ADMIN)) {
+                    <i kbq-icon="kbq-exclamation-triangle_16"
+                       class="runtime-feature-events-grid-error-icon"
+                       kbqTooltip="{{ tRuntime('Runtime.EventsPage.Hint.Process') }}"
+                       [kbqPlacement]="tooltipPlacements.Left"></i>
+                }
+            </td>
+            <td *transloco="let tCommon; prefix: 'common'">
+                <div class="layout-row layout-align-end-center">
+                    @if (item.threats.length) {
+                        <span class="kbq-text-compact cs-text-gray layout-margin-right-xxs">({{ item.threats.length }})</span>
+                    }
+                    <button kbq-button
+                            kbqStyle="transparent"
+                            color="contrast"
+                            type="button"
+                            class="kbq-button-icon"
+                            [ngClass]="{ 'runtime-feature-events-grid-none-severity': !item.threatSeverity }"
+                            [disabled]="!item.threats.length && !item.detect_errors.length"
+                            [kbqTooltip]="severityTooltip"
+                            [kbqPlacement]="tooltipPlacements.Right"
+                            (click)="openThreatsSidepanel(item.threats, entity.process.cap.effective, item.detect_errors); $event.stopPropagation()">
+                        <cs-severity-component
+                                [severity]="item.threatSeverity"
+                                [isWidthAuto]="item.threats.length"></cs-severity-component>
+                    </button>
+                </div>
+
+                <ng-template #severityTooltip>
+                    @if (item.threats.length) {
+                        <ul class="runtime-feature-events-grid-severity">
+                            @for (option of ruleSeverityOptions; track option.id) {
+                                @if (item.threats | runtimeSeverityThreatsCounter: option.id; as counter) {
+                                    <li>{{ counter }} — {{ tCommon(option.localizationKey) }}</li>
+                                }
+                            }
+                        </ul>
+                    } @else {
+                        {{ tRuntime('Runtime.EventsPage.Hint.NoThreats') }}
+                    }
+                </ng-template>
+            </td>
+            <td>{{ item.event.time | runtimeNanosecondsFormatter }}</td>
+            <td>
+                <div class="layout-row">
+                    <button kbq-button
+                            kbqStyle="transparent"
+                            color="contrast"
+                            type="button"
+                            class="kbq-button-icon"
+                            (click)="openViewCodeSidepanel(item.event); $event.stopPropagation()">
+                        <i kbq-icon="kbq-code_16"></i>
+                    </button>
+                    @if (isContextChangeAvailable) {
+                        <button kbq-button
+                                kbqStyle="transparent"
+                                color="contrast"
+                                type="button"
+                                class="kbq-button-icon"
+                                (click)="$event.stopPropagation()"
+                                [kbqDropdownTriggerFor]="dropdownContextMenu"
+                                data-testid="runtime-open-context-menu-button">
+                            <i kbq-icon="kbq-branch_16"></i>
+                        </button>
+                    }
+                </div>
+
+                <kbq-dropdown #dropdownContextMenu="kbqDropdown">
+                    @for (option of runtimeContextOptions; track option.id) {
+                        <button kbq-dropdown-item
+                                [disabled]="entity.parent === null && (option.id === runtimeContext.PARENT || option.id === runtimeContext.SIBLING)"
+                                (click)="setContextId(item.id, option.id, entity.process.exec_id, entity.process.parent_exec_id)"
+                                [attr.data-testid]="tRuntime(option.localizationKey)">
+                            {{ tRuntime(option.localizationKey) }}
+                        </button>
+                    }
+                </kbq-dropdown>
+            </td>
+        </tr>
+    </ng-template>
+</ng-container>

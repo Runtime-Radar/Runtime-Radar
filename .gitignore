@@ -1,0 +1,7 @@
+**/bin
+**/charts/*.tgz
+**/charts/.*
+**/Chart.lock
+# macOS artifacts
+.DS_Store
+oss-values.yaml

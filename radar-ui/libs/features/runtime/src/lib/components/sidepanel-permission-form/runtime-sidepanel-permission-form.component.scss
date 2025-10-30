@@ -1,0 +1,19 @@
+:host {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    height: 100%;
+}
+
+.runtime-feature-sidepanel-permission-form {
+    position: relative;
+
+    &-radio-group {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        padding: 16px;
+        border-radius: 8px;
+        background-color: #f2f5f9; // @todo: replace to koobiq token
+    }
+}

@@ -1,0 +1,8 @@
+apiVersion: v2
+appVersion: 17.5.0
+dependencies:
+  - name: common
+    repository: file://../common
+    version: "0.x.x"
+name: postgresql
+version: 0.0.1

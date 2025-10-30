@@ -1,0 +1,23 @@
+<ng-container *transloco="let tCommon; prefix: 'common'">
+    @if (blockIds?.length) {
+        <span class="cs-separator shared-event-action-item">
+            @if (isIconVisible) {
+                <i kbq-icon="kbq-lock_16" class="shared-event-action-item-icon"></i>
+            }
+            <span [attr.data-testid]="testLocator ? testLocator + '-block-text' : ''">{{ tCommon('Common.Pseudo.EventAction.Block') }}</span>
+        </span>
+    }
+    @if (notifyIds?.length) {
+        <span class="cs-separator shared-event-action-item">
+            @if (isIconVisible) {
+                <i kbq-icon="kbq-envelope_16" class="shared-event-action-item-icon"></i>
+            }
+            <span [attr.data-testid]="testLocator ? testLocator + '-notify-text' : ''">{{ tCommon('Common.Pseudo.EventAction.Notify') }}</span>
+        </span>
+    }
+
+    <!-- @todo: replace *ngIf -->
+    <ng-template [ngIf]="isEmptyStateShown && (!blockIds?.length && !notifyIds?.length)">
+        <span>—</span>
+    </ng-template>
+</ng-container>

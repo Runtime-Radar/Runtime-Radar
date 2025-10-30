@@ -1,0 +1,23 @@
+{
+    "name": "feature-integration",
+    "projectType": "library",
+    "root": "libs/features/integration",
+    "sourceRoot": "libs/features/integration/src",
+    "prefix": "runtime-radar",
+    "targets": {
+        "lint": {
+            "executor": "@nx/linter:eslint",
+            "options": {
+                "lintFilePatterns": ["libs/features/integration/src/**/*.ts", "libs/features/integration/src/**/*.html"]
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": ["coverage/libs/features/integration"],
+            "options": {
+                "jestConfig": "libs/features/integration/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    }
+}

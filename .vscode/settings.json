@@ -1,0 +1,7 @@
+{
+  "angular.enable-strict-mode-prompt": false,
+  "go.lintTool": "golangci-lint",
+  "go.lintFlags": [
+    // "--config=/path/to/local/config/.golangci.yml" // uncomment to run your local config instead
+  ]
+}

@@ -1,0 +1,110 @@
+<div class="navbar" *transloco="let tCommon; prefix: 'common'">
+    <section class="navbar-logo">
+        <ng-container *ngrxLet="loadStatus$ as status">
+            <a [routerLink]="routerName.DEFAULT" class="navbar-logo-link" [ngClass]="{ 'navbar-logo-link--loader': status === loadStatus.IN_PROGRESS }">
+                <img ngSrc="/assets/logotypes/logo.svg" width="36" height="36" alt="{{ tCommon('Common.Pseudo.Text.AppName') }}" priority>
+            </a>
+        </ng-container>
+        <span class="kbq-text-compact-strong">{{ tCommon('Common.Pseudo.Text.AppName') }}</span>
+    </section>
+
+    @for (item of navigationItems; track $index) {
+        <section class="navbar-menu">
+            @if (item.localizationKey) {
+                <h5 class="kbq-text-compact navbar-menu-title">
+                    {{ tCommon(item.localizationKey) }}
+                </h5>
+            }
+            <ul class="kbq-text-compact navbar-menu-list">
+                @for (menu of item.children; track menu.testId) {
+                    <li>
+                        <a [routerLink]="[item.path, menu.path]"
+                           routerLinkActive="active"
+                           class="navbar-menu-list-link"
+                           [attr.data-testid]="menu.testId">
+                            <i kbq-icon="{{ menu.icon }}" class="navbar-menu-list-icon"></i>
+                            <span>{{ tCommon(menu.localizationKey) }}</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </section>
+    }
+
+    <section class="layout-column layout-align-end-center navbar-footer">
+        <div class="layout-row navbar-footer-sticky">
+            <button kbq-button
+                    kbqPopover
+                    kbqStyle="transparent"
+                    color="contrast"
+                    type="button"
+                    class="navbar-profile-button navbar-profile-button--wide"
+                    #kbqPopover="kbqPopover"
+                    [closeOnScroll]="true"
+                    [kbqPopoverContent]="userInfoPopoverContent"
+                    data-testid="profile-navbar-button">
+                <div class="layout-row layout-align-start-center layout-margin-right-xs">
+                    <i kbq-icon="kbq-user_16"></i>
+                    <span class="kbq-text-compact navbar-profile-info-username">{{ credentials.username }}</span>
+                </div>
+                <button kbq-button
+                        kbqStyle="transparent"
+                        color="contrast"
+                        type="button"
+                        class="kbq-button-icon"
+                        (click)="onSignOut()"
+                        data-testid="auth-sign-out-button">
+                    <i kbq-icon="kbq-arrow-right-from-rectangle_16"></i>
+                </button>
+            </button>
+        </div>
+    </section>
+</div>
+
+<ng-template #userInfoPopoverContent>
+    <div *ngrxLet="appVersion$ as version" class="layout-column layout-align-start-center">
+        <div class="navbar-profile-info-avatar">
+            <i kbq-icon="kbq-user_24" class="navbar-profile-info-icon"></i>
+        </div>
+        <strong class="layout-margin-top-s layout-margin-bottom-s">{{ credentials.username }}</strong>
+        <span class="kbq-text-compact cs-text-gray">{{ role }}</span>
+        @if (credentials.email) {
+            <span class="layout-margin-top-s">{{ credentials.email }}</span>
+        }
+        <div class="kbq-text-compact cs-text-gray navbar-profile-info-version"
+             *transloco="let tCommon; read: 'common'"
+             data-testid="navbar-app-version-text">
+            {{ version ? tCommon('Common.Pseudo.Menu.Label.AppVersion', { version }) : '—' }}
+        </div>
+    </div>
+
+    <ul class="kbq-text-compact navbar-profile-menu-list" *transloco="let tCommon; prefix: 'common'">
+        <li>
+            <a kbq-button
+               kbqStyle="transparent"
+               color="contrast"
+               [routerLink]="routerName.TOKENS"
+               routerLinkActive="active"
+               class="kbq-button-icon navbar-profile-menu-list-link"
+               (click)="hidePopover()"
+               data-testid="tokens-navbar-link">
+                <i kbq-icon="kbq-key_16" class="navbar-profile-menu-list-icon"></i>
+                <span>{{ tCommon('Common.Pseudo.Menu.Token') }}</span>
+            </a>
+        </li>
+        @if (credentials.authType === 'internal') {
+            <li>
+                <button kbq-button
+                        kbqStyle="transparent"
+                        color="contrast"
+                        type="button"
+                        class="kbq-button-icon navbar-profile-menu-list-link"
+                        (click)="changePassword()"
+                        data-testid="change-password-button">
+                    <i kbq-icon="kbq-lock_16" class="navbar-profile-menu-list-icon"></i>
+                    {{ tCommon('Common.Pseudo.Menu.Password') }}
+                </button>
+            </li>
+        }
+    </ul>
+</ng-template>

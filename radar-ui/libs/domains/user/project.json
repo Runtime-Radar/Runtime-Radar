@@ -1,0 +1,23 @@
+{
+    "name": "domain-user",
+    "projectType": "library",
+    "root": "libs/domains/user",
+    "sourceRoot": "libs/domains/user/src",
+    "prefix": "runtime-radar",
+    "targets": {
+        "lint": {
+            "executor": "@nx/linter:eslint",
+            "options": {
+                "lintFilePatterns": ["libs/domains/user/src/**/*.ts", "libs/domains/user/src/**/*.html"]
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": ["coverage/libs/domains/user"],
+            "options": {
+                "jestConfig": "libs/domains/user/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    }
+}

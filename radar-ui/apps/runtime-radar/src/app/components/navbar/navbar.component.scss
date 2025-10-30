@@ -1,0 +1,190 @@
+$menu-height: 1 * 60px + 5 * 35px + 90px + 50px; // title + children + logo + userbar
+
+:host {
+    display: block;
+    position: relative;
+    z-index: 2;
+    background-color: #f2f5f9; // @todo: replace to koobiq token
+}
+
+@keyframes logoLoader {
+    0% { background-position: -360px 0; }
+    100% { background-position: 360px 0; }
+}
+
+.navbar {
+    width: 170px;
+    min-height: $menu-height + 70px;
+
+    @media (min-height: 600px) {
+        position: sticky;
+        height: calc(100vh);
+        top: 0;
+    }
+
+    &-logo {
+        margin: 0 auto 32px auto;
+        padding-top: 24px;
+        text-align: center;
+
+        &-link {
+            display: block;
+            position: relative;
+            width: 36px;
+            height: 36px;
+            margin: 0 auto 12px auto;
+            background: #134fb4; // @todo: replace to koobiq token
+            border-radius: 8px;
+
+            &::after {
+                display: block;
+                width: 36px;
+                height: 36px;
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 1;
+                border-radius: 8px;
+                background: linear-gradient(-45deg, rgba(242, 245, 249, 0.1) 8%, #134fb4 40%, rgba(242, 245, 249, 0.1) 56%);
+                background-size: 180px 180px;
+                animation-name: logoLoader;
+                animation-iteration-count: infinite;
+                animation-timing-function: linear;
+                animation-fill-mode: forwards;
+                animation-duration: 4s;
+                visibility: hidden;
+                opacity: 0;
+                content: '';
+            }
+
+            &--loader::after {
+                visibility: visible;
+                opacity: 1;
+            }
+        }
+    }
+
+    &-menu {
+        position: relative;
+
+        &-title {
+            display: block;
+            margin: 24px 18px 12px 18px;
+            text-transform: uppercase;
+            color: #808080; // @todo: replace to koobiq token
+        }
+
+        &-list {
+            display: block;
+            margin: 8px;
+            padding: 0;
+            list-style: none;
+
+            &-icon {
+                margin-right: 8px;
+                font-size: 1rem;
+            }
+
+            &-link {
+                display: flex;
+                margin-top: 2px;
+                padding: 8px 12px;
+                border-radius: 6px;
+                color: #000; // @todo: replace to koobiq token
+                text-decoration: none;
+
+                &:hover,
+                &:focus,
+                &.active {
+                    background-color: #e5e9ed; // @todo: replace to koobiq token
+                }
+
+                &:active {
+                    background-color: #d7dee4; // @todo: replace to koobiq token
+                }
+            }
+        }
+    }
+
+    &-profile {
+        &-button {
+            width: calc(100% - 16px);
+            min-height: 40px;
+            margin: 8px;
+            padding: 4px 4px 4px 12px;
+            border: 0;
+        }
+
+        &-info {
+            &-username {
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+                margin: 0 0 0 8px;
+            }
+
+            &-avatar {
+                border-radius: 50%;
+                background-color: #c2daff; // @todo: replace to koobiq token
+            }
+
+            &-icon {
+                padding: 8px;
+                color: #0066ff; // @todo: replace to koobiq token
+            }
+
+            &-version {
+                max-width: 190px;
+                margin-top: 8px;
+            }
+        }
+
+        &-menu-list {
+            display: block;
+            min-width: 210px;
+            padding: 0;
+            margin: 24px 0 0 0;
+            list-style: none;
+
+            .active {
+                background-color: #e5e9ed; // @todo: replace to koobiq token
+            }
+
+            &-icon {
+                margin-right: 8px !important;
+            }
+
+            &-link {
+                width: 100%;
+                display: flex;
+                justify-content: flex-start;
+                margin-top: 2px;
+                padding: 8px 12px !important;
+                color: #000; // @todo: replace to koobiq token
+            }
+        }
+    }
+
+    &-footer {
+        width: 100%;
+        height: calc(100% - $menu-height);
+        position: absolute;
+        top: $menu-height;
+
+        .active {
+            background-color: #e5e9ed; // @todo: replace to koobiq token
+        }
+
+        &-sticky {
+            width: 100%;
+            position: sticky;
+            bottom: 0;
+        }
+    }
+}
+
+// @todo: replace ::ng-deep to class props
+::ng-deep .navbar-profile-button--wide .kbq-button-wrapper {
+    width: 100%;
+    justify-content: space-between;
+}

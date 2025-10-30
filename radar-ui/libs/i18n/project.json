@@ -1,0 +1,23 @@
+{
+    "name": "i18n",
+    "projectType": "library",
+    "root": "libs/i18n",
+    "sourceRoot": "libs/i18n/src",
+    "prefix": "runtime-radar",
+    "targets": {
+        "lint": {
+            "executor": "@nx/linter:eslint",
+            "options": {
+                "lintFilePatterns": ["libs/i18n/src/**/*.ts", "libs/i18n/src/**/*.html"]
+            }
+        },
+        "test": {
+            "executor": "@nx/jest:jest",
+            "outputs": ["coverage/libs/i18n"],
+            "options": {
+                "jestConfig": "libs/i18n/jest.config.ts",
+                "passWithNoTests": true
+            }
+        }
+    }
+}

@@ -1,0 +1,48 @@
+{{- define "common.cs.deployment" -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "common.name" . }}
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+  {{- with (include "common.annotations" .) }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ eq (include "common.cs.devMode.enabled" .) "true" | ternary 1 (default (.Values.global).replicas .Values.replicas) }}
+  selector:
+    matchLabels:
+      {{- include "common.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        {{- include "common.podAnnotations" . | indent 8 }}
+        checksum/keys: {{ default (randAlphaNum 32) ((.Values.global).keys).token | sha256sum | quote }}
+      labels:
+        {{- include "common.podLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "common.cs.serviceAccountName" . }}
+      {{- include "common.imagePullSecrets" . | nindent 6 }}
+      containers:
+        {{- include "common.cs.container.app" . | nindent 8 -}}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if ne (include "common.cs.devMode.enabled" .) "true" }}
+      {{- if (.Values.podSecurityContext).enabled }}
+      securityContext:
+        {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- end }}
+      {{- include "common.cs.volumes" . | nindent 6 }}
+{{- end -}}

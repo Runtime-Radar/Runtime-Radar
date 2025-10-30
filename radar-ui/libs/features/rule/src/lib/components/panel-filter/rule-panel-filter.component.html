@@ -1,0 +1,38 @@
+<ng-container *transloco="let tCommon; prefix: 'common'">
+    <form [formGroup]="filterForm"
+          class="kbq-form-vertical layout-row layout-align-start-center rule-feature-panel-filter"
+          *transloco="let tRule; prefix: 'rule'">
+        <section class="kbq-form__row rule-feature-panel-filter-field">
+            <kbq-form-field class="kbq-form__control">
+                <i kbqPrefix kbq-icon="kbq-magnifying-glass_16"></i>
+                <input kbqInput
+                       type="text"
+                       formControlName="name"
+                       placeholder="{{ tRule('Rule.ListPage.Filter.Placeholder.Name') }}">
+                <kbq-cleaner></kbq-cleaner>
+            </kbq-form-field>
+        </section>
+
+        <section class="kbq-form__row rule-feature-panel-filter-field">
+            <label for="type" class="kbq-form__label">
+                {{ tRule('Rule.ListPage.Filter.Label.Type') }}
+            </label>
+            <cs-multiple-select-component
+                    id="type"
+                    formControlName="type"
+                    [options]="ruleTypeOptions"
+                    [localizationFn]="tCommon"></cs-multiple-select-component>
+        </section>
+
+        <section class="kbq-form__row rule-feature-panel-filter-field">
+            <label for="notify" class="kbq-form__label">
+                {{ tRule('Rule.ListPage.Filter.Label.Notify') }}
+            </label>
+            <cs-multiple-select-component
+                    id="notify"
+                    formControlName="notifySeverity"
+                    [options]="ruleSeverityOptions"
+                    [localizationFn]="tCommon"></cs-multiple-select-component>
+        </section>
+    </form>
+</ng-container>

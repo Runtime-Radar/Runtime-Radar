@@ -1,0 +1,7 @@
+.shared-modal-body {
+    padding-top: 32px; // @todo: replace to koobiq token
+
+    &.with-title {
+        padding-top: 8px;
+    }
+}

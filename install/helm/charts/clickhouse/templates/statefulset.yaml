@@ -1,0 +1,263 @@
+{{- $tlsEnabled := eq (include "common.tls.enabled" .) "true" }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "common.fullname" . }}
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+  {{- with (include "common.annotations" .) }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "common.selectorLabels" . | nindent 6 }}
+  serviceName: {{ include "common.fullname" . }}-headless
+  template:
+    metadata:
+      {{- with (include "common.podAnnotations" .) }}
+      annotations:
+        {{- . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "common.podLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "common.serviceAccountName" . }}
+      {{- include "common.imagePullSecrets" . | nindent 6 }}
+      {{- if (.Values.podSecurityContext).enabled }}
+      securityContext:
+        {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if .Values.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- end }}
+      {{- if $tlsEnabled }}
+      initContainers:
+        - name: copy-certs
+          image: {{ include "clickhouse.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if (.Values.containerSecurityContext).enabled }}
+          securityContext:
+            {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              cp -L /tmp/certs/* /etc/clickhouse-server/certs/
+              chmod 600 {{ include "clickhouse.tlsCertKey" $ }}
+          volumeMounts:
+            - name: raw-certificates
+              mountPath: /tmp/certs
+            - name: clickhouse-certificates
+              mountPath: /etc/clickhouse-server/certs
+            - name: empty-dir
+              mountPath: /tmp
+              subPath: tmp-dir
+      {{- end }}
+      containers:
+        - name: clickhouse
+          image: {{ include "clickhouse.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+          {{- if (.Values.containerSecurityContext).enabled }}
+          securityContext:
+            {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          env:
+            - name: CLICKHOUSE_HTTP_PORT
+              value: {{ .Values.containerPorts.http | quote }}
+            - name: CLICKHOUSE_TCP_PORT
+              value: {{ .Values.containerPorts.tcp | quote }}
+            - name: CLICKHOUSE_INTERSERVER_HTTP_PORT
+              value: {{ .Values.containerPorts.interserver | quote }}
+            {{- if $tlsEnabled }}
+            - name: CLICKHOUSE_TCP_SECURE_PORT
+              value: {{ .Values.containerPorts.tcpSecure | quote }}
+            - name: CLICKHOUSE_HTTPS_PORT
+              value: {{ .Values.containerPorts.https | quote }}
+            {{- end }}
+            {{- if .Values.keeper.enabled }}
+            - name: CLICKHOUSE_KEEPER_PORT
+              value: {{ .Values.containerPorts.keeper | quote }}
+            - name: CLICKHOUSE_KEEPER_INTER_PORT
+              value: {{ .Values.containerPorts.keeperInter | quote }}
+            {{- if $tlsEnabled }}
+            - name: CLICKHOUSE_KEEPER_SECURE_PORT
+              value: {{ .Values.containerPorts.keeperSecure | quote }}
+            {{- end }}
+            {{- end }}
+            {{- if (eq (include "common.metrics.enabled" $) "true") }}
+            - name: CLICKHOUSE_METRICS_PORT
+              value: {{ .Values.containerPorts.metrics | quote }}
+            {{- end }}
+            - name: CLICKHOUSE_SHARD_ID
+              value: shard0
+            - name: CLICKHOUSE_REPLICA_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: CLICKHOUSE_USER
+              value: {{ .Values.auth.username | quote }}
+            - name: CLICKHOUSE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "common.authSecretName" $ }}
+                  key: {{ include "clickhouse.secretPasswordKey" $ }}
+            {{- if .Values.auth.database }}
+            - name: CLICKHOUSE_DB
+              value: {{ include "clickhouse.database" . | quote }}
+            {{- end }}
+            {{- with .Values.extraEnvVars }}
+            {{- tpl (toYaml .) $ | nindent 12 }}
+            {{- end }}
+            {{- if .Values.keeper.enabled }}
+            {{- $replicas := .Values.replicaCount | int }}
+            {{- range $j, $r := until $replicas }}
+            - name: {{ printf "KEEPER_NODE_%d" $j }}
+              value: {{ printf "%s-%d.%s-headless.%s.svc.%s" (include "common.fullname" $) $j (include "common.fullname" $) (include "common.namespace" $) $.Values.clusterDomain }}
+            {{- end }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.containerPorts.http }}
+            - name: tcp
+              containerPort: {{ .Values.containerPorts.tcp }}
+            {{- if $tlsEnabled }}
+            - name: https
+              containerPort: {{ .Values.containerPorts.https }}
+            - name: tcp-secure
+              containerPort: {{ .Values.containerPorts.tcpSecure }}
+            {{- end }}
+            {{- if .Values.keeper.enabled }}
+            - name: tcp-keeper
+              containerPort: {{ .Values.containerPorts.keeper }}
+            - name: tcp-keeperinter
+              containerPort: {{ .Values.containerPorts.keeperInter }}
+            {{- if $tlsEnabled }}
+            - name: tcp-keepertls
+              containerPort: {{ .Values.containerPorts.keeperSecure }}
+            {{- end }}
+            {{- end }}
+            - name: http-intersrv
+              containerPort: {{ .Values.containerPorts.interserver }}
+            {{- if (eq (include "common.metrics.enabled" $) "true") }}
+            - name: http-metrics
+              containerPort: {{ $.Values.containerPorts.metrics }}
+            {{- end }}
+          {{- if .Values.startupProbe.enabled }}
+          startupProbe: {{- omit .Values.startupProbe "enabled" | toYaml | nindent 12 }}
+            httpGet:
+              path: /ping
+              port: http
+          {{- end }}
+          {{- if .Values.livenessProbe.enabled }}
+          livenessProbe: {{- omit .Values.livenessProbe "enabled" | toYaml | nindent 12 }}
+            tcpSocket:
+              port: http
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
+          readinessProbe: {{- omit .Values.readinessProbe "enabled" | toYaml | nindent 12 }}
+            httpGet:
+              path: /ping
+              port: http
+          {{- end }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: empty-dir
+              mountPath: /tmp
+              subPath: tmp-dir
+            - name: empty-dir
+              mountPath: /etc/clickhouse-server/users.d
+              subPath: users-dir
+            - name: empty-dir
+              mountPath: /var/log/clickhouse-server
+              subPath: logs-dir
+            - name: data
+              mountPath: /var/lib/clickhouse
+            - name: config
+              mountPath: /etc/clickhouse-server/config.d/00_default_overrides.xml
+              subPath: 00_default_overrides.xml
+          {{- if $tlsEnabled }}
+            - name: clickhouse-certificates
+              mountPath: /etc/clickhouse-server/certs
+          {{- end }}
+          {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: empty-dir
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: {{ include "common.configmapName" . }}
+        {{- if $tlsEnabled }}
+        - name: raw-certificates
+          secret:
+            secretName: {{ include "common.tls.secretName" . }}
+        - name: clickhouse-certificates
+          emptyDir: {}
+        {{- end }}
+        {{- with .Values.volumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+  {{- if not .Values.persistence.enabled }}
+        - name: data
+          emptyDir: {}
+  {{- else if .Values.persistence.existingClaim }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ tpl .Values.persistence.existingClaim . }}
+  {{- else }}
+  {{- with .Values.persistence.persistentVolumeClaimRetentionPolicy }}
+  persistentVolumeClaimRetentionPolicy:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: data
+        {{- with (include "common.mergeAnnotations" (dict "context" . "value" .Values.persistence.annotations)) }}
+        annotations:
+          {{- . | nindent 10 }}
+        {{- end }}
+        {{- with (include "common.mergeLabels" (dict "context" . "value" .Values.persistence.labels)) }}
+        labels:
+          {{- . | nindent 10 }}
+        {{- end }}
+      spec:
+        accessModes: {{- toYaml .Values.persistence.accessModes | nindent 10 }}
+        {{- with .Values.persistence.dataSource }}
+        dataSource: {{- toYaml . | nindent 10 }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size | quote }}
+        {{- with .Values.persistence.selector }}
+        selector: {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with (default .Values.persistence.storageClass (.Values.global).storageClass) }}
+        storageClassName: {{ eq . "-" | ternary "" . | quote }}
+        {{- end }}
+  {{- end }}

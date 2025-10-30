@@ -1,0 +1,14 @@
+// @todo: replace ::ng-deep to class props
+::ng-deep .shared-multiple-select-general {
+    &.checked .kbq-pseudo-checkbox,
+    &.indeterminate .kbq-pseudo-checkbox {
+        background: #0374eb; // @todo: replace to koobiq token
+        border-color: #0374eb;
+    }
+
+    &.indeterminate .kbq-checkbox-checkmark { display: none; }
+    &.indeterminate .kbq-checkbox-mixedmark { display: inline-block; }
+
+    &.checked .kbq-checkbox-checkmark { display: inline-block; }
+    &.checked .kbq-checkbox-mixedmark { display: none; }
+}

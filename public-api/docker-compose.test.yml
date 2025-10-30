@@ -1,0 +1,8 @@
+services:
+  test:
+      image: golang:1.24
+      working_dir: /go/src/repo
+      volumes:
+        - .:/go/src/repo
+
+      command: "go test -race -count=1 -vet=off ./..."

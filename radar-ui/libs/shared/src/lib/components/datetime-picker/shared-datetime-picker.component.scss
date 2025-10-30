@@ -1,0 +1,11 @@
+.shared-datetime-picker {
+    &-label {
+        min-width: 50px;
+        padding: 7px 8px !important;
+        text-align: right !important;
+    }
+
+    &-date {
+        min-width: 140px;
+    }
+}

@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres:17.4
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=cs
+      - POSTGRES_PASSWORD=cs
+      - POSTGRES_DB=cs
+    networks:
+      local:
+
+  service:
+    build:
+      context: .
+    image: cluster-manager
+    ports:
+      - "8001:8000"
+      - "9001:9000"
+    environment:
+      - ENCRYPTION_KEY=f5f3c6ac672c0e4ba49a41c96fad2cb4cb4fa2464836cada5a331847099181de
+    command: --postgresAddr=postgres --logLevel=INFO
+    depends_on:
+      - postgres
+    networks:
+      local:
+
+networks:
+  local:

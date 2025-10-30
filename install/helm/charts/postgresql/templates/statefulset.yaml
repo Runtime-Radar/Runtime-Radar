@@ -1,0 +1,297 @@
+{{- $customUser := .Values.auth.username }}
+{{- $tlsEnabled := eq (include "common.tls.enabled" .) "true" }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "common.fullname" . }}
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+  {{- with (include "common.annotations" .) }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: 1
+  serviceName: {{ include "common.fullname" . }}-headless
+  selector:
+    matchLabels:
+      {{- include "common.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with (include "common.podAnnotations" .) }}
+      annotations:
+        {{- . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "common.podLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "common.serviceAccountName" . }}
+      {{- include "common.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.podSecurityContext.enabled }}
+      securityContext:
+        {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if .Values.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- end }}
+      {{- if $tlsEnabled }}
+      initContainers:
+        - name: copy-certs
+          image: {{ include "postgresql.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext:
+            {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              cp -L /tmp/certs/* /etc/postgresql/certs/
+              chmod 600 {{ include "postgresql.tlsCertKey" . }}
+          volumeMounts:
+            - name: raw-certificates
+              mountPath: /tmp/certs
+            - name: postgresql-certificates
+              mountPath: /etc/postgresql/certs
+      {{- end }}
+      containers:
+        - name: postgresql
+          image: {{ include "postgresql.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext:
+            {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          command:
+            - /usr/local/bin/docker-entrypoint.sh
+            - postgres
+            - --config-file=/etc/postgresql/postgresql.conf
+          env:
+            - name: PGDATA
+              value: /postgresql/data
+            # Authentication
+            {{- with $customUser }}
+            - name: POSTGRES_USER
+              value: {{ quote . }}
+            {{- end }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "common.authSecretName" . }}
+                  key: {{ include "postgresql.userPasswordKey" . }}
+            {{- with .Values.auth.database }}
+            - name: POSTGRES_DB
+              value: {{ quote . }}
+            {{- end }}
+            # Initdb
+            {{- with .Values.extraEnvVars }}
+            {{- tpl (toYaml .) $ | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: tcp-postgresql
+              containerPort: {{ .Values.containerPorts.postgresql }}
+          {{- if .Values.startupProbe.enabled }}
+          startupProbe: {{- omit .Values.startupProbe "enabled" | toYaml | nindent 12 }}
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                {{- include "postgresql.probeCommand" . | nindent 16 }}
+          {{- end }}
+          {{- if .Values.livenessProbe.enabled }}
+          livenessProbe: {{- omit .Values.livenessProbe "enabled" | toYaml | nindent 12 }}
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                {{- include "postgresql.probeCommand" . | nindent 16 }}
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
+          readinessProbe: {{- omit .Values.readinessProbe "enabled" | toYaml | nindent 12 }}
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - -e
+                {{- include "postgresql.probeCommand" . | nindent 16 }}
+          {{- end }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: empty-dir
+              mountPath: /tmp
+              subPath: tmp-dir
+            - name: empty-dir
+              mountPath: /run/postgresql
+              subPath: run-dir
+            - name: postgresql-config
+              mountPath: /etc/postgresql
+            {{- if $tlsEnabled }}
+            - name: postgresql-certificates
+              mountPath: /etc/postgresql/certs
+              readOnly: true
+            {{- end }}
+            {{- if .Values.shmVolume.enabled }}
+            - name: dshm
+              mountPath: /dev/shm
+            {{- end }}
+            - name: data
+              mountPath: /postgresql
+          {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        {{- if (eq (include "common.metrics.enabled" .) "true") }}
+        - name: metrics
+          image: {{ include "common.metrics.image" . }}
+          imagePullPolicy: {{ .Values.metrics.image.pullPolicy | quote }}
+          {{- if .Values.metrics.containerSecurityContext.enabled }}
+          securityContext:
+            {{- omit .Values.metrics.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if or .Values.metrics.customMetrics .Values.metrics.collectors }}
+          args:
+            {{- if .Values.metrics.customMetrics }}
+            - --extend.query-path
+            - /conf/custom-metrics.yaml
+            {{- end }}
+            {{- range $name, $enabled := .Values.metrics.collectors }}
+            - --{{ if not $enabled }}no-{{ end }}collector.{{ $name }}
+            {{- end }}
+          {{- end }}
+          env:
+            {{- $database := required "In order to enable metrics you need to specify a database (.Values.auth.database)" .Values.auth.database }}
+            - name: DATA_SOURCE_URI
+              value: {{ printf "127.0.0.1:%d/%s?sslmode=disable" .Values.service.ports.postgresql $database }}
+            {{- $pwdKey := include "postgresql.userPasswordKey" . }}
+            - name: DATA_SOURCE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "common.authSecretName" . }}
+                  key: {{ $pwdKey }}
+            - name: DATA_SOURCE_USER
+              value: {{ default "postgres" $customUser | quote }}
+            {{- with .Values.metrics.extraEnvVars }}
+            {{- tpl (toYaml .) $ | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: http-metrics
+              containerPort: {{ .Values.metrics.containerPorts.metrics }}
+          {{- if .Values.metrics.startupProbe.enabled }}
+          startupProbe: {{- omit .Values.metrics.startupProbe "enabled" | toYaml | nindent 12 }}
+            tcpSocket:
+              port: http-metrics
+          {{- end }}
+          {{- if .Values.metrics.livenessProbe.enabled }}
+          livenessProbe: {{- omit .Values.metrics.livenessProbe "enabled" | toYaml | nindent 12 }}
+            httpGet:
+              path: /
+              port: http-metrics
+          {{- end }}
+          {{- if .Values.metrics.readinessProbe.enabled }}
+          readinessProbe: {{- omit .Values.metrics.readinessProbe "enabled" | toYaml | nindent 12 }}
+            httpGet:
+              path: /
+              port: http-metrics
+          {{- end }}
+          volumeMounts:
+            - name: empty-dir
+              mountPath: /tmp
+              subPath: tmp-dir
+            {{- if .Values.metrics.customMetrics }}
+            - name: custom-metrics
+              mountPath: /conf
+              readOnly: true
+            {{- end }}
+          {{- with .Values.metrics.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: empty-dir
+          emptyDir: {}
+        - name: postgresql-config
+          configMap:
+            name: {{ include "common.configmapName" . }}
+        {{- if  $tlsEnabled }}
+        - name: raw-certificates
+          secret:
+            secretName: {{ include "common.tls.secretName" . }}
+        - name: postgresql-certificates
+          emptyDir: {}
+        {{- end }}
+        {{- with .Values.volumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- if and (include "common.metrics.enabled" .) .Values.metrics.customMetrics }}
+        - name: custom-metrics
+          configMap:
+            name: {{ include "postgresql.metrics.configMapName" . }}
+        {{- end }}
+        {{- if .Values.shmVolume.enabled }}
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            {{- if .Values.shmVolume.sizeLimit }}
+            sizeLimit: {{ .Values.shmVolume.sizeLimit }}
+            {{- end }}
+        {{- end }}
+  {{- if not .Values.persistence.enabled }}
+        - name: data
+          emptyDir: {}
+  {{- else if .Values.persistence.existingClaim }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ tpl .Values.persistence.existingClaim . }}
+  {{- else }}
+  {{- with .Values.persistence.persistentVolumeClaimRetentionPolicy }}
+  persistentVolumeClaimRetentionPolicy:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: data
+        {{- with (include "common.mergeAnnotations" (dict "context" . "value" .Values.persistence.annotations)) }}
+        annotations:
+          {{- . | nindent 10 }}
+        {{- end }}
+        {{- with (include "common.mergeLabels" (dict "context" . "value" .Values.persistence.labels)) }}
+        labels:
+          {{- . | nindent 10 }}
+        {{- end }}
+      spec:
+        accessModes: {{- toYaml .Values.persistence.accessModes | nindent 10 }}
+        {{- with .Values.persistence.dataSource }}
+        dataSource: {{- toYaml . | nindent 10 }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size | quote }}
+        {{- with .Values.persistence.selector }}
+        selector: {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with (default .Values.persistence.storageClass (.Values.global).storageClass) }}
+        storageClassName: {{ eq . "-" | ternary "" . | quote }}
+        {{- end }}
+  {{- end }}

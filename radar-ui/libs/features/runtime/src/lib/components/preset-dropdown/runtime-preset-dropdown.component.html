@@ -1,0 +1,20 @@
+<ng-container *transloco="let tRuntime; prefix: 'runtime'">
+    <button kbq-button
+            type="button"
+            [kbqDropdownTriggerFor]="dropdownMenu"
+            (dropdownOpened)="applyItems()"
+            data-testid="runtime-preset-dropdown-open-button">
+        <i kbq-icon="kbq-check_16"></i>
+        <span>{{ tRuntime('Runtime.EventsPage.Filter.Button.Preset') }}</span>
+    </button>
+
+    <kbq-dropdown #dropdownMenu="kbqDropdown">
+        @for (preset of presetDropdownFiltersCollection | keyvalue; track preset.key) {
+            <button kbq-dropdown-item
+                    (click)="select(preset.key)"
+                    [attr.data-testid]="tRuntime(preset.value)">
+                {{ tRuntime(preset.value) }}
+            </button>
+        }
+    </kbq-dropdown>
+</ng-container>

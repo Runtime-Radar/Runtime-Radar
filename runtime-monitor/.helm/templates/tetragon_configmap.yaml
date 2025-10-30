@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.name" . }}-tetragon-config
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+data:
+  cluster-name: {{ .Values.tetragon.clusterName | quote }}
+{{- if .Values.tetragon.btf }}
+  btf: {{ .Values.tetragon.btf }}
+{{- end }}
+  procfs: /procRoot
+  debug: {{ .Values.tetragon.debug | quote }}
+  enable-process-cred: {{ .Values.tetragon.enableProcessCred | quote }}
+  enable-process-ns: {{ .Values.tetragon.enableProcessNs | quote }}
+  process-cache-size: {{ .Values.tetragon.processCacheSize | quote }}
+{{- if .Values.tetragon.exportFilename }}
+  export-filename: {{ .Values.exportDirectory}}/{{ .Values.tetragon.exportFilename }}
+  export-file-perm: {{ .Values.tetragon.exportFilePerm | quote }}
+  export-file-max-size-mb: {{ .Values.tetragon.exportFileMaxSizeMB | quote }}
+  export-file-max-backups: {{ .Values.tetragon.exportFileMaxBackups | quote }}
+  export-file-compress: {{ .Values.tetragon.exportFileCompress | quote }}
+  export-allowlist: |-
+{{- .Values.tetragon.exportAllowList | trim | nindent 4 }}
+  export-denylist: |-
+{{- .Values.tetragon.exportDenyList | trim | nindent 4 }}
+  field-filters: |-
+{{- .Values.tetragon.fieldFilters | trim | nindent 4 }}
+  redaction-filters: |-
+{{- .Values.tetragon.redactionFilters | trim | nindent 4 }}
+  export-rate-limit: {{ .Values.tetragon.exportRateLimit | quote }}
+{{- end }}
+{{- if .Values.tetragon.enableK8sAPI }}
+  enable-k8s-api: "true"
+{{- end }}
+{{- if .Values.tetragon.prometheus.enabled }}
+  metrics-server: {{ .Values.tetragon.prometheus.address }}:{{ .Values.tetragon.prometheus.port }}
+{{- else }}
+  metrics-server: ""
+{{- end }}
+{{- if .Values.tetragon.prometheus.enabled }}
+  metrics-label-filter: {{ .Values.tetragon.prometheus.metricsLabelFilter }}
+{{- end }}
+{{- if .Values.tetragon.grpc.enabled }}
+  server-address: {{ .Values.tetragon.grpc.address }}
+{{- else }}
+  server-address: ""
+{{- end }}
+{{- if .Values.tetragon.healthGrpc.enabled }}
+  health-server-address: :{{ .Values.tetragon.healthGrpc.port }}
+  health-server-interval: {{ .Values.tetragon.healthGrpc.interval | quote }}
+{{- else }}
+  health-server-address: ""
+{{- end }}
+{{- if .Values.tetragon.gops.enabled }}
+  gops-address: {{ .Values.tetragon.gops.address }}:{{ .Values.tetragon.gops.port }}
+{{- end }}
+{{- if .Values.tetragon.enablePolicyFilter }}
+  enable-policy-filter: "true"
+{{- end }}
+{{- if .Values.tetragon.enablePolicyFilterDebug }}
+  enable-policy-filter-debug: "true"
+{{- end }}
+{{- if .Values.tetragon.enableMsgHandlingLatency }}
+  enable-msg-handling-latency: "true"
+{{- end }}
+  enable-pod-info: {{ .Values.tetragonOperator.podInfo.enabled | quote }}
+  enable-tracing-policy-crd: {{ .Values.tetragonOperator.tracingPolicy.enabled | quote }}
+{{- if .Values.tetragon.pprof.enabled }}
+  pprof-address: {{ .Values.tetragon.pprof.address }}:{{ .Values.tetragon.pprof.port }}
+{{- end }}
+  event-cache-retries: {{ .Values.tetragon.eventCacheRetries | quote }}
+  event-cache-retry-delay: {{ .Values.tetragon.eventCacheRetryDelay | quote }}
+{{- include "configmap.extra" . | nindent 2 }}
+{{- if .Values.tetragon.enableKeepSensorsOnExit }}
+  keep-sensors-on-exit: "true"
+  release-pinned-bpf: "false"
+{{- end }}
+  process-cache-gc-interval: {{ .Values.tetragon.processCacheGCInterval | quote }}

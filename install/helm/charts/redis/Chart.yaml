@@ -1,0 +1,11 @@
+apiVersion: v2
+appVersion: 8.0.2
+dependencies:
+- name: common
+  repository: file://../common
+  version: 0.x.x
+description: Redis(R) is an open source, advanced key-value store. It is often referred
+  to as a data structure server since keys can contain strings, hashes, lists, sets
+  and sorted sets.
+name: redis
+version: 0.0.1

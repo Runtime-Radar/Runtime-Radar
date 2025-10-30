@@ -1,0 +1,71 @@
+<ng-container *transloco="let tRuntime; prefix: 'runtime'">
+    <ng-container *ngrxLet="uploadedFiles$ as files">
+        <kbq-modal-title>{{ tRuntime('Runtime.UploadDetectorModal.Title.Create') }}</kbq-modal-title>
+
+        <kbq-modal-body class="runtime-feature-upload-detector-modal">
+            @if (files.length) {
+                <table kbq-table class="runtime-feature-upload-detector-modal-table">
+                    <thead>
+                        <tr>
+                            <th>{{ tRuntime('Runtime.UploadDetectorModal.Table.Name') }}</th>
+                            <th>{{ tRuntime('Runtime.UploadDetectorModal.Table.Size') }}</th>
+                            <th width="34"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (file of files; track file.id) {
+                            <tr id="{{ file.id }}" [attr.data-testid]="file.name">
+                                <td><span class="runtime-feature-upload-detector-modal-table-truncate">{{ file.name | lowercase }}</span></td>
+                                <td>{{ file.size | runtimeByteFormatter }}</td>
+                                <td>
+                                    <button kbq-button
+                                            kbqStyle="transparent"
+                                            color="contrast"
+                                            type="button"
+                                            class="kbq-button-icon"
+                                            (click)="delete(file.id)"
+                                            data-testid="runtime-detector-upload-delete-button">
+                                        <i kbq-icon="kbq-xmark-circle_16"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+
+            <section class="layout-row layout-align-center-center runtime-feature-upload-detector-modal-area">
+                @if (isUploadInProgress$ | async) {
+                    <kbq-loader-overlay [transparent]="true"></kbq-loader-overlay>
+                }
+                <i kbq-icon="kbq-cloud-arrow-up-o_24"></i>
+                <span class="kbq-text-compact layout-margin-left-s">
+                    {{ tRuntime('Runtime.UploadDetectorModal.Text.Upload') }}
+                </span>
+                <input multiple
+                       type="file"
+                       accept="application/wasm"
+                       (change)="upload($event)"
+                       class="runtime-feature-upload-detector-modal-area-input">
+            </section>
+        </kbq-modal-body>
+
+        <kbq-modal-footer>
+            <button kbq-button
+                    kbqStyle="outline"
+                    color="theme-fade"
+                    type="button"
+                    [disabled]="!files.length"
+                    (click)="dispatch(true)"
+                    data-testid="runtime-detector-upload-confirm-button">
+                {{ tRuntime('Runtime.UploadDetectorModal.Button.Confirm') }}
+            </button>
+            <button kbq-button
+                    type="button"
+                    (click)="dispatch(false)"
+                    data-testid="runtime-detector-upload-cancel-button">
+                {{ tRuntime('Runtime.UploadDetectorModal.Button.Cancel') }}
+            </button>
+        </kbq-modal-footer>
+    </ng-container>
+</ng-container>

@@ -1,0 +1,7 @@
+# .vscode
+.idea
+# .task
+/.task/checksum/tools
+*.exe
+/bin
+/cmd/cluster-manager/cluster-manager

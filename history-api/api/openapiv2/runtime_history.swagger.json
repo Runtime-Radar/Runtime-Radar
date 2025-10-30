@@ -1,0 +1,1630 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "History Runtime Events API",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "RuntimeHistory"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/runtime-event/by-filter/slice/{direction}": {
+      "post": {
+        "operationId": "RuntimeHistory_FilterRuntimeEventSlice",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/runtime_historyListRuntimeEventSliceResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "direction",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RuntimeHistoryFilterRuntimeEventSliceBody"
+            }
+          }
+        ],
+        "tags": [
+          "RuntimeHistory"
+        ]
+      }
+    },
+    "/api/v1/runtime-event/slice/{direction}": {
+      "get": {
+        "operationId": "RuntimeHistory_ListRuntimeEventSlice",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/runtime_historyListRuntimeEventSliceResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "direction",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "sliceSize",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "tags": [
+          "RuntimeHistory"
+        ]
+      }
+    },
+    "/api/v1/runtime-event/{id}": {
+      "get": {
+        "operationId": "RuntimeHistory_Read",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/runtime_eventRuntimeEvent"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RuntimeHistory"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "RuntimeHistoryFilterRuntimeEventSliceBody": {
+      "type": "object",
+      "properties": {
+        "cursor": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "sliceSize": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "filter": {
+          "$ref": "#/definitions/runtime_historyRuntimeFilter"
+        }
+      }
+    },
+    "commonPeriod": {
+      "type": "object",
+      "properties": {
+        "from": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "to": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "detectorDetector": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "version": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "author": {
+          "type": "string"
+        },
+        "contact": {
+          "type": "string"
+        },
+        "license": {
+          "type": "string"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "runtime_eventDetectError": {
+      "type": "object",
+      "properties": {
+        "detector": {
+          "$ref": "#/definitions/detectorDetector"
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "runtime_eventRuntimeEvent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "id (as UUID) will be generated by event-processor, so that it can be used in notifier templates\nwhen sending notifications, for building URL pointing to a particular event, or as a supplementary info"
+        },
+        "tetragonVersion": {
+          "type": "string",
+          "title": "TODO: tetragon_version is hardcoded on event_processor side, but it is assumed that it will be passed\nright from the runtime_monitor"
+        },
+        "event": {
+          "$ref": "#/definitions/tetragonGetEventsResponse"
+        },
+        "threats": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/runtime_eventThreat"
+          }
+        },
+        "detectErrors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/runtime_eventDetectError"
+          }
+        },
+        "isIncident": {
+          "type": "boolean"
+        },
+        "incidentSeverity": {
+          "type": "string"
+        },
+        "blockBy": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notifyBy": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "runtime_eventThreat": {
+      "type": "object",
+      "properties": {
+        "detector": {
+          "$ref": "#/definitions/detectorDetector"
+        },
+        "severity": {
+          "type": "string"
+        }
+      }
+    },
+    "runtime_historyListRuntimeEventSliceResp": {
+      "type": "object",
+      "properties": {
+        "runtimeEvents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/runtime_eventRuntimeEvent"
+          }
+        },
+        "leftCursor": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "rightCursor": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "runtime_historyRuntimeFilter": {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "event_type represents the type of runtime event registered in the system.\nPossible values are UNDEF, PROCESS_EXEC, PROCESS_EXIT, PROCESS_KPROBE, PROCESS_TRACEPOINT, PROCESS_LOADER and PROCESS_UPROBE"
+        },
+        "kprobeFunctionName": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "processPodNamespace": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "processPodName": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "nodeName": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "processPodContainerName": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "processPodContainerImageName": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "processBinary": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "processArguments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "period": {
+          "$ref": "#/definitions/commonPeriod"
+        },
+        "hasThreats": {
+          "type": "boolean"
+        },
+        "processExecId": {
+          "type": "string",
+          "description": "Process's execution identifier. This field does not support globs."
+        },
+        "processParentExecId": {
+          "type": "string",
+          "description": "Process parent's execution identifier. This field does not support globs."
+        },
+        "threatsDetectors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Identifiers of detectors that have detected threats. This field does not support globs."
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Identifiers of worked rules. This field does not support globs."
+        },
+        "hasIncident": {
+          "type": "boolean"
+        }
+      }
+    },
+    "tetragonAggregationInfo": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "string",
+          "format": "uint64",
+          "description": "Total count of events in this aggregation time window."
+        }
+      },
+      "description": "AggregationInfo contains information about aggregation results."
+    },
+    "tetragonBinaryProperties": {
+      "type": "object",
+      "properties": {
+        "setuid": {
+          "type": "integer",
+          "format": "int64",
+          "title": "If set then this is the set user ID used for execution"
+        },
+        "setgid": {
+          "type": "integer",
+          "format": "int64",
+          "title": "If set then this is the set group ID used for execution"
+        },
+        "privilegesChanged": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/tetragonProcessPrivilegesChanged"
+          },
+          "description": "The reasons why this binary execution changed privileges. Usually this happens when the process executes\na binary with the set-user-ID to root or file capability sets.\nThe final granted privileges can be listed inside the `process_credentials` or capabilities fields part of of the `process` object."
+        },
+        "file": {
+          "$ref": "#/definitions/tetragonFileProperties",
+          "description": "File properties in case the executed binary is:\n1. An anonymous shared memory file https://man7.org/linux/man-pages/man7/shm_overview.7.html.\n2. An anonymous file obtained with memfd API https://man7.org/linux/man-pages/man2/memfd_create.2.html.\n3. Or it was deleted from the file system."
+        }
+      }
+    },
+    "tetragonCapabilities": {
+      "type": "object",
+      "properties": {
+        "permitted": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/tetragonCapabilitiesType"
+          },
+          "description": "Permitted set indicates what capabilities the process can use. This is a\nlimiting superset for the effective capabilities that the thread may\nassume. It is also a limiting superset for the capabilities that may be\nadded to the inheritable set by a thread without the CAP_SETPCAP in its\neffective set."
+        },
+        "effective": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/tetragonCapabilitiesType"
+          },
+          "description": "Effective set indicates what capabilities are active in a process. This\nis the set used by the kernel to perform permission checks for the\nthread."
+        },
+        "inheritable": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/tetragonCapabilitiesType"
+          },
+          "description": "Inheritable set indicates which capabilities will be inherited by the\ncurrent process when running as a root user."
+        }
+      }
+    },
+    "tetragonCapabilitiesType": {
+      "type": "string",
+      "enum": [
+        "CAP_CHOWN",
+        "DAC_OVERRIDE",
+        "CAP_DAC_READ_SEARCH",
+        "CAP_FOWNER",
+        "CAP_FSETID",
+        "CAP_KILL",
+        "CAP_SETGID",
+        "CAP_SETUID",
+        "CAP_SETPCAP",
+        "CAP_LINUX_IMMUTABLE",
+        "CAP_NET_BIND_SERVICE",
+        "CAP_NET_BROADCAST",
+        "CAP_NET_ADMIN",
+        "CAP_NET_RAW",
+        "CAP_IPC_LOCK",
+        "CAP_IPC_OWNER",
+        "CAP_SYS_MODULE",
+        "CAP_SYS_RAWIO",
+        "CAP_SYS_CHROOT",
+        "CAP_SYS_PTRACE",
+        "CAP_SYS_PACCT",
+        "CAP_SYS_ADMIN",
+        "CAP_SYS_BOOT",
+        "CAP_SYS_NICE",
+        "CAP_SYS_RESOURCE",
+        "CAP_SYS_TIME",
+        "CAP_SYS_TTY_CONFIG",
+        "CAP_MKNOD",
+        "CAP_LEASE",
+        "CAP_AUDIT_WRITE",
+        "CAP_AUDIT_CONTROL",
+        "CAP_SETFCAP",
+        "CAP_MAC_OVERRIDE",
+        "CAP_MAC_ADMIN",
+        "CAP_SYSLOG",
+        "CAP_WAKE_ALARM",
+        "CAP_BLOCK_SUSPEND",
+        "CAP_AUDIT_READ",
+        "CAP_PERFMON",
+        "CAP_BPF",
+        "CAP_CHECKPOINT_RESTORE"
+      ],
+      "default": "CAP_CHOWN",
+      "title": "- CAP_CHOWN: In a system with the [_POSIX_CHOWN_RESTRICTED] option defined, this\noverrides the restriction of changing file ownership and group\nownership.\n - DAC_OVERRIDE: Override all DAC access, including ACL execute access if\n[_POSIX_ACL] is defined. Excluding DAC access covered by\nCAP_LINUX_IMMUTABLE.\n - CAP_DAC_READ_SEARCH: Overrides all DAC restrictions regarding read and search on files\nand directories, including ACL restrictions if [_POSIX_ACL] is\ndefined. Excluding DAC access covered by \"$1\"_LINUX_IMMUTABLE.\n - CAP_FOWNER: Overrides all restrictions about allowed operations on files, where\nfile owner ID must be equal to the user ID, except where CAP_FSETID\nis applicable. It doesn't override MAC and DAC restrictions.\n - CAP_FSETID: Overrides the following restrictions that the effective user ID\nshall match the file owner ID when setting the S_ISUID and S_ISGID\nbits on that file; that the effective group ID (or one of the\nsupplementary group IDs) shall match the file owner ID when setting\nthe S_ISGID bit on that file; that the S_ISUID and S_ISGID bits are\ncleared on successful return from chown(2) (not implemented).\n - CAP_KILL: Overrides the restriction that the real or effective user ID of a\nprocess sending a signal must match the real or effective user ID\nof the process receiving the signal.\n - CAP_SETGID: Allows forged gids on socket credentials passing.\n - CAP_SETUID: Allows forged pids on socket credentials passing.\n - CAP_SETPCAP: Without VFS support for capabilities:\n  Transfer any capability in your permitted set to any pid,\n  remove any capability in your permitted set from any pid\nWith VFS support for capabilities (neither of above, but)\n  Add any capability from current's capability bounding set\n      to the current process' inheritable set\n  Allow taking bits out of capability bounding set\n  Allow modification of the securebits for a process\n - CAP_LINUX_IMMUTABLE: Allow modification of S_IMMUTABLE and S_APPEND file attributes\n - CAP_NET_BIND_SERVICE: Allows binding to ATM VCIs below 32\n - CAP_NET_BROADCAST: Allow broadcasting, listen to multicast\n - CAP_NET_ADMIN: Allow activation of ATM control sockets\n - CAP_NET_RAW: Allow binding to any address for transparent proxying (also via NET_ADMIN)\n - CAP_IPC_LOCK: Allow mlock and mlockall (which doesn't really have anything to do\nwith IPC)\n - CAP_IPC_OWNER: Override IPC ownership checks\n - CAP_SYS_MODULE: Insert and remove kernel modules - modify kernel without limit\n - CAP_SYS_RAWIO: Allow sending USB messages to any device via /dev/bus/usb\n - CAP_SYS_CHROOT: Allow use of chroot()\n - CAP_SYS_PTRACE: Allow ptrace() of any process\n - CAP_SYS_PACCT: Allow configuration of process accounting\n - CAP_SYS_ADMIN: Allow everything under CAP_BPF and CAP_PERFMON for backward compatibility\n - CAP_SYS_BOOT: Allow use of reboot()\n - CAP_SYS_NICE: Allow setting cpu affinity on other processes\n - CAP_SYS_RESOURCE: Control memory reclaim behavior\n - CAP_SYS_TIME: Allow setting the real-time clock\n - CAP_SYS_TTY_CONFIG: Allow vhangup() of tty\n - CAP_MKNOD: Allow the privileged aspects of mknod()\n - CAP_LEASE: Allow taking of leases on files\n - CAP_AUDIT_WRITE: Allow writing the audit log via unicast netlink socket\n - CAP_AUDIT_CONTROL: Allow configuration of audit via unicast netlink socket\n - CAP_SETFCAP: Set or remove capabilities on files\n - CAP_MAC_OVERRIDE: Override MAC access.\nThe base kernel enforces no MAC policy.\nAn LSM may enforce a MAC policy, and if it does and it chooses\nto implement capability based overrides of that policy, this is\nthe capability it should use to do so.\n - CAP_MAC_ADMIN: Allow MAC configuration or state changes.\nThe base kernel requires no MAC configuration.\nAn LSM may enforce a MAC policy, and if it does and it chooses\nto implement capability based checks on modifications to that\npolicy or the data required to maintain it, this is the\ncapability it should use to do so.\n - CAP_SYSLOG: Allow configuring the kernel's syslog (printk behaviour)\n - CAP_WAKE_ALARM: Allow triggering something that will wake the system\n - CAP_BLOCK_SUSPEND: Allow preventing system suspends\n - CAP_AUDIT_READ: Allow reading the audit log via multicast netlink socket\n - CAP_PERFMON: Allow system performance and observability privileged operations\nusing perf_events, i915_perf and other kernel subsystems\n - CAP_BPF: CAP_BPF allows the following BPF operations:\n- Creating all types of BPF maps\n- Advanced verifier features\n  - Indirect variable access\n  - Bounded loops\n  - BPF to BPF function calls\n  - Scalar precision tracking\n  - Larger complexity limits\n  - Dead code elimination\n  - And potentially other features\n- Loading BPF Type Format (BTF) data\n- Retrieve xlated and JITed code of BPF programs\n- Use bpf_spin_lock() helper\nCAP_PERFMON relaxes the verifier checks further:\n- BPF progs can use of pointer-to-integer conversions\n- speculation attack hardening measures are bypassed\n- bpf_probe_read to read arbitrary kernel memory is allowed\n- bpf_trace_printk to print kernel memory is allowed\nCAP_SYS_ADMIN is required to use bpf_probe_write_user.\nCAP_SYS_ADMIN is required to iterate system wide loaded\nprograms, maps, links, BTFs and convert their IDs to file descriptors.\nCAP_PERFMON and CAP_BPF are required to load tracing programs.\nCAP_NET_ADMIN and CAP_BPF are required to load networking programs.\n - CAP_CHECKPOINT_RESTORE: Allow writing to ns_last_pid"
+    },
+    "tetragonContainer": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identifier of the container."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the container."
+        },
+        "image": {
+          "$ref": "#/definitions/tetragonImage",
+          "description": "Image of the container."
+        },
+        "startTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Start time of the container."
+        },
+        "pid": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Process identifier in the container namespace."
+        },
+        "maybeExecProbe": {
+          "type": "boolean",
+          "description": "If this is set true, it means that the process might have been originated from\na Kubernetes exec probe. For this field to be true, the following must be true:\n1. The binary field matches the first element of the exec command list for either\n   liveness or readiness probe excluding the basename. For example, \"/bin/ls\"\n   and \"ls\" are considered a match.\n2. The arguments field exactly matches the rest of the exec command list."
+        }
+      }
+    },
+    "tetragonFileProperties": {
+      "type": "object",
+      "properties": {
+        "inode": {
+          "$ref": "#/definitions/tetragonInodeProperties",
+          "title": "Inode of the file"
+        },
+        "path": {
+          "type": "string",
+          "title": "Path of the file"
+        }
+      }
+    },
+    "tetragonGetEventsResponse": {
+      "type": "object",
+      "properties": {
+        "processExec": {
+          "$ref": "#/definitions/tetragonProcessExec",
+          "description": "ProcessExec event includes information about the execution of\nbinaries and other related process metadata."
+        },
+        "processExit": {
+          "$ref": "#/definitions/tetragonProcessExit",
+          "description": "ProcessExit event indicates how and when a process terminates."
+        },
+        "processKprobe": {
+          "$ref": "#/definitions/tetragonProcessKprobe",
+          "description": "ProcessKprobe event contains information about the pre-defined\nfunctions and the process that invoked them."
+        },
+        "processTracepoint": {
+          "$ref": "#/definitions/tetragonProcessTracepoint",
+          "description": "ProcessTracepoint contains information about the pre-defined\ntracepoint and the process that invoked them."
+        },
+        "processLoader": {
+          "$ref": "#/definitions/tetragonProcessLoader"
+        },
+        "processUprobe": {
+          "$ref": "#/definitions/tetragonProcessUprobe"
+        },
+        "test": {
+          "$ref": "#/definitions/tetragonTest"
+        },
+        "rateLimitInfo": {
+          "$ref": "#/definitions/tetragonRateLimitInfo"
+        },
+        "nodeName": {
+          "type": "string",
+          "description": "Name of the node where this event was observed."
+        },
+        "time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp at which this event was observed.\nFor an aggregated response, this field to set to the timestamp at which\nthe event was observed for the first time in a given aggregation time window."
+        },
+        "aggregationInfo": {
+          "$ref": "#/definitions/tetragonAggregationInfo",
+          "description": "aggregation_info contains information about aggregation results. This field\nis set only for aggregated responses."
+        }
+      }
+    },
+    "tetragonImage": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identifier of the container image composed of the registry path and the\nsha256."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the container image composed of the registry path and the tag."
+        }
+      }
+    },
+    "tetragonInodeProperties": {
+      "type": "object",
+      "properties": {
+        "number": {
+          "type": "string",
+          "format": "uint64",
+          "title": "The inode number"
+        },
+        "links": {
+          "type": "integer",
+          "format": "int64",
+          "title": "The inode links on the file system. If zero means the file is only in memory"
+        }
+      }
+    },
+    "tetragonKernelModule": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Kernel module name"
+        },
+        "signatureOk": {
+          "type": "boolean",
+          "title": "If true the module signature was verified successfully. Depends on kernels compiled with\nCONFIG_MODULE_SIG option, for details please read: https://www.kernel.org/doc/Documentation/admin-guide/module-signing.rst"
+        },
+        "tainted": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/tetragonTaintedBitsType"
+          },
+          "title": "The module tainted flags that will be applied on the kernel. For further details please read: https://docs.kernel.org/admin-guide/tainted-kernels.html"
+        }
+      }
+    },
+    "tetragonKprobeAction": {
+      "type": "string",
+      "enum": [
+        "KPROBE_ACTION_UNKNOWN",
+        "KPROBE_ACTION_POST",
+        "KPROBE_ACTION_FOLLOWFD",
+        "KPROBE_ACTION_SIGKILL",
+        "KPROBE_ACTION_UNFOLLOWFD",
+        "KPROBE_ACTION_OVERRIDE",
+        "KPROBE_ACTION_COPYFD",
+        "KPROBE_ACTION_GETURL",
+        "KPROBE_ACTION_DNSLOOKUP",
+        "KPROBE_ACTION_NOPOST",
+        "KPROBE_ACTION_SIGNAL",
+        "KPROBE_ACTION_TRACKSOCK",
+        "KPROBE_ACTION_UNTRACKSOCK",
+        "KPROBE_ACTION_NOTIFYENFORCER"
+      ],
+      "default": "KPROBE_ACTION_UNKNOWN",
+      "description": " - KPROBE_ACTION_UNKNOWN: Unknown action\n - KPROBE_ACTION_POST: Post action creates an event (default action).\n - KPROBE_ACTION_FOLLOWFD: Post action creates a mapping between file descriptors and file names.\n - KPROBE_ACTION_SIGKILL: Sigkill action synchronously terminates the process.\n - KPROBE_ACTION_UNFOLLOWFD: Post action removes a mapping between file descriptors and file names.\n - KPROBE_ACTION_OVERRIDE: Override action modifies the return value of the call.\n - KPROBE_ACTION_COPYFD: Post action dupplicates a mapping between file descriptors and file\nnames.\n - KPROBE_ACTION_GETURL: GetURL action issue an HTTP Get request against an URL from userspace.\n - KPROBE_ACTION_DNSLOOKUP: GetURL action issue a DNS lookup against an URL from userspace.\n - KPROBE_ACTION_NOPOST: NoPost action suppresses the transmission of the event to userspace.\n - KPROBE_ACTION_SIGNAL: Signal action sends specified signal to the process.\n - KPROBE_ACTION_TRACKSOCK: TrackSock action tracks socket.\n - KPROBE_ACTION_UNTRACKSOCK: UntrackSock action un-tracks socket.\n - KPROBE_ACTION_NOTIFYENFORCER: NotifyEnforcer action notifies killer sensor."
+    },
+    "tetragonKprobeArgument": {
+      "type": "object",
+      "properties": {
+        "stringArg": {
+          "type": "string"
+        },
+        "intArg": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "skbArg": {
+          "$ref": "#/definitions/tetragonKprobeSkb"
+        },
+        "sizeArg": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "bytesArg": {
+          "type": "string",
+          "format": "byte"
+        },
+        "pathArg": {
+          "$ref": "#/definitions/tetragonKprobePath"
+        },
+        "fileArg": {
+          "$ref": "#/definitions/tetragonKprobeFile"
+        },
+        "truncatedBytesArg": {
+          "$ref": "#/definitions/tetragonKprobeTruncatedBytes"
+        },
+        "sockArg": {
+          "$ref": "#/definitions/tetragonKprobeSock"
+        },
+        "credArg": {
+          "$ref": "#/definitions/tetragonKprobeCred"
+        },
+        "longArg": {
+          "type": "string",
+          "format": "int64"
+        },
+        "bpfAttrArg": {
+          "$ref": "#/definitions/tetragonKprobeBpfAttr"
+        },
+        "perfEventArg": {
+          "$ref": "#/definitions/tetragonKprobePerfEvent"
+        },
+        "bpfMapArg": {
+          "$ref": "#/definitions/tetragonKprobeBpfMap"
+        },
+        "uintArg": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "userNamespaceArg": {
+          "$ref": "#/definitions/tetragonKprobeUserNamespace"
+        },
+        "capabilityArg": {
+          "$ref": "#/definitions/tetragonKprobeCapability"
+        },
+        "processCredentialsArg": {
+          "$ref": "#/definitions/tetragonProcessCredentials"
+        },
+        "userNsArg": {
+          "$ref": "#/definitions/tetragonUserNamespace"
+        },
+        "moduleArg": {
+          "$ref": "#/definitions/tetragonKernelModule"
+        },
+        "kernelCapTArg": {
+          "type": "string",
+          "description": "Capabilities in hexadecimal format."
+        },
+        "capInheritableArg": {
+          "type": "string",
+          "description": "Capabilities inherited by a forked process in hexadecimal format."
+        },
+        "capPermittedArg": {
+          "type": "string",
+          "description": "Capabilities that are currently permitted in hexadecimal format."
+        },
+        "capEffectiveArg": {
+          "type": "string",
+          "description": "Capabilities that are actually used in hexadecimal format."
+        },
+        "linuxBinprmArg": {
+          "$ref": "#/definitions/tetragonKprobeLinuxBinprm"
+        },
+        "netDevArg": {
+          "$ref": "#/definitions/tetragonKprobeNetDev"
+        },
+        "label": {
+          "type": "string"
+        }
+      }
+    },
+    "tetragonKprobeBpfAttr": {
+      "type": "object",
+      "properties": {
+        "ProgType": {
+          "type": "string"
+        },
+        "InsnCnt": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ProgName": {
+          "type": "string"
+        }
+      }
+    },
+    "tetragonKprobeBpfMap": {
+      "type": "object",
+      "properties": {
+        "MapType": {
+          "type": "string"
+        },
+        "KeySize": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ValueSize": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "MaxEntries": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "MapName": {
+          "type": "string"
+        }
+      }
+    },
+    "tetragonKprobeCapability": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "tetragonKprobeCred": {
+      "type": "object",
+      "properties": {
+        "permitted": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/tetragonCapabilitiesType"
+          }
+        },
+        "effective": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/tetragonCapabilitiesType"
+          }
+        },
+        "inheritable": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/tetragonCapabilitiesType"
+          }
+        }
+      }
+    },
+    "tetragonKprobeFile": {
+      "type": "object",
+      "properties": {
+        "mount": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "flags": {
+          "type": "string"
+        },
+        "permission": {
+          "type": "string"
+        }
+      }
+    },
+    "tetragonKprobeLinuxBinprm": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "flags": {
+          "type": "string"
+        },
+        "permission": {
+          "type": "string"
+        }
+      }
+    },
+    "tetragonKprobeNetDev": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "tetragonKprobePath": {
+      "type": "object",
+      "properties": {
+        "mount": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "flags": {
+          "type": "string"
+        },
+        "permission": {
+          "type": "string"
+        }
+      }
+    },
+    "tetragonKprobePerfEvent": {
+      "type": "object",
+      "properties": {
+        "KprobeFunc": {
+          "type": "string"
+        },
+        "Type": {
+          "type": "string"
+        },
+        "Config": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "ProbeOffset": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
+    "tetragonKprobeSkb": {
+      "type": "object",
+      "properties": {
+        "hash": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "len": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "priority": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "mark": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "saddr": {
+          "type": "string"
+        },
+        "daddr": {
+          "type": "string"
+        },
+        "sport": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "dport": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "proto": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "secPathLen": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "secPathOlen": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "protocol": {
+          "type": "string"
+        },
+        "family": {
+          "type": "string"
+        }
+      }
+    },
+    "tetragonKprobeSock": {
+      "type": "object",
+      "properties": {
+        "family": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "protocol": {
+          "type": "string"
+        },
+        "mark": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "priority": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "saddr": {
+          "type": "string"
+        },
+        "daddr": {
+          "type": "string"
+        },
+        "sport": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "dport": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "cookie": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "state": {
+          "type": "string"
+        }
+      }
+    },
+    "tetragonKprobeTruncatedBytes": {
+      "type": "object",
+      "properties": {
+        "bytesArg": {
+          "type": "string",
+          "format": "byte"
+        },
+        "origSize": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
+    "tetragonKprobeUserNamespace": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "owner": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "group": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ns": {
+          "$ref": "#/definitions/tetragonNamespace"
+        }
+      }
+    },
+    "tetragonNamespace": {
+      "type": "object",
+      "properties": {
+        "inum": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Inode number of the namespace."
+        },
+        "isHost": {
+          "type": "boolean",
+          "description": "Indicates if namespace belongs to host."
+        }
+      }
+    },
+    "tetragonNamespaces": {
+      "type": "object",
+      "properties": {
+        "uts": {
+          "$ref": "#/definitions/tetragonNamespace",
+          "description": "Hostname and NIS domain name."
+        },
+        "ipc": {
+          "$ref": "#/definitions/tetragonNamespace",
+          "description": "System V IPC, POSIX message queues."
+        },
+        "mnt": {
+          "$ref": "#/definitions/tetragonNamespace",
+          "description": "Mount points."
+        },
+        "pid": {
+          "$ref": "#/definitions/tetragonNamespace",
+          "description": "Process IDs."
+        },
+        "pidForChildren": {
+          "$ref": "#/definitions/tetragonNamespace",
+          "description": "Process IDs for children processes."
+        },
+        "net": {
+          "$ref": "#/definitions/tetragonNamespace",
+          "description": "Network devices, stacks, ports, etc."
+        },
+        "time": {
+          "$ref": "#/definitions/tetragonNamespace",
+          "description": "Boot and monotonic clocks."
+        },
+        "timeForChildren": {
+          "$ref": "#/definitions/tetragonNamespace",
+          "description": "Boot and monotonic clocks for children processes."
+        },
+        "cgroup": {
+          "$ref": "#/definitions/tetragonNamespace",
+          "description": "Cgroup root directory."
+        },
+        "user": {
+          "$ref": "#/definitions/tetragonNamespace",
+          "description": "User and group IDs."
+        }
+      }
+    },
+    "tetragonPod": {
+      "type": "object",
+      "properties": {
+        "namespace": {
+          "type": "string",
+          "description": "Kubernetes namespace of the Pod."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the Pod."
+        },
+        "container": {
+          "$ref": "#/definitions/tetragonContainer",
+          "description": "Container of the Pod from which the process that triggered the event\noriginates."
+        },
+        "podLabels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Contains all the labels of the pod."
+        },
+        "workload": {
+          "type": "string",
+          "description": "Kubernetes workload of the Pod."
+        },
+        "workloadKind": {
+          "type": "string",
+          "description": "Kubernetes workload kind (e.g. \"Deployment\", \"DaemonSet\") of the Pod."
+        }
+      }
+    },
+    "tetragonProcess": {
+      "type": "object",
+      "properties": {
+        "execId": {
+          "type": "string",
+          "description": "Exec ID uniquely identifies the process over time across all the nodes in the cluster."
+        },
+        "pid": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Process identifier from host PID namespace."
+        },
+        "uid": {
+          "type": "integer",
+          "format": "int64",
+          "description": "User identifier associated with the process."
+        },
+        "cwd": {
+          "type": "string",
+          "description": "Current working directory of the process."
+        },
+        "binary": {
+          "type": "string",
+          "description": "Absolute path of the executed binary."
+        },
+        "arguments": {
+          "type": "string",
+          "description": "Arguments passed to the binary at execution."
+        },
+        "flags": {
+          "type": "string",
+          "description": "Flags are for debugging purposes only and should not be considered a\nreliable source of information. They hold various information about\nwhich syscalls generated events, use of internal Tetragon buffers,\nerrors and more.\n- `execve` This event is generated by an execve syscall for a new\nprocess. See procFs for the other option. A correctly formatted event\nshould either set execve or procFS (described next).\n- `procFS` This event is generated from a proc interface. This happens\nat Tetragon init when existing processes are being loaded into Tetragon\nevent buffer. All events should have either execve or procFS set.\n- `truncFilename` Indicates a truncated processes filename because the\nbuffer size is too small to contain the process filename. Consider\nincreasing buffer size to avoid this.\n- `truncArgs` Indicates truncated the processes arguments because the\nbuffer size was too small to contain all exec args. Consider increasing\nbuffer size to avoid this.\n- `taskWalk` Primarily useful for debugging. Indicates a walked process\nhierarchy to find a parent process in the Tetragon buffer. This may\nhappen when we did not receive an exec event for the immediate parent of\na process. Typically means we are looking at a fork that in turn did\nanother fork we don't currently track fork events exactly and instead\npush an event with the original parent exec data. This flag can provide\nthis insight into the event if needed.\n- `miss` An error flag indicating we could not find parent info in the\nTetragon event buffer. If this is set it should be reported to Tetragon\ndevelopers for debugging. Tetragon will do its best to recover\ninformation about the process from available kernel data structures\ninstead of using cached info in this case. However, args will not be\navailable.\n- `needsAUID` An internal flag for Tetragon to indicate the audit has\nnot yet been resolved. The BPF hooks look at this flag to determine if\nprobing the audit system is necessary.\n- `errorFilename` An error flag indicating an error happened while\nreading the filename. If this is set it should be reported to Tetragon\ndevelopers for debugging.\n- `errorArgs` An error flag indicating an error happened while reading\nthe process args. If this is set it should be reported to Tetragon\ndevelopers for debugging\n- `needsCWD` An internal flag for Tetragon to indicate the current\nworking directory has not yet been resolved. The Tetragon hooks look at\nthis flag to determine if probing the CWD is necessary.\n- `noCWDSupport` Indicates that CWD is removed from the event because\nthe buffer size is too small. Consider increasing buffer size to avoid\nthis.\n- `rootCWD` Indicates that CWD is the root directory. This is necessary\nto inform readers the CWD is not in the event buffer and is '/' instead.\n- `errorCWD` An error flag indicating an error occurred while reading\nthe CWD of a process. If this is set it should be reported to Tetragon\ndevelopers for debugging.\n- `clone` Indicates the process issued a clone before exec*. This is the\ngeneral flow to exec* a new process, however its possible to replace the\ncurrent process with a new process by doing an exec* without a clone. In\nthis case the flag will be omitted and the same PID will be used by the\nkernel for both the old process and the newly exec'd process."
+        },
+        "startTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Start time of the execution."
+        },
+        "auid": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Audit user ID, this ID is assigned to a user upon login and is inherited\nby every process even when the user's identity changes. For example, by\nswitching user accounts with su - john."
+        },
+        "pod": {
+          "$ref": "#/definitions/tetragonPod",
+          "description": "Information about the the Kubernetes Pod where the event originated."
+        },
+        "docker": {
+          "type": "string",
+          "description": "The 15 first digits of the container ID."
+        },
+        "parentExecId": {
+          "type": "string",
+          "description": "Exec ID of the parent process."
+        },
+        "refcnt": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Reference counter from the Tetragon process cache."
+        },
+        "cap": {
+          "$ref": "#/definitions/tetragonCapabilities",
+          "description": "Set of capabilities that define the permissions the process can execute with."
+        },
+        "ns": {
+          "$ref": "#/definitions/tetragonNamespaces",
+          "description": "Linux namespaces of the process, disabled by default, can be enabled by\nthe `--enable-process-ns` flag."
+        },
+        "tid": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Thread ID, note that for the thread group leader, tid is equal to pid."
+        },
+        "processCredentials": {
+          "$ref": "#/definitions/tetragonProcessCredentials",
+          "title": "Process credentials"
+        },
+        "binaryProperties": {
+          "$ref": "#/definitions/tetragonBinaryProperties",
+          "description": "Executed binary properties. This field is only available on ProcessExec events."
+        },
+        "user": {
+          "$ref": "#/definitions/tetragonUserRecord",
+          "description": "UserRecord contains user information about the event.\n\nUserRecord is only supported when i) Tetragon is running as a systemd service or directly on the host, and\n ii) when  `--username-metadata` is set to \"unix\". In this case, the information is retrieved from\nthe traditional user database `/etc/passwd` and no name services lookups are performed.\nThe resolution will only be attempted for processes in the host namespace.\nNote that this resolution happens in user-space, which means that mapping might have changed\nbetween the in-kernel BPF hook being executed and the username resolution."
+        }
+      }
+    },
+    "tetragonProcessCredentials": {
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "integer",
+          "format": "int64",
+          "title": "The real user ID"
+        },
+        "gid": {
+          "type": "integer",
+          "format": "int64",
+          "title": "The real group ID"
+        },
+        "euid": {
+          "type": "integer",
+          "format": "int64",
+          "title": "The effective user ID"
+        },
+        "egid": {
+          "type": "integer",
+          "format": "int64",
+          "title": "The effective group ID"
+        },
+        "suid": {
+          "type": "integer",
+          "format": "int64",
+          "title": "The saved user ID"
+        },
+        "sgid": {
+          "type": "integer",
+          "format": "int64",
+          "title": "The saved group ID"
+        },
+        "fsuid": {
+          "type": "integer",
+          "format": "int64",
+          "title": "the filesystem user ID"
+        },
+        "fsgid": {
+          "type": "integer",
+          "format": "int64",
+          "title": "The filesystem group ID"
+        },
+        "securebits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/tetragonSecureBitsType"
+          },
+          "title": "Secure management flags"
+        },
+        "caps": {
+          "$ref": "#/definitions/tetragonCapabilities",
+          "description": "Set of capabilities that define the permissions the process can execute with."
+        },
+        "userNs": {
+          "$ref": "#/definitions/tetragonUserNamespace",
+          "description": "User namespace where the UIDs, GIDs and capabilities are relative to."
+        }
+      }
+    },
+    "tetragonProcessExec": {
+      "type": "object",
+      "properties": {
+        "process": {
+          "$ref": "#/definitions/tetragonProcess",
+          "description": "Process that triggered the exec."
+        },
+        "parent": {
+          "$ref": "#/definitions/tetragonProcess",
+          "description": "Immediate parent of the process."
+        },
+        "ancestors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/tetragonProcess"
+          },
+          "description": "Ancestors of the process beyond the immediate parent."
+        }
+      }
+    },
+    "tetragonProcessExit": {
+      "type": "object",
+      "properties": {
+        "process": {
+          "$ref": "#/definitions/tetragonProcess",
+          "description": "Process that triggered the exit."
+        },
+        "parent": {
+          "$ref": "#/definitions/tetragonProcess",
+          "description": "Immediate parent of the process."
+        },
+        "signal": {
+          "type": "string",
+          "description": "Signal that the process received when it exited, for example SIGKILL or\nSIGTERM (list all signal names with `kill -l`). If there is no signal\nhandler implemented for a specific process, we report the exit status\ncode that can be found in the status field."
+        },
+        "status": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Status code on process exit. For example, the status code can indicate\nif an error was encountered or the program exited successfully."
+        },
+        "time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Date and time of the event."
+        }
+      }
+    },
+    "tetragonProcessKprobe": {
+      "type": "object",
+      "properties": {
+        "process": {
+          "$ref": "#/definitions/tetragonProcess",
+          "description": "Process that triggered the kprobe."
+        },
+        "parent": {
+          "$ref": "#/definitions/tetragonProcess",
+          "description": "Immediate parent of the process."
+        },
+        "functionName": {
+          "type": "string",
+          "description": "Symbol on which the kprobe was attached."
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/tetragonKprobeArgument"
+          },
+          "description": "Arguments definition of the observed kprobe."
+        },
+        "return": {
+          "$ref": "#/definitions/tetragonKprobeArgument",
+          "description": "Return value definition of the observed kprobe."
+        },
+        "action": {
+          "$ref": "#/definitions/tetragonKprobeAction",
+          "description": "Action performed when the kprobe matched."
+        },
+        "kernelStackTrace": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/tetragonStackTraceEntry"
+          },
+          "description": "Kernel stack trace to the call."
+        },
+        "policyName": {
+          "type": "string",
+          "description": "Name of the Tracing Policy that created that kprobe."
+        },
+        "returnAction": {
+          "$ref": "#/definitions/tetragonKprobeAction",
+          "description": "Action performed when the return kprobe executed."
+        },
+        "message": {
+          "type": "string",
+          "description": "Short message of the Tracing Policy to inform users what is going on."
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Tags of the Tracing Policy to categorize the event."
+        },
+        "userStackTrace": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/tetragonStackTraceEntry"
+          },
+          "description": "User-mode stack trace to the call."
+        }
+      }
+    },
+    "tetragonProcessLoader": {
+      "type": "object",
+      "properties": {
+        "process": {
+          "$ref": "#/definitions/tetragonProcess"
+        },
+        "path": {
+          "type": "string"
+        },
+        "buildid": {
+          "type": "string",
+          "format": "byte"
+        }
+      },
+      "title": "loader sensor event triggered for loaded binary/library"
+    },
+    "tetragonProcessPrivilegesChanged": {
+      "type": "string",
+      "enum": [
+        "PRIVILEGES_CHANGED_UNSET",
+        "PRIVILEGES_RAISED_EXEC_FILE_CAP",
+        "PRIVILEGES_RAISED_EXEC_FILE_SETUID",
+        "PRIVILEGES_RAISED_EXEC_FILE_SETGID"
+      ],
+      "default": "PRIVILEGES_CHANGED_UNSET",
+      "description": "Reasons of why the process privileges changed.\n\n - PRIVILEGES_RAISED_EXEC_FILE_CAP: A privilege elevation happened due to the execution of a binary with file capability sets.\nThe kernel supports associating capability sets with an executable file using `setcap` command.\nThe file capability sets are stored in an extended attribute (see https://man7.org/linux/man-pages/man7/xattr.7.html)\nnamed `security.capability`. The file capability sets, in conjunction with the capability sets\nof the process, determine the process capabilities and privileges after the `execve` system call.\nFor further reference, please check sections `File capability extended attribute versioning` and\n`Namespaced file capabilities` of the capabilities man pages: https://man7.org/linux/man-pages/man7/capabilities.7.html.\nThe new granted capabilities can be listed inside the `process` object.\n - PRIVILEGES_RAISED_EXEC_FILE_SETUID: A privilege elevation happened due to the execution of a binary with set-user-ID to root.\nWhen a process with nonzero UIDs executes a binary with a set-user-ID to root also\nknown as suid-root executable, then the kernel switches the effective user ID to 0 (root) which\nis a privilege elevation operation since it grants access to resources owned by the root user.\nThe effective user ID is listed inside the `process_credentials` part of the `process` object.\nFor further reading, section `Capabilities and execution of programs by root` of https://man7.org/linux/man-pages/man7/capabilities.7.html.\nAfterward the kernel recalculates the capability sets of the process and grants all capabilities\nin the permitted and effective capability sets, except those masked out by the capability bounding set.\nIf the binary also have file capability sets then these bits are honored and the process gains just\nthe capabilities granted by the file capability sets (i.e., not all capabilities, as it would occur\nwhen executing a set-user-ID to root binary that does not have any associated file capabilities). This\nis described in section `Set-user-ID-root programs that have file capabilities` of https://man7.org/linux/man-pages/man7/capabilities.7.html.\nThe new granted capabilities can be listed inside the `process` object.\nThere is one exception for the special treatments of set-user-ID to root execution receiving all\ncapabilities, if the `SecBitNoRoot` bit of the Secure bits is set, then the kernel does not grant\nany capability. Please check section: `The securebits flags: establishing a capabilities-only environment`\nof the capabilities man pages: https://man7.org/linux/man-pages/man7/capabilities.7.html\n - PRIVILEGES_RAISED_EXEC_FILE_SETGID: A privilege elevation happened due to the execution of a binary with set-group-ID to root.\nWhen a process with nonzero GIDs executes a binary with a set-group-ID to root, the kernel switches\nthe effective group ID to 0 (root) which is a privilege elevation operation since it grants access to\nresources owned by the root group.\nThe effective group ID is listed inside the `process_credentials` part of the `process` object."
+    },
+    "tetragonProcessTracepoint": {
+      "type": "object",
+      "properties": {
+        "process": {
+          "$ref": "#/definitions/tetragonProcess",
+          "description": "Process that triggered the tracepoint."
+        },
+        "parent": {
+          "$ref": "#/definitions/tetragonProcess",
+          "description": "Immediate parent of the process."
+        },
+        "subsys": {
+          "type": "string",
+          "description": "Subsystem of the tracepoint."
+        },
+        "event": {
+          "type": "string",
+          "description": "Event of the subsystem."
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/tetragonKprobeArgument"
+          },
+          "title": "Arguments definition of the observed tracepoint.\nTODO: once we implement all we want, rename KprobeArgument to GenericArgument"
+        },
+        "policyName": {
+          "type": "string",
+          "description": "Name of the policy that created that tracepoint."
+        },
+        "action": {
+          "$ref": "#/definitions/tetragonKprobeAction",
+          "description": "Action performed when the tracepoint matched."
+        },
+        "message": {
+          "type": "string",
+          "description": "Short message of the Tracing Policy to inform users what is going on."
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Tags of the Tracing Policy to categorize the event."
+        }
+      }
+    },
+    "tetragonProcessUprobe": {
+      "type": "object",
+      "properties": {
+        "process": {
+          "$ref": "#/definitions/tetragonProcess"
+        },
+        "parent": {
+          "$ref": "#/definitions/tetragonProcess"
+        },
+        "path": {
+          "type": "string"
+        },
+        "symbol": {
+          "type": "string"
+        },
+        "policyName": {
+          "type": "string",
+          "description": "Name of the policy that created that uprobe."
+        },
+        "message": {
+          "type": "string",
+          "description": "Short message of the Tracing Policy to inform users what is going on."
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/tetragonKprobeArgument"
+          },
+          "description": "Arguments definition of the observed uprobe."
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Tags of the Tracing Policy to categorize the event."
+        }
+      }
+    },
+    "tetragonRateLimitInfo": {
+      "type": "object",
+      "properties": {
+        "numberOfDroppedProcessEvents": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
+    "tetragonSecureBitsType": {
+      "type": "string",
+      "enum": [
+        "SecBitNotSet",
+        "SecBitNoRoot",
+        "SecBitNoRootLocked",
+        "SecBitNoSetUidFixup",
+        "SecBitNoSetUidFixupLocked",
+        "SecBitKeepCaps",
+        "SecBitKeepCapsLocked",
+        "SecBitNoCapAmbientRaise",
+        "SecBitNoCapAmbientRaiseLocked"
+      ],
+      "default": "SecBitNotSet",
+      "title": "- SecBitNoRoot: When set UID 0 has no special privileges. When unset, inheritance\nof root-permissions and suid-root executable under compatibility mode\nis supported. If the effective uid of the new process is 0 then\nthe effective and inheritable bitmasks of the executable file is raised.\nIf the real uid is 0, the effective (legacy) bit of the executable file\nis raised.\n - SecBitNoRootLocked: Make bit-0 SecBitNoRoot immutable\n - SecBitNoSetUidFixup: When set, setuid to/from uid 0 does not trigger capability-\"fixup\".\nWhen unset, to provide compatiblility with old programs relying on\nset*uid to gain/lose privilege, transitions to/from uid 0 cause\ncapabilities to be gained/lost.\n - SecBitNoSetUidFixupLocked: Make bit-2 SecBitNoSetUidFixup immutable\n - SecBitKeepCaps: When set, a process can retain its capabilities even after\ntransitioning to a non-root user (the set-uid fixup suppressed by\nbit 2). Bit-4 is cleared when a process calls exec(); setting both\nbit 4 and 5 will create a barrier through exec that no exec()'d\nchild can use this feature again.\n - SecBitKeepCapsLocked: Make bit-4 SecBitKeepCaps immutable\n - SecBitNoCapAmbientRaise: When set, a process cannot add new capabilities to its ambient set.\n - SecBitNoCapAmbientRaiseLocked: Make bit-6 SecBitNoCapAmbientRaise immutable"
+    },
+    "tetragonStackTraceEntry": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string",
+          "format": "uint64",
+          "description": "linear address of the function in kernel or user space."
+        },
+        "offset": {
+          "type": "string",
+          "format": "uint64",
+          "description": "offset is the offset into the native instructions for the function."
+        },
+        "symbol": {
+          "type": "string",
+          "description": "symbol is the symbol name of the function."
+        },
+        "module": {
+          "type": "string",
+          "description": "module path for user space addresses."
+        }
+      }
+    },
+    "tetragonTaintedBitsType": {
+      "type": "string",
+      "enum": [
+        "TAINT_UNSET",
+        "TAINT_PROPRIETARY_MODULE",
+        "TAINT_FORCED_MODULE",
+        "TAINT_FORCED_UNLOAD_MODULE",
+        "TAINT_STAGED_MODULE",
+        "TAINT_OUT_OF_TREE_MODULE",
+        "TAINT_UNSIGNED_MODULE",
+        "TAINT_KERNEL_LIVE_PATCH_MODULE",
+        "TAINT_TEST_MODULE"
+      ],
+      "default": "TAINT_UNSET",
+      "description": "- TAINT_PROPRIETARY_MODULE: A proprietary module was loaded.\n - TAINT_FORCED_MODULE: A module was force loaded.\n - TAINT_FORCED_UNLOAD_MODULE: A module was force unloaded.\n - TAINT_STAGED_MODULE: A staging driver was loaded.\n - TAINT_OUT_OF_TREE_MODULE: An out of tree module was loaded.\n - TAINT_UNSIGNED_MODULE: An unsigned module was loaded. Supported only on kernels built with CONFIG_MODULE_SIG option.\n - TAINT_KERNEL_LIVE_PATCH_MODULE: The kernel has been live patched.\n - TAINT_TEST_MODULE: Loading a test module.",
+      "title": "Tainted bits to indicate if the kernel was tainted. For further details: https://docs.kernel.org/admin-guide/tainted-kernels.html"
+    },
+    "tetragonTest": {
+      "type": "object",
+      "properties": {
+        "arg0": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "arg1": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "arg2": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "arg3": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
+    "tetragonUserNamespace": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Nested level of the user namespace. Init or host user namespace is at level 0."
+        },
+        "uid": {
+          "type": "integer",
+          "format": "int64",
+          "title": "The owner user ID of the namespace"
+        },
+        "gid": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The owner group ID of the namepace."
+        },
+        "ns": {
+          "$ref": "#/definitions/tetragonNamespace",
+          "description": "The user namespace details that include the inode number of the namespace."
+        }
+      }
+    },
+    "tetragonUserRecord": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The UNIX username for this record. Corresponds to `pw_name` field of [struct passwd](https://man7.org/linux/man-pages/man3/getpwnam.3.html)\nand the `sp_namp` field of [struct spwd](https://man7.org/linux/man-pages/man3/getspnam.3.html)."
+        }
+      },
+      "title": "User records"
+    }
+  }
+}

@@ -1,0 +1,356 @@
+# @section Global parameters
+global:
+  # -- Global Docker image registry
+  imageRegistry: ""
+  # -- Global Docker registry secret names as an array
+  # e.g.
+  # imagePullSecrets:
+  #   - myRegistryKeySecretName
+  imagePullSecrets: []
+  # -- Global StorageClass for Persistent Volume(s)
+  storageClass: ""
+
+# @section Common parameters
+# -- String to partially override common.fullname template (will maintain the release name)
+nameOverride: ""
+# -- String to fully override common.fullname template
+fullnameOverride: ""
+# -- String to fully override common.namespace
+namespaceOverride: ""
+# -- Kubernetes Cluster Domain
+clusterDomain: cluster.local
+# -- Add labels to all the deployed resources
+labels: {}
+# -- Add annotations to all the deployed resources
+annotations: {}
+# -- Global Docker registry secret names as an array
+# e.g.
+# imagePullSecrets:
+#   - myRegistryKeySecretName
+imagePullSecrets: []
+
+# @section RabbitMQ parameters
+# RabbitMQ image version
+image:
+  # -- RabbitMQ image registry
+  registry: ""
+  # -- RabbitMQ image repository
+  repository: rabbitmq
+  # -- RabbitMQ image tag (immutable tags are recommended)
+  tag: 4.1.1-management
+  # -- RabbitMQ image digest in the way sha256:aa.... Please note this parameter, if set, will override the tag
+  digest: ""
+  # -- RabbitMQ image pull policy
+  # Specify a imagePullPolicy
+  # Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+  # ref: https://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+  pullPolicy: IfNotPresent
+# Authentication
+auth:
+  # -- RabbitMQ application username
+  username: user
+  # -- RabbitMQ application password
+  password: ""
+  # -- Existing secret with RabbitMQ credentials (must contain a value for `rabbitmq-password` key)
+  existingSecret: ""
+  # -- Password key to be retrieved from existing secret
+  existingSecretPasswordKey: rabbitmq-password
+# RabbitMQ resource requests and limits
+# ref: http://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/
+# -- [object] Set container requests and limits for different resources like CPU or memory
+resources:
+  requests:
+    cpu: "1.0"
+    memory: 2048Mi
+    ephemeral-storage: 50Mi
+  limits:
+    cpu: "2.0"
+    memory: 3072Mi
+    ephemeral-storage: 1024Mi
+# -- Path of the RabbitMQ server's Erlang log file. Value for the `RABBITMQ_LOGS` environment variable
+# ref: https://www.rabbitmq.com/logging.html#log-file-location
+logs: "-"
+# -- RabbitMQ Max File Descriptors
+# ref: https://www.rabbitmq.com/install-debian.html#kernel-resource-limits
+ulimitNofiles: "65536"
+# -- List of default plugins to enable (should only be altered to remove defaults; for additional plugins use `extraPlugins`)
+plugins: "rabbitmq_management rabbitmq_peer_discovery_k8s"
+# -- [string] RabbitMQ Configuration file content: required cluster configuration
+# Do not override unless you know what you are doing.
+# To add more configuration, use `extraConfiguration` of `advancedConfiguration` instead
+configuration: ""
+# -- The name of an existing ConfigMap with your custom configuration
+existingConfigmap: ""
+# -- Optionally specify extra list of additional volumeMounts
+# Examples:
+# volumeMounts:
+#   - name: extras
+#     mountPath: /usr/share/extras
+#     readOnly: true
+volumeMounts: []
+# -- Optionally specify extra list of additional volumes .
+# Example:
+# volumes:
+#   - name: extras
+#     emptyDir: {}
+volumes: []
+# @section Statefulset parameters
+# -- Number of RabbitMQ replicas to deploy
+replicaCount: 1
+# -- RabbitMQ Pod labels. Evaluated as a template
+# Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+podLabels: {}
+# -- RabbitMQ Pod annotations. Evaluated as a template
+# ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+podAnnotations: {}
+# -- Affinity for pod assignment. Evaluated as a template
+# Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+# Note: podAffinityPreset, podAntiAffinityPreset, and  nodeAffinityPreset will be ignored when it's set
+affinity: {}
+# -- Node labels for pod assignment. Evaluated as a template
+# ref: https://kubernetes.io/docs/user-guide/node-selection/
+nodeSelector: {}
+# -- Tolerations for pod assignment. Evaluated as a template
+# Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+tolerations: []
+# -- Default duration in seconds k8s waits for container to exit before sending kill signal.
+# Any time in excess of 10 seconds will be spent waiting for any synchronization necessary for cluster not to lose data.
+terminationGracePeriodSeconds: 120
+# -- Extra environment variables to add to RabbitMQ pods
+# E.g:
+# extraEnvVars:
+#   - name: FOO
+#     value: BAR
+extraEnvVars: []
+# Container Ports
+containerPorts:
+  # -- AMQP
+  amqp: 5672
+  # -- dist
+  dist: 25672
+  # -- manager
+  manager: 15672
+  # -- EPMD
+  epmd: 4369
+  # -- metrics
+  metrics: 9419
+# RabbitMQ pods' Security Context
+# ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+podSecurityContext:
+  # -- Enable RabbitMQ pods' Security Context
+  enabled: true
+  # -- Set filesystem group change policy
+  fsGroupChangePolicy: Always
+  # -- Set kernel settings using the sysctl interface
+  sysctls: []
+  # -- Set filesystem extra groups
+  supplementalGroups: []
+  # -- Set RabbitMQ pod's Security Context fsGroup
+  fsGroup: 1001
+# ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+# Example:
+#   containerSecurityContext:
+#     capabilities:
+#       drop: ["NET_RAW"]
+#     readOnlyRootFilesystem: true
+containerSecurityContext:
+  # -- Enabled RabbitMQ containers' Security Context
+  enabled: true
+  # -- [object,nullable] Set SELinux options in container
+  seLinuxOptions: null
+  # -- Set RabbitMQ containers' Security Context runAsUser
+  runAsUser: 1001
+  # -- Set RabbitMQ containers' Security Context runAsGroup
+  runAsGroup: 1001
+  # -- Set RabbitMQ container's Security Context runAsNonRoot
+  runAsNonRoot: true
+  # -- Set container's privilege escalation
+  allowPrivilegeEscalation: false
+  # -- Set container's Security Context readOnlyRootFilesystem
+  readOnlyRootFilesystem: true
+  capabilities:
+    # -- Set container's Security Context runAsNonRoot
+    drop: ["ALL"]
+  seccompProfile:
+    # -- Set container's Security Context seccomp profile
+    type: "RuntimeDefault"
+# Configure RabbitMQ containers' extra options for liveness probe
+# ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+livenessProbe:
+  # -- Enable livenessProbe
+  enabled: true
+  # -- Initial delay seconds for livenessProbe
+  initialDelaySeconds: 120
+  # -- Timeout seconds for livenessProbe
+  timeoutSeconds: 20
+  # -- Period seconds for livenessProbe
+  periodSeconds: 30
+  # -- Failure threshold for livenessProbe
+  failureThreshold: 6
+  # -- Success threshold for livenessProbe
+  successThreshold: 1
+# Configure RabbitMQ containers' extra options for readiness probe
+# ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+readinessProbe:
+  # -- Enable readinessProbe
+  enabled: true
+  # -- Initial delay seconds for readinessProbe
+  initialDelaySeconds: 10
+  # -- Timeout seconds for readinessProbe
+  timeoutSeconds: 20
+  # -- Period seconds for readinessProbe
+  periodSeconds: 30
+  # -- Failure threshold for readinessProbe
+  failureThreshold: 3
+  # -- Success threshold for readinessProbe
+  successThreshold: 1
+# Configure RabbitMQ containers' extra options for startup probe
+# ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+startupProbe:
+  # -- Enable startupProbe
+  enabled: false
+  # -- Initial delay seconds for startupProbe
+  initialDelaySeconds: 10
+  # -- Timeout seconds for startupProbe
+  timeoutSeconds: 20
+  # -- Period seconds for startupProbe
+  periodSeconds: 30
+  # -- Failure threshold for startupProbe
+  failureThreshold: 3
+  # -- Success threshold for startupProbe
+  successThreshold: 1
+# @section Service parameters
+service:
+  # -- Kubernetes Service type
+  type: ClusterIP
+  # Service ports
+  ports:
+    # -- Amqp service port
+    amqp: 5672
+    # -- Erlang distribution service port
+    dist: 25672
+    # -- RabbitMQ Manager service port
+    manager: 15672
+    # -- RabbitMQ Prometheues metrics service port
+    metrics: 9419
+    # -- EPMD Discovery service port
+    epmd: 4369
+  # -- Service annotations. Evaluated as a template
+  annotations: {}
+  # Headless service properties
+  headless:
+    # -- Annotations for the headless service.
+    annotations: {}
+# @section Persistence Parameters
+# Enable persistence using Persistent Volume Claims
+# ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+persistence:
+  # -- Enable persistence using Persistent Volume Claims
+  enabled: true
+  # -- Name of an existing PVC to use
+  existingClaim: ""
+  # -- Storage class of backing PVC
+  # If defined, storageClassName: <storageClass>
+  # If set to "-", storageClassName: "", which disables dynamic provisioning
+  # If undefined (the default) or set to null, no storageClassName spec is
+  #   set, choosing the default provisioner.  (gp2 on AWS, standard on
+  #   GKE, AWS & OpenStack)
+  storageClass: ""
+  # -- Persistent Volume Claim labels
+  labels: {}
+  # -- Persistent Volume Claim annotations
+  annotations: {}
+  # -- Persistent Volume Access Modes
+  accessModes:
+    - ReadWriteOnce
+  # -- Size of data volume
+  size: 8Gi
+  # -- Selector to match an existing Persistent Volume for ClickHouse data PVC
+  # If set, the PVC can't have a PV dynamically provisioned for it
+  # E.g.
+  # selector:
+  #   matchLabels:
+  #     app: my-app
+  selector: {}
+  # -- Custom PVC data source
+  dataSource: {}
+  # -- PostgreSQL Persistent Volume Claim Retention Policy
+  # ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#persistentvolumeclaim-retention
+  # Example:
+  #   whenScaled: Retain
+  #   whenDeleted: Retain
+  persistentVolumeClaimRetentionPolicy: {}
+# @section Other Parameters
+# RabbitMQ pods ServiceAccount
+# ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+serviceAccount:
+  # -- Enable creation of ServiceAccount for RabbitMQ pods
+  create: true
+  # -- Name of the created serviceAccount
+  # If not set and create is true, a name is generated using the rabbitmq.fullname template
+  name: ""
+  # -- Auto-mount the service account token in the pod
+  automount: true
+  # -- Annotations for service account. Evaluated as a template. Only used if `create` is `true`.
+  annotations: {}
+# Network Policies
+# Ref: https://kubernetes.io/docs/concepts/services-networking/network-policies/
+networkPolicy:
+  # -- Specifies whether a NetworkPolicy should be created
+  enabled: true
+  # -- Don't require server label for connections
+  # The Policy model to apply. When set to false, only pods with the correct
+  # server label will have network access to the ports server is listening
+  # on. When true, server will accept connections from any source
+  # (with the correct destination port).
+  allowExternal: true
+  # -- [array] Add extra ingress rules to the NetworkPolicy
+  # e.g:
+  # extraIngress:
+  #   - ports:
+  #       - port: 1234
+  #     from:
+  #       - podSelector:
+  #           - matchLabels:
+  #               - role: frontend
+  #       - podSelector:
+  #           - matchExpressions:
+  #               - key: role
+  #                 operator: In
+  #                 values:
+  #                   - frontend
+  extraIngress: []
+  # -- [array] Add extra ingress rules to the NetworkPolicy
+  # e.g:
+  # extraEgress:
+  #   - ports:
+  #       - port: 1234
+  #     to:
+  #       - podSelector:
+  #           - matchLabels:
+  #               - role: frontend
+  #       - podSelector:
+  #           - matchExpressions:
+  #               - key: role
+  #                 operator: In
+  #                 values:
+  #                   - frontend
+  extraEgress: []
+# @section Metrics Parameters
+# Prometheus Metrics
+metrics:
+  # -- Enable exposing RabbitMQ metrics to be gathered by Prometheus
+  enabled: false
+  # -- RabbitMQ metrics external host
+  externalHost: ""
+  # -- Plugins to enable Prometheus metrics in RabbitMQ
+  plugins: "rabbitmq_prometheus"
+  # Prometheus pod annotations
+  # -- [object] Annotations for enabling prometheus to access the metrics endpoint
+  # ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "{{ .Values.service.ports.metrics }}"
+
+# @skip
+deployed: true

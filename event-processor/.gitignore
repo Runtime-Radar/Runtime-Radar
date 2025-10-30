@@ -1,0 +1,12 @@
+# .vscode
+.idea
+# .task
+/.task/checksum/tools
+*.exe
+/bin
+/cmd/event-processor/test.go
+/cmd/event-processor/event-processor
+
+# helm dependencies
+.helm/charts
+.helm/Chart.lock

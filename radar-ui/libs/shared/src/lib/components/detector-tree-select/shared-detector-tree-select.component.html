@@ -1,0 +1,70 @@
+<kbq-form-field class="kbq-form__control" *transloco="let tCommon; prefix: 'common'">
+    <kbq-tree-select
+            [multiple]="true"
+            [disabled]="isDisabled || !dataSource.data.length"
+            [(ngModel)]="detectorIds"
+            (ngModelChange)="changeDetectorIds($event)"
+            (selectionChange)="changeSelection($event)"
+            [attr.id]="id"
+            [attr.data-testid]="testLocator">
+        <kbq-form-field kbqFormFieldWithoutBorders kbqSelectSearch>
+            <i kbqPrefix kbq-icon="kbq-magnifying-glass_16"></i>
+            <input kbqInput
+                   ngModel
+                   type="text"
+                   (ngModelChange)="searchChange($event)"
+                   [attr.data-testid]="testLocator + '-search-input'">
+            <kbq-cleaner></kbq-cleaner>
+        </kbq-form-field>
+
+        <div kbq-select-search-empty-result>
+            {{ tCommon('Common.DetectorTreeSelect.Text.EmptySearch') }}
+        </div>
+
+        <kbq-tree-selection
+                class="shared-detector-tree-select-selection"
+                [dataSource]="dataSource"
+                [treeControl]="treeControl">
+            <kbq-tree-option
+                    kbqTreeNodePadding
+                    class="shared-detector-tree-select-selection-option"
+                    *kbqTreeNodeDef="let node"
+                    [checkboxThirdState]="true"
+                    [disabled]="isExtraOptionDisabled(node)"
+                    [ngClass]="{ 'hidden': isExtraOptionRemoved(node) }"
+                    [attr.data-testid]="treeControl.getValue(node)">
+                <span class="shared-detector-tree-select-selection-option-prewrap"
+                      [ngClass]="{ 'cs-text-gray removed': node.isExtra }"
+                      [innerHTML]="treeControl.getValue(node)"></span>
+                @if (node.isExtra) {
+                    <span class="kbq-text-compact cs-text-gray">
+                        {{ tCommon('Common.DetectorTreeSelect.Text.Deleted') }}
+                        @if (!isExtraOptionDisabled(node)) {
+                            <span class="kbq-link" (click)="removeOption(node); $event.stopPropagation()">
+                                {{ tCommon('Common.DetectorTreeSelect.Link.RemoveOption') }}
+                            </span>
+                        }
+                    </span>
+                } @else {
+                    <span class="kbq-text-compact cs-text-gray shared-detector-tree-select-selection-option-prewrap"
+                          [innerHTML]="node.name | mcHighlight: treeControl.filterValue.value"></span>
+                }
+            </kbq-tree-option>
+
+            <kbq-tree-option
+                    kbqTreeNodePadding
+                    class="shared-detector-tree-select-selection-option shared-detector-tree-select-selection-option--expandable"
+                    *kbqTreeNodeDef="let node; when: hasChild"
+                    [checkboxThirdState]="true"
+                    [attr.data-testid]="treeControl.getValue(node)">
+                <i kbqTreeNodeToggle
+                   kbq-icon="kbq-chevron-down-s_16"
+                   [style.transform]="treeControl.isExpanded(node) ? 'translateY(2px)' : 'rotate(-90deg) translateX(-2px)'"></i>
+                <span class="shared-detector-tree-select-selection-option-prewrap"
+                      [innerHTML]="node.name | mcHighlight: treeControl.filterValue.value"></span>
+            </kbq-tree-option>
+        </kbq-tree-selection>
+
+        <kbq-cleaner #kbqSelectCleaner></kbq-cleaner>
+    </kbq-tree-select>
+</kbq-form-field>

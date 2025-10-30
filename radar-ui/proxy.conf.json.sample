@@ -1,0 +1,7 @@
+{
+    "/api": {
+        "target": "",
+        "secure": false,
+        "changeOrigin": true
+    }
+}

@@ -1,0 +1,14 @@
+# .vscode
+.idea
+# .task
+/.task/checksum/tools
+*.exe
+/bin
+/cmd/cs-manager/test.go
+/cmd/cs-manager/cs-manager
+vulnkb/
+
+# helm dependencies
+.helm/charts
+.helm/Chart.lock
+.helm/*.tgz

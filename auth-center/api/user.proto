@@ -1,0 +1,153 @@
+syntax = "proto3";
+
+package user;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/protobuf/empty.proto";
+
+import "role.proto";
+import "auth.proto";
+
+option go_package = "./api";
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "User API";
+  };
+};
+
+// The user service definition.
+service UserController {
+    // Create new user
+    rpc Create(CreateUserReq) returns (UserResp) {
+        option (google.api.http) = {
+            post: "/api/v1/user"
+            body: "*"
+        };
+    }
+
+    // Get information about user by id
+    rpc Read(ReadUserReq) returns (UserResp)  {
+        option (google.api.http) = {
+            get: "/api/v1/user/{id}"
+        };
+    }
+
+    // Get information about all users
+    rpc ReadList(google.protobuf.Empty) returns (UserListResp)  {
+      option (google.api.http) = {
+        get: "/api/v1/user"
+      };
+    }
+
+    // Update information about user
+    rpc Update(UpdateUserReq) returns (UserResp) {
+        option (google.api.http) = {
+            patch: "/api/v1/user/{id}"
+            body: "*"
+        };
+    }
+
+    // Delete user
+    rpc Delete(DeleteUserReq) returns (DeleteUserResp) {
+        option (google.api.http) = {
+            delete: "/api/v1/user/{id}"
+        };
+    }
+
+    // Change user password
+    rpc ChangePassword (ChangePasswordReq) returns (auth.SignInResp) {
+      option (google.api.http) = {
+        patch: "/api/v1/user/{id}/password"
+        body: "*"
+      };
+    }
+}
+
+
+
+message CreateUserReq {
+    optional string id = 1;
+    string username = 2;
+    string password = 3;
+    string auth_type = 4;
+    string email = 5;
+    string role_id = 6 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      format: "uuid",
+      description: "example: 3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }];
+    string mapping_role_id = 7;
+}
+
+message UserResp {
+    string id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      format: "uuid",
+      description: "example: 3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }];
+    string username = 2;
+    string auth_type = 3;
+    int64 last_password_changed_at = 4;
+    string email = 5;
+    string role_id = 6 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      format: "uuid",
+      description: "example: 3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }];
+    string mapping_role_id = 7 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      format: "uuid",
+      description: "example: 3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }];
+    role.ReadRoleResp role = 8;
+
+}
+
+message ReadUserReq {
+    string id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      format: "uuid",
+      description: "example: 3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }];;
+}
+
+message UserListResp {
+    repeated UserResp users = 1;
+}
+
+
+message UpdateUserReq {
+    string id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      format: "uuid",
+      description: "example: 3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }];
+    string email = 2;
+    string role_id = 3 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      format: "uuid",
+      description: "example: 3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }];
+    string mapping_role_id = 4 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      format: "uuid",
+      description: "example: 3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }];
+}
+
+message DeleteUserReq {
+    string id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      format: "uuid",
+      description: "example: 3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }];;
+      
+}
+
+message DeleteUserResp {
+    string id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      format: "uuid",
+      description: "example: 3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }];
+}
+
+message ChangePasswordReq {
+    string id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      format: "uuid",
+      description: "example: 3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    }];
+    string password = 2;
+}
+

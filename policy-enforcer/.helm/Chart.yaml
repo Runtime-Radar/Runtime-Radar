@@ -1,0 +1,9 @@
+apiVersion: v2
+name: policy-enforcer
+description: A Helm chart for Kubernetes
+type: application
+version: v0.0.1
+dependencies:
+  - name: common
+    repository: file://../../install/helm/charts/common
+    version: 0.x.x

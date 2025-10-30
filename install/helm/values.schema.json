@@ -1,0 +1,1049 @@
+{
+    "title": "Chart Values",
+    "type": "object",
+    "properties": {
+        "global": {
+            "type": "object",
+            "properties": {
+                "imageRegistry": {
+                    "type": "string",
+                    "description": "Global Docker image registry",
+                    "default": ""
+                },
+                "imageTag": {
+                    "type": "string",
+                    "description": "Global Docker image tag to use for RR components",
+                    "default": ""
+                },
+                "logLevel": {
+                    "type": "string",
+                    "description": "Logging level for components",
+                    "default": "INFO"
+                },
+                "tls": {
+                    "type": "object",
+                    "properties": {
+                        "existingSecret": {
+                            "type": "string",
+                            "description": "Name of the existing secret with TLS certificates",
+                            "default": ""
+                        }
+                    }
+                },
+                "keys": {
+                    "type": "object",
+                    "properties": {
+                        "existingSecret": {
+                            "type": "string",
+                            "description": "Existing secret name with keys `encryption` and `token`",
+                            "default": ""
+                        },
+                        "encryption": {
+                            "type": "string",
+                            "description": "Encryption key for secrets stored in database. Must be a 64-character hexadecimal string (32 bytes)",
+                            "default": ""
+                        },
+                        "token": {
+                            "type": "string",
+                            "description": "Encryption key for authentication tokens. Must be a 64-character hexadecimal string (32 bytes)",
+                            "default": ""
+                        },
+                        "publicAccessTokenSalt": {
+                            "type": "string",
+                            "description": "Salt for public API tokens. Must be a 128-character hexadecimal string (64 bytes)",
+                            "default": ""
+                        }
+                    }
+                },
+                "postgresql": {
+                    "type": "object",
+                    "properties": {
+                        "tls": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "description": "Enable TLS traffic support (overrides `tls.enabled`)",
+                                    "default": true,
+                                    "nullable": true
+                                },
+                                "verify": {
+                                    "type": "boolean",
+                                    "description": "Verify TLS connection to the service (overrides `tls.verify`)",
+                                    "default": true,
+                                    "nullable": true
+                                },
+                                "existingSecret": {
+                                    "type": "string",
+                                    "description": "Name of an existing secret that contains the certificates (overrides `tls.existingSecret`)",
+                                    "default": ""
+                                }
+                            }
+                        }
+                    }
+                },
+                "redis": {
+                    "type": "object",
+                    "properties": {
+                        "tls": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "description": "Enable TLS traffic support (overrides `tls.enabled`)",
+                                    "default": true,
+                                    "nullable": true
+                                },
+                                "verify": {
+                                    "type": "boolean",
+                                    "description": "Verify TLS connection to the service (overrides `tls.verify`)",
+                                    "default": true,
+                                    "nullable": true
+                                },
+                                "existingSecret": {
+                                    "type": "string",
+                                    "description": "Name of an existing secret that contains the certificates (overrides `tls.existingSecret`)",
+                                    "default": ""
+                                }
+                            }
+                        }
+                    }
+                },
+                "clickhouse": {
+                    "type": "object",
+                    "properties": {
+                        "tls": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "description": "Enable TLS traffic support (overrides `tls.enabled`)",
+                                    "default": true,
+                                    "nullable": true
+                                },
+                                "verify": {
+                                    "type": "boolean",
+                                    "description": "Verify TLS connection to the service (overrides `tls.verify`)",
+                                    "default": true,
+                                    "nullable": true
+                                },
+                                "existingSecret": {
+                                    "type": "string",
+                                    "description": "Name of an existing secret that contains the certificates (overrides `tls.existingSecret`)",
+                                    "default": ""
+                                }
+                            }
+                        }
+                    }
+                },
+                "grafana": {
+                    "type": "object",
+                    "properties": {
+                        "tls": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean",
+                                    "description": "Enable TLS traffic support (overrides `tls.enabled`)",
+                                    "default": true,
+                                    "nullable": true
+                                },
+                                "verify": {
+                                    "type": "boolean",
+                                    "description": "Verify TLS connection to the service (overrides `tls.verify`)",
+                                    "default": true,
+                                    "nullable": true
+                                },
+                                "existingSecret": {
+                                    "type": "string",
+                                    "description": "Name of an existing secret that contains the certificates (overrides `tls.existingSecret`)",
+                                    "default": ""
+                                }
+                            }
+                        }
+                    }
+                },
+                "imagePullSecrets": {
+                    "type": "array",
+                    "description": "Names of the secrets of the global container registry as an array",
+                    "default": [
+                        "regcred"
+                    ],
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "ownCsUrl": {
+                    "type": "string",
+                    "description": "URL of primary installation",
+                    "default": ""
+                },
+                "centralCsUrl": {
+                    "type": "string",
+                    "description": "URL of primary installation",
+                    "default": ""
+                },
+                "isChildCluster": {
+                    "type": "boolean",
+                    "description": "Is this a child cluster",
+                    "default": false
+                }
+            }
+        },
+        "fullnameOverride": {
+            "type": "string",
+            "description": "String to fully override common.fullname",
+            "default": "runtime-radar"
+        },
+        "imagePullSecret": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name of the secret with container registry credentials",
+                    "default": "regcred"
+                },
+                "username": {
+                    "type": "string",
+                    "description": "Container registry username",
+                    "default": ""
+                },
+                "password": {
+                    "type": "string",
+                    "description": "Container registry password",
+                    "default": ""
+                }
+            }
+        },
+        "serviceAccount": {
+            "type": "object",
+            "properties": {
+                "create": {
+                    "type": "boolean",
+                    "description": "Create a service account",
+                    "default": true
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Service account name",
+                    "default": "runtime-radar"
+                }
+            }
+        },
+        "tls": {
+            "type": "object",
+            "properties": {
+                "autoGenerated": {
+                    "type": "boolean",
+                    "description": "Generate automatically self-signed TLS certificates if nothing is provided",
+                    "default": true,
+                    "nullable": true
+                },
+                "verify": {
+                    "type": "boolean",
+                    "description": "Verify connection to external cluster",
+                    "default": false
+                },
+                "cert": {
+                    "type": "string",
+                    "description": "TLS certificate",
+                    "default": ""
+                },
+                "certKey": {
+                    "type": "string",
+                    "description": "TLS certificate key",
+                    "default": ""
+                },
+                "certCA": {
+                    "type": "string",
+                    "description": "TLS certificate CA",
+                    "default": ""
+                }
+            }
+        },
+        "auth-center": {
+            "type": "object",
+            "properties": {
+                "nodeSelector": {
+                    "type": "object",
+                    "description": "Template to specify the labels of nodes for pod assignment",
+                    "default": {}
+                },
+                "replicas": {
+                    "type": "number",
+                    "description": "Number of replicas for the auth-center component",
+                    "default": 2
+                },
+                "administrator": {
+                    "type": "object",
+                    "properties": {
+                        "existingSecret": {
+                            "type": "string",
+                            "description": "Name of the existing secret with administrator credentials",
+                            "default": ""
+                        },
+                        "username": {
+                            "type": "string",
+                            "description": "Administrator name",
+                            "default": ""
+                        },
+                        "password": {
+                            "type": "string",
+                            "description": "Administrator password",
+                            "default": ""
+                        }
+                    }
+                }
+            }
+        },
+        "policy-enforcer": {
+            "type": "object",
+            "properties": {
+                "nodeSelector": {
+                    "type": "object",
+                    "description": "Template to specify the labels of nodes for pod assignment",
+                    "default": {}
+                },
+                "replicas": {
+                    "type": "number",
+                    "description": "Number of replicas for the policy-enforcer component",
+                    "default": 2
+                }
+            }
+        },
+        "history-api": {
+            "type": "object",
+            "properties": {
+                "nodeSelector": {
+                    "type": "object",
+                    "description": "Template to specify the labels of nodes for pod assignment",
+                    "default": {}
+                },
+                "replicas": {
+                    "type": "number",
+                    "description": "Number of replicas for the history-api component",
+                    "default": 2
+                },
+                "retentionInterval": {
+                    "type": "string",
+                    "description": "Interval to retain history data for",
+                    "default": "8760h"
+                },
+                "rabbitmq": {
+                    "type": "object",
+                    "properties": {
+                        "queue": {
+                            "type": "string",
+                            "description": "RabbitMQ queue name",
+                            "default": "history_events"
+                        }
+                    }
+                }
+            }
+        },
+        "cluster-manager": {
+            "type": "object",
+            "properties": {
+                "nodeSelector": {
+                    "type": "object",
+                    "description": "Template to specify the labels of nodes for pod assignment",
+                    "default": {}
+                },
+                "replicas": {
+                    "type": "number",
+                    "description": "Number of replicas for the cluster-manager component",
+                    "default": 2
+                }
+            }
+        },
+        "notifier": {
+            "type": "object",
+            "properties": {
+                "nodeSelector": {
+                    "type": "object",
+                    "description": "Template to specify the labels of nodes for pod assignment",
+                    "default": {}
+                },
+                "replicas": {
+                    "type": "number",
+                    "description": "Number of replicas for the notifier component",
+                    "default": 2
+                }
+            }
+        },
+        "reverse-proxy": {
+            "type": "object",
+            "properties": {
+                "nodeSelector": {
+                    "type": "object",
+                    "description": "Template to specify the labels of nodes for pod assignment",
+                    "default": {}
+                },
+                "replicas": {
+                    "type": "number",
+                    "description": "Number of replicas for the reverse-proxy component",
+                    "default": 2
+                },
+                "ingress": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Enable ingress for RR",
+                            "default": false
+                        },
+                        "class": {
+                            "type": "string",
+                            "description": "Ingress class",
+                            "default": ""
+                        },
+                        "hostname": {
+                            "type": "string",
+                            "description": "Hostname of ingress",
+                            "default": ""
+                        },
+                        "tls": {
+                            "type": "object",
+                            "properties": {
+                                "autoGenerated": {
+                                    "type": "boolean",
+                                    "description": "Generate automatically self-signed TLS certificates if nothing is provided",
+                                    "default": true,
+                                    "nullable": true
+                                },
+                                "existingSecret": {
+                                    "type": "string",
+                                    "description": "Name of an existing secret that contains the certificates",
+                                    "default": ""
+                                },
+                                "cert": {
+                                    "type": "string",
+                                    "description": "Certificate value",
+                                    "default": ""
+                                },
+                                "certKey": {
+                                    "type": "string",
+                                    "description": "Certificate key value",
+                                    "default": ""
+                                },
+                                "certCA": {
+                                    "type": "string",
+                                    "description": "CA Certificate value",
+                                    "default": ""
+                                }
+                            }
+                        }
+                    }
+                },
+                "service": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "Type of reverse-proxy service",
+                            "default": "ClusterIP"
+                        },
+                        "nodePorts": {
+                            "type": "object",
+                            "description": "Node ports which should be exposed outside",
+                            "default": {}
+                        }
+                    }
+                }
+            }
+        },
+        "cs-manager": {
+            "type": "object",
+            "properties": {
+                "nodeSelector": {
+                    "type": "object",
+                    "description": "Template to specify the labels of nodes for pod assignment",
+                    "default": {}
+                },
+                "replicas": {
+                    "type": "number",
+                    "description": "Number of replicas for the cs-manager component",
+                    "default": 1
+                },
+                "registrationToken": {
+                    "type": "string",
+                    "description": "Token for cluster registration",
+                    "default": ""
+                }
+            }
+        },
+        "runtime-monitor": {
+            "type": "object",
+            "properties": {
+                "nodeSelector": {
+                    "type": "object",
+                    "description": "Template to specify the labels of nodes for pod assignment",
+                    "default": {}
+                },
+                "configUpdateInterval": {
+                    "type": "string",
+                    "description": "Interval to update the stored configuration",
+                    "default": "30s"
+                },
+                "dnsPolicy": {
+                    "type": "string",
+                    "description": "Configuration of the DNS policy for runtime monitoring",
+                    "default": "ClusterFirstWithHostNet"
+                },
+                "containerPorts": {
+                    "type": "object",
+                    "properties": {
+                        "http": {
+                            "type": "number",
+                            "description": "Port that HTTP server should be listening on",
+                            "default": 9000
+                        },
+                        "grpc": {
+                            "type": "number",
+                            "description": "Port that GRPC server should be listening on",
+                            "default": 8000
+                        },
+                        "gops": {
+                            "type": "number",
+                            "description": "Port that gops agent should be listening on",
+                            "default": 7000
+                        }
+                    }
+                },
+                "tetragon": {
+                    "type": "object",
+                    "properties": {
+                        "enableProcessCred": {
+                            "type": "boolean",
+                            "description": "Enable visibility of capabilities in the exec and kprobe events",
+                            "default": true
+                        },
+                        "enableProcessNs": {
+                            "type": "boolean",
+                            "description": "Enable visibility of namespaces in the exec and kprobe events",
+                            "default": true
+                        },
+                        "exportAllowList": {
+                            "type": "string",
+                            "description": "Allowlist for JSON export",
+                            "default": "{\"pod_regex\":[\"deathstar\"],\"event_set\":[\"PROCESS_EXEC\", \"PROCESS_EXIT\", \"PROCESS_KPROBE\", \"PROCESS_UPROBE\", \"PROCESS_TRACEPOINT\"]}\n"
+                        },
+                        "grpc": {
+                            "type": "object",
+                            "properties": {
+                                "address": {
+                                    "type": "string",
+                                    "description": "Set address of Tetragon grpc connection in host:port format",
+                                    "default": "localhost:54321"
+                                }
+                            }
+                        }
+                    }
+                },
+                "rabbitmq": {
+                    "type": "object",
+                    "properties": {
+                        "queue": {
+                            "type": "string",
+                            "description": "RabbitMQ queue name",
+                            "default": "runtime_events"
+                        }
+                    }
+                }
+            }
+        },
+        "event-processor": {
+            "type": "object",
+            "properties": {
+                "nodeSelector": {
+                    "type": "object",
+                    "description": "Template to specify the labels of nodes for pod assignment",
+                    "default": {}
+                },
+                "replicas": {
+                    "type": "number",
+                    "description": "Number of replicas for the component",
+                    "default": 2
+                },
+                "configUpdateInterval": {
+                    "type": "string",
+                    "description": "Interval to update the stored configuration",
+                    "default": "30s"
+                },
+                "rabbitmq": {
+                    "type": "object",
+                    "properties": {
+                        "runtimeEventsQueue": {
+                            "type": "string",
+                            "description": "RabbitMQ runtime events queue name",
+                            "default": "runtime_events"
+                        },
+                        "historyEventsQueue": {
+                            "type": "string",
+                            "description": "RabbitMQ history events queue name",
+                            "default": "history_events"
+                        }
+                    }
+                }
+            }
+        },
+        "public-api": {
+            "type": "object",
+            "properties": {
+                "nodeSelector": {
+                    "type": "object",
+                    "description": "Template to specify the labels of nodes for pod assignment",
+                    "default": {}
+                },
+                "replicas": {
+                    "type": "number",
+                    "description": "Number of replicas for the public-api component",
+                    "default": 2
+                }
+            }
+        },
+        "postgresql": {
+            "type": "object",
+            "properties": {
+                "externalHost": {
+                    "type": "string",
+                    "description": "External host with PostgreSQL. Requires setting `postgresql.deploy` to `false`.",
+                    "default": ""
+                },
+                "fullnameOverride": {
+                    "type": "string",
+                    "description": "String to fully override common.names.fullname template",
+                    "default": "postgresql"
+                },
+                "tls": {
+                    "type": "object",
+                    "properties": {
+                        "autoGenerated": {
+                            "type": "boolean",
+                            "description": "Generate automatically self-signed TLS certificates if nothing is provided",
+                            "default": true,
+                            "nullable": true
+                        },
+                        "cert": {
+                            "type": "string",
+                            "description": "Certificate value",
+                            "default": ""
+                        },
+                        "certKey": {
+                            "type": "string",
+                            "description": "Certificate key value",
+                            "default": ""
+                        },
+                        "certCA": {
+                            "type": "string",
+                            "description": "CA Certificate value",
+                            "default": ""
+                        }
+                    }
+                },
+                "auth": {
+                    "type": "object",
+                    "properties": {
+                        "existingSecret": {
+                            "type": "string",
+                            "description": "Name of the existing secret with PostgreSQL credentials. The `auth.postgresPassword`, `auth.password`, and `auth.replicationPassword` values will be ignored and taken from this secret. The secret might also contain the `ldap-password` key if LDAP is enabled. If so, the `ldap.bind_password` value will be ignored and taken from this secret.",
+                            "default": "postgresql"
+                        },
+                        "username": {
+                            "type": "string",
+                            "description": "Name of custom user to be created",
+                            "default": "runtime-radar"
+                        },
+                        "password": {
+                            "type": "string",
+                            "description": "Password of custom user to be created. Ignored if `auth.existingSecret` is set.",
+                            "default": ""
+                        },
+                        "database": {
+                            "type": "string",
+                            "description": "Name of custom database to be created",
+                            "default": "runtime-radar"
+                        },
+                        "existingSecretPasswordKey": {
+                            "type": "string",
+                            "description": "Name of the key in the existing secret with PostgreSQL credentials. Only used if `auth.existingSecret` is set.",
+                            "default": "POSTGRES_PASSWORD"
+                        }
+                    }
+                },
+                "nodeSelector": {
+                    "type": "object",
+                    "description": "Labels of nodes for primary PostgreSQL pod assignment",
+                    "default": {}
+                },
+                "persistence": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Enable data persistence for primary PostgreSQL using PVC",
+                            "default": true
+                        },
+                        "storageClass": {
+                            "type": "string",
+                            "description": "Persistent volume storage class for primary PostgreSQL",
+                            "default": ""
+                        },
+                        "size": {
+                            "type": "string",
+                            "description": "Persistent volume size for PostgreSQL",
+                            "default": "1Gi"
+                        },
+                        "existingClaim": {
+                            "type": "string",
+                            "description": "Name of an existing PVC",
+                            "default": ""
+                        },
+                        "selector": {
+                            "type": "object",
+                            "description": "Template to specify an existing persistent volume",
+                            "default": {}
+                        }
+                    }
+                },
+                "metrics": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Start a prometheus exporter",
+                            "default": false
+                        },
+                        "externalHost": {
+                            "type": "string",
+                            "description": "PostgreSQL metrics external host",
+                            "default": ""
+                        }
+                    }
+                }
+            }
+        },
+        "redis": {
+            "type": "object",
+            "properties": {
+                "externalHost": {
+                    "type": "string",
+                    "description": "External host with Redis. Requires setting `redis.deploy` to `false`.",
+                    "default": ""
+                },
+                "fullnameOverride": {
+                    "type": "string",
+                    "description": "String to fully override common.names.fullname",
+                    "default": "redis"
+                },
+                "tls": {
+                    "type": "object",
+                    "properties": {
+                        "autoGenerated": {
+                            "type": "boolean",
+                            "description": "Generate automatically self-signed TLS certificates if nothing is provided",
+                            "default": true,
+                            "nullable": true
+                        },
+                        "cert": {
+                            "type": "string",
+                            "description": "Certificate value",
+                            "default": ""
+                        },
+                        "certKey": {
+                            "type": "string",
+                            "description": "Certificate key value",
+                            "default": ""
+                        },
+                        "certCA": {
+                            "type": "string",
+                            "description": "CA Certificate value",
+                            "default": ""
+                        }
+                    }
+                },
+                "auth": {
+                    "type": "object",
+                    "properties": {
+                        "existingSecret": {
+                            "type": "string",
+                            "description": "Name of the existing secret with Redis credentials",
+                            "default": "redis"
+                        },
+                        "username": {
+                            "type": "string",
+                            "description": "Redis username",
+                            "default": "runtime-radar"
+                        },
+                        "password": {
+                            "type": "string",
+                            "description": "Redis password",
+                            "default": ""
+                        },
+                        "existingSecretPasswordKey": {
+                            "type": "string",
+                            "description": "Password key to retrieve from the existing secret",
+                            "default": "REDIS_PASSWORD"
+                        }
+                    }
+                },
+                "replicaCount": {
+                    "type": "number",
+                    "description": "Number of Redis master instances to deploy (experimental, requires additional configuring)",
+                    "default": 1
+                },
+                "nodeSelector": {
+                    "type": "object",
+                    "description": "Labels of nodes for Redis master pod assignment",
+                    "default": {}
+                },
+                "persistence": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Enable persistence for Redis master nodes using PVC",
+                            "default": false
+                        },
+                        "storageClass": {
+                            "type": "string",
+                            "description": "Persistent volume storage class",
+                            "default": ""
+                        },
+                        "size": {
+                            "type": "string",
+                            "description": "Persistent volume size",
+                            "default": "1Gi"
+                        },
+                        "existingClaim": {
+                            "type": "string",
+                            "description": "Use an existing PVC created manually",
+                            "default": ""
+                        },
+                        "selector": {
+                            "type": "object",
+                            "description": "Template to specify additional labels for PVC",
+                            "default": {}
+                        }
+                    }
+                }
+            }
+        },
+        "rabbitmq": {
+            "type": "object",
+            "properties": {
+                "externalHost": {
+                    "type": "string",
+                    "description": "External host with RabbitMQ",
+                    "default": ""
+                },
+                "fullnameOverride": {
+                    "type": "string",
+                    "description": "String to fully override rabbitmq.fullname template",
+                    "default": "rabbitmq"
+                },
+                "auth": {
+                    "type": "object",
+                    "properties": {
+                        "username": {
+                            "type": "string",
+                            "description": "RabbitMQ application username",
+                            "default": "runtime-radar"
+                        },
+                        "password": {
+                            "type": "string",
+                            "description": "RabbitMQ application password",
+                            "default": ""
+                        },
+                        "existingSecret": {
+                            "type": "string",
+                            "description": "Existing secret with RabbitMQ credentials (must contain value for the `rabbitmq-password` parameter)",
+                            "default": "rabbitmq"
+                        },
+                        "existingSecretPasswordKey": {
+                            "type": "string",
+                            "description": "Password key to be retrieved from existing secret",
+                            "default": "RABBIT_PASSWORD"
+                        }
+                    }
+                },
+                "nodeSelector": {
+                    "type": "object",
+                    "description": "Template to specify the labels of nodes for pod assignment",
+                    "default": {}
+                },
+                "persistence": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Enable RabbitMQ data persistence using PVC",
+                            "default": true
+                        },
+                        "storageClass": {
+                            "type": "string",
+                            "description": "Persistent volume storage class for RabbitMQ",
+                            "default": ""
+                        },
+                        "size": {
+                            "type": "string",
+                            "description": "Persistent volume size for RabbitMQ",
+                            "default": "1Gi"
+                        },
+                        "existingClaim": {
+                            "type": "string",
+                            "description": "Name of an existing PVC",
+                            "default": ""
+                        },
+                        "selector": {
+                            "type": "object",
+                            "description": "Template to specify an existing persistent volume",
+                            "default": {}
+                        }
+                    }
+                },
+                "metrics": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Enable exposing RabbitMQ metrics to be gathered by Prometheus",
+                            "default": false
+                        },
+                        "externalHost": {
+                            "type": "string",
+                            "description": "RabbitMQ metrics external host",
+                            "default": ""
+                        }
+                    }
+                }
+            }
+        },
+        "clickhouse": {
+            "type": "object",
+            "properties": {
+                "externalHost": {
+                    "type": "string",
+                    "description": "External host with ClickHouse. Requires setting `clickhouse.deploy` to `false`.",
+                    "default": ""
+                },
+                "fullnameOverride": {
+                    "type": "string",
+                    "description": "String to fully override common.names.fullname",
+                    "default": "clickhouse"
+                },
+                "nodeSelector": {
+                    "type": "object",
+                    "description": "Labels of nodes for ClickHouse pod assignment",
+                    "default": {}
+                },
+                "replicaCount": {
+                    "type": "number",
+                    "description": "Number of ClickHouse replicas to deploy per shard",
+                    "default": 1
+                },
+                "persistence": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Enable persistence using PVC",
+                            "default": true
+                        },
+                        "storageClass": {
+                            "type": "string",
+                            "description": "Persistent volume storage class",
+                            "default": ""
+                        },
+                        "size": {
+                            "type": "string",
+                            "description": "Data volume size",
+                            "default": "5Gi"
+                        },
+                        "existingClaim": {
+                            "type": "string",
+                            "description": "Name of an existing PVC",
+                            "default": ""
+                        },
+                        "selector": {
+                            "type": "object",
+                            "description": "Template to specify an existing persistent volume",
+                            "default": {}
+                        }
+                    }
+                },
+                "tls": {
+                    "type": "object",
+                    "properties": {
+                        "autoGenerated": {
+                            "type": "boolean",
+                            "description": "Generate automatically self-signed TLS certificates if nothing is provided",
+                            "default": true,
+                            "nullable": true
+                        },
+                        "cert": {
+                            "type": "string",
+                            "description": "Certificate value",
+                            "default": ""
+                        },
+                        "certKey": {
+                            "type": "string",
+                            "description": "Certificate key value",
+                            "default": ""
+                        },
+                        "certCA": {
+                            "type": "string",
+                            "description": "CA Certificate value",
+                            "default": ""
+                        }
+                    }
+                },
+                "auth": {
+                    "type": "object",
+                    "properties": {
+                        "username": {
+                            "type": "string",
+                            "description": "ClickHouse administrator name",
+                            "default": "runtime-radar"
+                        },
+                        "password": {
+                            "type": "string",
+                            "description": "ClickHouse administartor password",
+                            "default": ""
+                        },
+                        "existingSecret": {
+                            "type": "string",
+                            "description": "Name of the secret with the administrator password",
+                            "default": "clickhouse"
+                        },
+                        "existingSecretPasswordKey": {
+                            "type": "string",
+                            "description": "Name of the key stored in the existing secret",
+                            "default": "CLICKHOUSE_PASSWORD"
+                        },
+                        "database": {
+                            "type": "string",
+                            "description": "Name of the ClickHouse database",
+                            "default": "runtime-radar"
+                        }
+                    }
+                },
+                "metrics": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "Enable the export of Prometheus metrics",
+                            "default": false
+                        },
+                        "externalHost": {
+                            "type": "string",
+                            "description": "ClickHouse metrics external host",
+                            "default": ""
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

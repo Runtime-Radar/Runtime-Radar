@@ -1,0 +1,116 @@
+{{- define "reverse-proxy.ingress.annotations" -}}
+{{- with .context -}}
+{{- if and .Values.ingress.class (semverCompare "<=1.27" .Capabilities.KubeVersion.Version) -}}
+kubernetes.io/ingress.class: {{ .Values.ingress.class | quote }}
+{{- end -}}
+# Nginx default configs
+# https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/
+nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+nginx.ingress.kubernetes.io/proxy-connect-timeout: "1800"
+nginx.ingress.kubernetes.io/proxy-read-timeout: "1800"
+nginx.ingress.kubernetes.io/proxy-send-timeout: "1800"
+nginx.ingress.kubernetes.io/backend-protocol: {{ $.proto | quote }}
+# HAProxy configs
+# https://haproxy-ingress.github.io/docs/configuration/keys/#annotation
+haproxy-ingress.github.io/health-check-port: {{ .Values.service.ports.health | quote }}
+haproxy-ingress.github.io/proxy-body-size: "100m"
+haproxy-ingress.github.io/timeout-connect: "30m"
+haproxy-ingress.github.io/timeout-http-request: "30m"
+haproxy-ingress.github.io/timeout-server: "30m"
+haproxy-ingress.github.io/timeout-stop: "30m"
+{{- if eq (include "common.cs.tls.enabled" .) "true" }}
+# Nginx TLS config
+# https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#backend-certificate-authentication
+nginx.ingress.kubernetes.io/proxy-ssl-secret: {{ .Release.Namespace }}/{{ include "common.cs.tls.secretName" . }}
+nginx.ingress.kubernetes.io/proxy-ssl-verify: "on"
+nginx.ingress.kubernetes.io/proxy-ssl-name: {{ include "common.name" . }}
+nginx.ingress.kubernetes.io/ssl-redirect: "true"
+nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+# HAProxy TLS config
+# https://haproxy-ingress.github.io/docs/configuration/keys/#secure-backend
+haproxy-ingress.github.io/backend-protocol: h2-ssl
+haproxy-ingress.github.io/secure-backends: "true"
+haproxy-ingress.github.io/secure-sni: {{ printf "%s.%s.svc.cluster.local" (include "common.name" .) .Release.Namespace }}
+haproxy-ingress.github.io/secure-verify-ca-secret: {{ .Release.Namespace }}/{{ include "common.cs.tls.secretName" . }}
+haproxy-ingress.github.io/service-upstream: "true"
+haproxy-ingress.github.io/ssl-redirect: "true"
+haproxy-ingress.github.io/ssl-always-add-https: "true"
+{{- end }}
+{{- if and .Values.ingress.class (semverCompare "<=1.27" .Capabilities.KubeVersion.Version) }}
+# Ingress class for kubernetes versions below 1.27
+kubernetes.io/ingress.class: {{ .Values.ingress.class }}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "reverse-proxy.ingress.host" -}}
+{{- $host := include "common.cs.ownCsUrl" . | urlParse | pluck "hostname" | first -}}
+{{- if .Values.ingress.hostname -}}
+{{- .Values.ingress.hostname -}}
+{{- else if and $host (not (regexMatch "^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$" $host)) -}}
+{{- $host -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "reverse-proxy.ingress.spec" -}}
+{{- if eq (include "common.cs.tls.enabled" .) "true" }}
+tls:
+  - secretName: {{ include "reverse-proxy.tls.secretName" . }}
+    {{- include "reverse-proxy.hosts" . | nindent 4 }}
+{{- end }}
+{{- if .Values.ingress.class }}
+ingressClassName: {{ .Values.ingress.class | quote }}
+{{- end }}
+{{- end -}}
+
+{{- if .Values.ingress.enabled }}
+{{- $tlsEnabled := eq (include "common.cs.tls.enabled" .) "true"  }}
+{{- $host := include "reverse-proxy.ingress.host" . }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "common.name" . }}
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+  {{- $proto := $tlsEnabled | ternary "HTTPS" "HTTP" }}
+  annotations:
+    {{- include "reverse-proxy.ingress.annotations" (dict "context" . "proto" $proto) | nindent 4 }}
+spec:
+  {{- include "reverse-proxy.ingress.spec" . | indent 2 }}
+  rules:
+    - host: {{ $host | quote }}
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: {{ include "common.name" . }}
+                port:
+                  number: 9000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "common.name" . }}-grpc
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+  {{- $proto := $tlsEnabled | ternary "GRPCS" "GRPC" }}
+  annotations:
+    {{- include "reverse-proxy.ingress.annotations" (dict "context" . "proto" $proto) | nindent 4 }}
+spec:
+  {{- include "reverse-proxy.ingress.spec" . | indent 2 }}
+  rules:
+  {{- range $path := (list "/license.LicenseController" "/cluster.ClusterController" "/vulnkb.VulnKBController") }}
+    - host: {{ $host | quote }}
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            path: {{ quote $path }}
+            backend:
+              service:
+                name: {{ include "common.name" $ }}
+                port:
+                  number: 8000
+  {{- end }}
+{{- end }}

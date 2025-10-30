@@ -1,0 +1,11 @@
+:host {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    height: 100%;
+}
+
+// @todo: replace ::ng-deep to class props
+::ng-deep .runtime-feature-sidepanel-code code {
+    max-height: calc(100vh - 135px);
+}

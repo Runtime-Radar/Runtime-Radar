@@ -1,0 +1,32 @@
+.shared-detector-tree-select-selection {
+    position: relative;
+
+    &-option {
+        height: fit-content;
+        align-items: start;
+        padding: 6px 0;
+
+        &.hidden {
+            display: none;
+        }
+
+        .removed {
+            text-decoration: line-through;
+        }
+
+        &--expandable {
+            padding-left: 8px !important;
+        }
+
+        &-prewrap {
+            display: block;
+            max-width: 95%;
+            white-space: pre-wrap;
+        }
+    }
+}
+
+// @todo: replace ::ng-deep to class props
+::ng-deep .shared-detector-tree-select-selection .kbq-pseudo-checkbox {
+    transform: translateY(2px);
+}

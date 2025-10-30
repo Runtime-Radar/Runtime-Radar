@@ -1,0 +1,220 @@
+{{- $tlsEnabled := eq (include "common.tls.enabled" .) "true" }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "common.fullname" . }}
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+  {{- with (include "common.annotations" .) }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "common.selectorLabels" . | nindent 6 }}
+  serviceName: {{ include "common.fullname" . }}-headless
+  template:
+    metadata:
+      {{- with (include "common.podAnnotations" .) }}
+      annotations:
+        {{- . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "common.podLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "common.serviceAccountName" . }}
+      {{- include "common.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.podSecurityContext.enabled }}
+      securityContext:
+        {{- omit .Values.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if .Values.terminationGracePeriodSeconds }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- end }}
+      containers:
+        - name: rabbitmq
+          image: {{ include "rabbitmq.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+          {{- if .Values.containerSecurityContext.enabled }}
+          securityContext:
+            {{- omit .Values.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          command:
+            - /bin/bash
+            - -c
+            - |
+              # Resources limits: maximum number of open file descriptors
+              if [ -n "${RABBITMQ_ULIMIT_NOFILES:-}" ]; then
+                  current_limit=$(ulimit -n)
+                  if [ "$current_limit" != "unlimited" ]; then
+                      if [ $RABBITMQ_ULIMIT_NOFILES -gt $current_limit ]; then
+                          echo "Setting file description limit to $RABBITMQ_ULIMIT_NOFILES"
+                          ulimit -n $RABBITMQ_ULIMIT_NOFILES
+                      fi
+                  fi
+              fi
+              /usr/local/bin/docker-entrypoint.sh rabbitmq-server "$@"
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/bash
+                  - -ec
+                  - |
+                    rabbitmqctl stop_app
+          env:
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: K8S_SERVICE_NAME
+              value: {{ printf "%s-headless" (include "common.fullname" .) }}
+            - name: RABBITMQ_FEATURE_FLAGS
+              value: {{ .Values.featureFlags | quote }}
+            - name: RABBITMQ_NODE_NAME
+              value: "rabbit@$(MY_POD_NAME)"
+            - name: RABBITMQ_MNESIA_DIR
+              value: "/rabbitmq/mnesia/$(RABBITMQ_NODE_NAME)"
+            {{- if .Values.logs }}
+            - name: RABBITMQ_LOGS
+              value: {{ .Values.logs | quote }}
+            {{- end }}
+            - name: RABBITMQ_ULIMIT_NOFILES
+              value: {{ .Values.ulimitNofiles | quote }}
+            - name: RABBITMQ_USE_LONGNAME
+              value: "true"
+            - name: RABBITMQ_DEFAULT_USER
+              value: {{ .Values.auth.username | quote }}
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "common.authSecretName" . }}
+                  key: {{ include "rabbitmq.secretPasswordKey" . }}
+            - name: RABBITMQ_PLUGINS
+              value: {{ include "rabbitmq.plugins" . | quote }}
+            {{- with .Values.extraEnvVars }}
+            {{- tpl (toYaml .) $ | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: amqp
+              containerPort: {{ .Values.containerPorts.amqp }}
+            - name: dist
+              containerPort: {{ .Values.containerPorts.dist }}
+            - name: stats
+              containerPort: {{ .Values.containerPorts.manager }}
+            - name: epmd
+              containerPort: {{ .Values.containerPorts.epmd }}
+            {{- if (eq (include "common.metrics.enabled" .) "true") }}
+            - name: metrics
+              containerPort: {{ .Values.containerPorts.metrics }}
+            {{- end }}
+          {{- if .Values.startupProbe.enabled }}
+          startupProbe: {{- omit .Values.startupProbe "enabled" | toYaml | nindent 12 }}
+            tcpSocket:
+              port: amqp
+          {{- end }}
+          {{- if .Values.livenessProbe.enabled }}
+          livenessProbe: {{- omit .Values.livenessProbe "enabled" | toYaml | nindent 12 }}
+            exec:
+              command:
+                - sh
+                - -ec
+                - rabbitmq-diagnostics -q ping
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
+          readinessProbe: {{- omit .Values.readinessProbe "enabled" | toYaml | nindent 12 }}
+            exec:
+              command:
+                - sh
+                - -ec
+                - rabbitmq-diagnostics -q check_running && rabbitmq-diagnostics -q check_local_alarms
+          {{- end }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: configuration
+              mountPath: /etc/rabbitmq
+            - name: empty-dir
+              mountPath: /tmp
+              subPath: tmp-dir
+            - name: empty-dir
+              mountPath: /var/lib/rabbitmq
+              subPath: var-dir
+            - name: data
+              mountPath: /rabbitmq/mnesia
+            {{- with .Values.volumeMounts }}
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: empty-dir
+          emptyDir: {}
+        - name: configuration
+          configMap:
+            name: {{ include "common.configmapName" . }}
+        {{- with .Values.volumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+  {{- if not .Values.persistence.enabled }}
+        - name: data
+          emptyDir: {}
+  {{- else if .Values.persistence.existingClaim }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ tpl .Values.persistence.existingClaim . }}
+  {{- else }}
+  {{- with .Values.persistence.persistentVolumeClaimRetentionPolicy }}
+  persistentVolumeClaimRetentionPolicy:
+    {{ toYaml . | nindent 4 }}
+  {{- end }}
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: data
+        {{- with (include "common.mergeAnnotations" (dict "context" . "value" .Values.persistence.annotations)) }}
+        annotations:
+          {{- . | nindent 10 }}
+        {{- end }}
+        {{- with (include "common.mergeLabels" (dict "context" . "value" .Values.persistence.labels)) }}
+        labels:
+          {{- . | nindent 10 }}
+        {{- end }}
+      spec:
+        accessModes: {{- toYaml .Values.persistence.accessModes | nindent 10 }}
+        {{- with .Values.persistence.dataSource }}
+        dataSource: {{- toYaml . | nindent 10 }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size | quote }}
+        {{- with .Values.persistence.selector }}
+        selector: {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with (default .Values.persistence.storageClass (.Values.global).storageClass) }}
+        storageClassName: {{ eq . "-" | ternary "" . | quote }}
+        {{- end }}
+  {{- end }}

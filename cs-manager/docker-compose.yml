@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres:17.4
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=cs
+      - POSTGRES_PASSWORD=cs
+      - POSTGRES_DB=cs
+    networks:
+      - local
+
+  cs-manager:
+    build:
+      context: .
+    image: cs-manager
+    ports:
+      - "8008:8000"
+      - "9008:9000"
+    command: --postgresAddr=postgres --logLevel=INFO
+    depends_on:
+      - postgres
+    networks:
+      local:
+
+networks:
+  local:
