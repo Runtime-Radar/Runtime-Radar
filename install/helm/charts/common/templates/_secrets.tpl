@@ -43,7 +43,7 @@ Params:
 {{- if empty $value -}}
   {{- $secretData := (lookup "v1" "Secret" (include "common.namespace" .context) .secret).data -}}
   {{- if and $secretData (hasKey $secretData .key) -}}
-    {{- $value = index $secretData .key -}}
+    {{- $value = index $secretData .key | b64dec -}}
   {{- end -}}
 {{- end -}}
 {{- if empty $value -}}
