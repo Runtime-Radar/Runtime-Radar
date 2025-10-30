@@ -77,7 +77,7 @@ global:
   # -- Is this a child cluster
   isChildCluster: false
   # @skip global.csVersion
-  csVersion: "0.1"
+  csVersion: "v0.1.0"
 
 # @section Common RR parameters
 # -- String to fully override common.fullname

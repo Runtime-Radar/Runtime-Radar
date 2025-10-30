@@ -215,6 +215,7 @@ To install Runtime Radar using Helm,
 1. Run the following command:
    ```bash
    helm install runtime-radar -n runtime-radar --create-namespace oci://ghcr.io/runtime-radar/runtime-radar:0.2 \
+   helm install runtime-radar -n runtime-radar --create-namespace oci://ghcr.io/runtime-radar/runtime-radar:v0.1.0 \
      --set-string 'global.ownCsUrl=https://your-domain.com:32000' \
      --set-string 'global.keys.publicAccessTokenSalt=INIT-DO-NOT-USE' \
      --set-string 'global.keys.encryption=INIT-DO-NOT-USE' \
