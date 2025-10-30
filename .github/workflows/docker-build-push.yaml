@@ -9,6 +9,7 @@ on:
 env:
   TASK_VERSION: '3.38.0'
   REGISTRY: ghcr.io
+  REPO: runtime-radar
   GO_VERSION: '1.24'
 
 jobs:
@@ -22,12 +23,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
-
-      # This step is necessary because the organization name contains uppercase letters.
-      # Github Actions itself doesn't have any functions that help to transform strings.
-      - name: Make repo lowercase
-        run: |
-          echo "REPO=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
 
       - name: Install Task
         uses: go-task/setup-task@v1
